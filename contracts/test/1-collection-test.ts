@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Contract, Signer, WalletTypes, toNano } from "locklift";
+import { Contract, Signer, WalletTypes, fromNano, toNano } from "locklift";
 import { FactorySource } from "../build/factorySource";
 import { isValidEverAddress } from "locklift/utils";
 
@@ -35,9 +35,16 @@ describe("Test Collection contract", async function () {
     });
 
     it("Mint NFT", async function () {
-      await collection.methods.mintNft().sendExternal({ publicKey: signer.publicKey });
-      const response = await collection.methods.nftAddress({answerId: 0, id: 0}).call();
-      expect(isValidEverAddress(response.nft)).to.be.true;
+      const { account } = await locklift.factory.accounts.addNewAccount({
+        type: WalletTypes.EverWallet,
+        value: toNano(100000),
+        publicKey: signer.publicKey,
+      });
+      await locklift.transactions.waitFinalized(
+        collection.methods.mintNft().send({ from: account.address, amount: toNano(6) }),
+      );
+      const supplyRes = await collection.methods.totalSupply({ answerId: 0 }).call({});
+      expect(BigInt(supplyRes.count)).to.be.equal(1n);
     });
   });
 });
