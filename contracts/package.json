@@ -8,6 +8,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@itgold/everscale-tip": "^1.1.4",
     "@types/chai": "^4.3.5",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.2.1",
