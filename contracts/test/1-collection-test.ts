@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { Contract, Signer, WalletTypes, fromNano, toNano } from "locklift";
 import { FactorySource } from "../build/factorySource";
-import { isValidEverAddress } from "locklift/utils";
 
 
 describe("Test Collection contract", async function () {
