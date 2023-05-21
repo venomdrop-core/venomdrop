@@ -4,28 +4,41 @@ pragma AbiHeader pubkey;
 
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
+import "./consts/Errors.tsol";
 
-contract Collection is TIP4_1Collection {
+contract Collection is TIP4_1Collection, Errors {
 
+  address private _owner;
+  uint private _maxSupply;
   address[] private _allowedVenomDrops;
 
   constructor(TvmCell codeNft, address[] allowedVenomDrops) public TIP4_1Collection(codeNft) {
     tvm.accept();
     _allowedVenomDrops = allowedVenomDrops;
+    _owner = msg.sender;
   }
 
-  // Method to set the allowed VenomDrop contracts
-  function setAllowedVenomDrops(
-      address[] venomDropAddrs
-  ) public {
-      // clear the existing array
-      delete _allowedVenomDrops;
-      // push the elements of the new array
-      for (uint i = 0; i < venomDropAddrs.length; i++) {
-        // TODO: Verify if the address implements the VenomDrop interface or revert it
-        _allowedVenomDrops.push(venomDropAddrs[i]);
-      }
+  // UTILS
+
+  /**
+    * @dev Reverts if the sender is not the owner or the contract itself
+    */
+  function _checkOnlyOwnerOrSelf() internal view {
+    if (
+        msg.sender != owner() || msg.sender != address(this)
+    ) {
+        revert(sender_is_not_owner);
+    }
   }
+
+  // MODIFIERS
+
+  modifier onlyOwnerOrSelf() {
+      _checkOnlyOwnerOrSelf();
+      _;
+  }
+
+  // PRIVATE FUNCTIONS
 
   function _mintNft() private {
     require(msg.value > 0.4 ever, 101);
@@ -39,5 +52,46 @@ contract Collection is TIP4_1Collection {
     new Nft{ stateInit: stateNft, value: 0, flag: 128 }(msg.sender, msg.sender, 0.3 ever);
   }
 
+  // PUBLIC FUNCTIONS
 
+
+  /**
+   * @notice Set the list of allowed VenomDrop contracts
+   */
+  function setAllowedVenomDrops(
+      address[] venomDropAddrs
+  ) public {
+      // clear the existing array
+      delete _allowedVenomDrops;
+      // push the elements of the new array
+      for (uint i = 0; i < venomDropAddrs.length; i++) {
+        // TODO: Verify if the address implements the VenomDrop interface or revert it
+        _allowedVenomDrops.push(venomDropAddrs[i]);
+      }
+  }
+
+  /**
+    * @notice Sets the max token supply
+    *
+    * @param maxSupply The max supply to set
+    */
+  function setMaxSupply(uint256 maxSupply) external onlyOwnerOrSelf {
+    _maxSupply = maxSupply;
+  }
+  
+  // PUBLIC VIEWS
+
+  /**
+   *  
+   */
+  function maxSupply() public view returns (uint256) {
+      return _maxSupply;
+  }
+
+  /**
+   * @notice returns the owner of the collection
+   */
+  function owner() public view returns (address) {
+    return _owner;
+  }
 }
