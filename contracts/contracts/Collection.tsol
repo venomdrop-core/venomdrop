@@ -1,4 +1,4 @@
-pragma ever-solidity >=0.61.2;
+pragma ever-solidity ^0.62.0;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
@@ -6,11 +6,28 @@ import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
 
 contract Collection is TIP4_1Collection {
-  constructor(TvmCell codeNft) TIP4_1Collection(codeNft) {
+
+  address[] private _allowedVenomDrops;
+
+  constructor(TvmCell codeNft, address[] allowedVenomDrops) public TIP4_1Collection(codeNft) {
     tvm.accept();
+    _allowedVenomDrops = allowedVenomDrops;
   }
 
-  function mintNft() external virtual {
+  // Method to set the allowed VenomDrop contracts
+  function setAllowedVenomDrops(
+      address[] venomDropAddrs
+  ) public {
+      // clear the existing array
+      delete _allowedVenomDrops;
+      // push the elements of the new array
+      for (uint i = 0; i < venomDropAddrs.length; i++) {
+        // TODO: Verify if the address implements the VenomDrop interface or revert it
+        _allowedVenomDrops.push(venomDropAddrs[i]);
+      }
+  }
+
+  function _mintNft() private {
     require(msg.value > 0.4 ever, 101);
     tvm.rawReserve(0, 4);
 
@@ -21,4 +38,6 @@ contract Collection is TIP4_1Collection {
     TvmCell stateNft = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: codeNft });
     new Nft{ stateInit: stateNft, value: 0, flag: 128 }(msg.sender, msg.sender, 0.3 ever);
   }
+
+
 }
