@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { Contract, Signer, WalletTypes, fromNano, toNano } from "locklift";
 import { FactorySource } from "../build/factorySource";
-import { Account } from "locklift/internal/factory";
 import { CreateAccountOutput } from "locklift/types";
 
 
@@ -76,7 +75,7 @@ describe("Test Collection contract", async function () {
             maxSupply: 12345,
           }).send({ from: owner.address, amount: toNano(6) })
         );
-        expect(BigInt((await collection.methods.maxSupply().call()).maxSupply)).to.be.equal(12345n);
+        expect(BigInt((await collection.methods.getMaxSupply().call()).maxSupply)).to.be.equal(12345n);
       });
       it('should revert if user is not owner', async () => {
         const { traceTree } = await locklift.tracing.trace(
@@ -85,11 +84,11 @@ describe("Test Collection contract", async function () {
           }).send({ from: minter.address, amount: toNano(6) }),
           {
             allowedCodes: {
-              compute: [101],
+              compute: [1000],
             },
           }
         );
-        await expect(traceTree).to.have.error(101);
+        await expect(traceTree).to.have.error(1000);
       });
     })
   });

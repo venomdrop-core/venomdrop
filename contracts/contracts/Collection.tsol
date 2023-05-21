@@ -1,12 +1,13 @@
-pragma ever-solidity ^0.62.0;
+pragma ever-solidity >=0.62.0;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
-import "./consts/Errors.tsol";
+import "./utils/Ownable.tsol";
+import "./libraries/OwnableErrors.tsol";
 
-contract Collection is TIP4_1Collection, Errors {
+contract Collection is TIP4_1Collection, Ownable {
 
   address private _owner;
   uint private _maxSupply;
@@ -15,7 +16,7 @@ contract Collection is TIP4_1Collection, Errors {
   constructor(TvmCell codeNft, address owner, address[] allowedVenomDrops) public TIP4_1Collection(codeNft) {
     tvm.accept();
     _allowedVenomDrops = allowedVenomDrops;
-    _owner = owner;
+    _transferOwnership(owner);
   }
 
   // UTILS
@@ -25,9 +26,9 @@ contract Collection is TIP4_1Collection, Errors {
     */
   function _checkOnlyOwnerOrSelf() internal view {
     if (
-        msg.sender != owner() && msg.sender != address(this)
+        _msgSender() != owner() && _msgSender() != address(this)
     ) {
-        revert(sender_is_not_owner);
+        revert(OwnableErrors.CALLER_IS_NOT_THE_OWNER);
     }
   }
 
@@ -60,7 +61,7 @@ contract Collection is TIP4_1Collection, Errors {
    */
   function setAllowedVenomDrops(
       address[] venomDropAddrs
-  ) public {
+  ) external onlyOwnerOrSelf {
       // clear the existing array
       delete _allowedVenomDrops;
       // push the elements of the new array
@@ -84,14 +85,7 @@ contract Collection is TIP4_1Collection, Errors {
   /**
    *  
    */
-  function maxSupply() public view returns (uint256 maxSupply) {
+  function getMaxSupply() public view returns (uint256 maxSupply) {
       return _maxSupply;
-  }
-
-  /**
-   * @notice returns the owner of the collection
-   */
-  function owner() public view returns (address) {
-    return _owner;
   }
 }
