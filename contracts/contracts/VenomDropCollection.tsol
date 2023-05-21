@@ -9,6 +9,7 @@ import "./utils/Ownable.tsol";
 import "./libraries/OwnableErrors.tsol";
 
 contract VenomDropCollection is TIP4_1Collection, Ownable {
+  uint static _id;
   address private _owner;
   uint private _maxSupply;
   MintStage[] private _mintStages;
@@ -45,6 +46,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
    * @notice Set all mint stages for the collection
    */
   function setMintStages(MintStage[] mintStages) public onlyOwner {
+    // TODO: Add validations here
     _mintStages = mintStages;
   }
 
@@ -55,5 +57,12 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
    */
   function getMaxSupply() public view returns (uint256 maxSupply) {
     return _maxSupply;
+  }
+
+  /**
+   * @notice get the mint stages for the collection
+   */
+  function getMintStages() public view returns (MintStage[] mintStages) {
+    return _mintStages;
   }
 }

@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { Contract, Signer, WalletTypes, fromNano, toNano } from "locklift";
 import { FactorySource } from "../build/factorySource";
 import { CreateAccountOutput } from "locklift/types";
+import { deployVenomCollection } from "./utils";
 
 
 describe("Test VenomDropCollection contract", async function () {
@@ -38,23 +39,36 @@ describe("Test VenomDropCollection contract", async function () {
     });
 
     it("Deploy contract", async function () {
-      const nftArtifacts = locklift.factory.getContractArtifacts("Nft");
-      ({ contract: collection } = await locklift.factory.deployContract({
-        contract: "VenomDropCollection",
-        publicKey: ownerSigner.publicKey,
-        initParams: {},
-        constructorParams: {
-          codeNft: nftArtifacts.code,
-          owner: owner.address,
-        },
-        value: locklift.utils.toNano(20),
-      }));
-
+      collection = await deployVenomCollection(1, ownerSigner, owner.address);
       expect(await locklift.provider.getBalance(collection.address).then(balance => Number(balance))).to.be.above(0);
     });
 
     describe('setMaxSupply', () => {
       it('should set the max supply properly as owner', async () => {
+        await locklift.transactions.waitFinalized(
+          collection.methods.setMaxSupply({
+            maxSupply: 12345,
+          }).send({ from: owner.address, amount: toNano(6) })
+        );
+        expect(BigInt((await collection.methods.getMaxSupply().call()).maxSupply)).to.be.equal(12345n);
+      });
+      it('should revert if user is not owner', async () => {
+        const { traceTree } = await locklift.tracing.trace(
+          collection.methods.setMaxSupply({
+            maxSupply: 12345,
+          }).send({ from: minter.address, amount: toNano(6) }),
+          {
+            allowedCodes: {
+              compute: [1000],
+            },
+          }
+        );
+        await expect(traceTree).to.have.error(1000);
+      });
+    });
+
+    describe('setMintStages', () => {
+      it('should set the mint stages properly as owner', async () => {
         await locklift.transactions.waitFinalized(
           collection.methods.setMaxSupply({
             maxSupply: 12345,
