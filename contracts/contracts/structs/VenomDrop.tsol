@@ -1,0 +1,35 @@
+pragma ever-solidity >=0.61.2;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+/**
+ * @notice The public drop data struct
+ *
+ * @param price                The mint price per token. (Up to 18 bi of VENOM)
+ * @param startTime                Start timestamp (Max date is February 7, 2106)
+ * @param endTime                  End timestamp (Max date is February 7, 2106)
+ * @param maxTotalMintableByWallet Maximum total number of mints (Up to 65,535)
+ */
+struct PublicDrop {
+  uint64 price;
+  uint32 startTime;
+  uint32 endTime;
+  uint16 maxTotalMintableByWallet;
+}
+
+/**
+ * @notice The params used on allow list mint (also used to compose the Merkle Tree leaf node)
+ *
+ * @param price                The mint price per token.
+ * @param maxTotalMintableByWallet Maximum total number of mints a user is allowed.
+ * @param startTime                The start time, ensure this is not zero.
+ * @param endTime                  The end time, ensure this is not zero.
+ * @param maxTokenSupplyForStage   The limit of token supply this stage can mint within.
+ */
+struct MintAllowListParams {
+  uint256 price;
+  uint256 maxTotalMintableByWallet;
+  uint256 startTime;
+  uint256 endTime;
+  uint256 maxTokenSupplyForStage;
+}

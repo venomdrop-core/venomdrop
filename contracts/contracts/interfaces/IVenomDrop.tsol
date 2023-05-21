@@ -1,0 +1,31 @@
+pragma ever-solidity >=0.61.2;
+pragma AbiHeader expire;
+pragma AbiHeader time;
+pragma AbiHeader pubkey;
+
+import "../structs/VenomDrop.tsol";
+
+interface IVenomDrop {
+  /**
+   * @notice Mint (Public Mode)
+   *
+   * @param collectionContract The NFT Collection contract to mint
+   * @param quantity The quantity of tokens to mint
+   */
+  function mintPublic(address collectionContract, uint256 quantity) external;
+
+  /**
+   * @notice Mint (Allowlist Mode)
+   *
+   * @param collectionContract The nft contract to mint.
+   * @param quantity The number of tokens to mint.
+   * @param params The mint parameters.
+   * @param proof The proof for the leaf of the allow list.
+   */
+  function mintAllowList(
+    address collectionContract,
+    uint256 quantity,
+    MintAllowListParams calldata params,
+    bytes32[] calldata proof
+  ) external;
+}
