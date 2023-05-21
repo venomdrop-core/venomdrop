@@ -3,47 +3,19 @@ pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
 import "./interfaces/IVenomDropCollection.tsol";
-import "@itgold/everscale-tip/contracts/TIP6/TIP6.sol";
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
 import "./utils/Ownable.tsol";
 import "./libraries/OwnableErrors.tsol";
 
 contract VenomDropCollection is TIP4_1Collection, Ownable {
-
   address private _owner;
   uint private _maxSupply;
-  address[] private _allowedVenomDrops;
+  MintStage[] private _mintStages;
 
-  constructor(TvmCell codeNft, address owner, address[] allowedVenomDrops) public TIP4_1Collection(codeNft) {
+  constructor(TvmCell codeNft, address owner) public TIP4_1Collection(codeNft) {
     tvm.accept();
-    _allowedVenomDrops = allowedVenomDrops;
     _transferOwnership(owner);
-
-    _supportedInterfaces[ bytes4(tvm.functionId(ITIP6.supportsInterface)) ] = true;
-    _supportedInterfaces[
-        bytes4(tvm.functionId(IVenomDropCollection.setAllowedVenomDrops))
-    ] = true;
-  }
-
-  // UTILS
-
-  /**
-    * @dev Reverts if the sender is not the owner or the contract itself
-    */
-  function _checkOnlyOwnerOrSelf() internal view {
-    if (
-        _msgSender() != owner() && _msgSender() != address(this)
-    ) {
-        revert(OwnableErrors.CALLER_IS_NOT_THE_OWNER);
-    }
-  }
-
-  // MODIFIERS
-
-  modifier onlyOwnerOrSelf() {
-      _checkOnlyOwnerOrSelf();
-      _;
   }
 
   // PRIVATE FUNCTIONS
@@ -62,37 +34,26 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
 
   // PUBLIC FUNCTIONS
 
-
   /**
-   * @notice Set the list of allowed VenomDrop contracts
+   * @notice set the max supply for the collection
    */
-  function setAllowedVenomDrops(
-      address[] venomDropAddrs
-  ) external onlyOwnerOrSelf {
-      // clear the existing array
-      delete _allowedVenomDrops;
-      // push the elements of the new array
-      for (uint i = 0; i < venomDropAddrs.length; i++) {
-        // TODO: Verify if the address implements the VenomDrop interface or revert it
-        _allowedVenomDrops.push(venomDropAddrs[i]);
-      }
-  }
-
-  /**
-    * @notice Sets the max token supply
-    *
-    * @param maxSupply The max supply to set
-    */
-  function setMaxSupply(uint256 maxSupply) external onlyOwnerOrSelf {
+  function setMaxSupply(uint maxSupply) public onlyOwner {
     _maxSupply = maxSupply;
   }
-  
+
+  /**
+   * @notice Set all mint stages for the collection
+   */
+  function setMintStages(MintStage[] mintStages) public onlyOwner {
+    _mintStages = mintStages;
+  }
+
   // PUBLIC VIEWS
 
   /**
-   *  
+   * @notice get the max supply for the collection
    */
   function getMaxSupply() public view returns (uint256 maxSupply) {
-      return _maxSupply;
+    return _maxSupply;
   }
 }

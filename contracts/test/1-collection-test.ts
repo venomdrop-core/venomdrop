@@ -5,7 +5,7 @@ import { CreateAccountOutput } from "locklift/types";
 
 
 describe("Test VenomDropCollection contract", async function () {
-  let collection: Contract<FactorySource["Collection"]>;
+  let collection: Contract<FactorySource["VenomDropCollection"]>;
   let ownerSigner: Signer;
   let minterSigner: Signer;
   let owner: CreateAccountOutput['account'];
@@ -30,7 +30,7 @@ describe("Test VenomDropCollection contract", async function () {
   });
   describe("Contracts", async function () {
     it("Load contract factory", async function () {
-      const collectionData = locklift.factory.getContractArtifacts("Collection");
+      const collectionData = locklift.factory.getContractArtifacts("VenomDropCollection");
 
       expect(collectionData.code).not.to.equal(undefined, "Code should be available");
       expect(collectionData.abi).not.to.equal(undefined, "ABI should be available");
@@ -46,27 +46,12 @@ describe("Test VenomDropCollection contract", async function () {
         constructorParams: {
           codeNft: nftArtifacts.code,
           owner: owner.address,
-          allowedVenomDrops: [],
         },
         value: locklift.utils.toNano(20),
       }));
 
       expect(await locklift.provider.getBalance(collection.address).then(balance => Number(balance))).to.be.above(0);
     });
-
-    // TODO: Add the mint tests from the VenomDrop
-    // it("Mint NFT", async function () {
-    // const { account } = await locklift.factory.accounts.addNewAccount({
-    //   type: WalletTypes.EverWallet,
-    //   value: toNano(100000),
-    //   publicKey: signer.publicKey,
-    // });
-    //   await locklift.transactions.waitFinalized(
-    //     collection.methods.mintNft().send({ from: account.address, amount: toNano(6) }),
-    //   );
-    //   const supplyRes = await collection.methods.totalSupply({ answerId: 0 }).call({});
-    //   expect(BigInt(supplyRes.count)).to.be.equal(1n);
-    // });
 
     describe('setMaxSupply', () => {
       it('should set the max supply properly as owner', async () => {
@@ -90,6 +75,6 @@ describe("Test VenomDropCollection contract", async function () {
         );
         await expect(traceTree).to.have.error(1000);
       });
-    })
+    });
   });
 });
