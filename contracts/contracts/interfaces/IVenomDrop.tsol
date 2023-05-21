@@ -1,6 +1,5 @@
 pragma ever-solidity >=0.61.2;
 pragma AbiHeader expire;
-pragma AbiHeader time;
 pragma AbiHeader pubkey;
 
 import "../structs/VenomDrop.tsol";
@@ -25,7 +24,7 @@ interface IVenomDrop {
   function mintAllowList(
     address collectionContract,
     uint256 quantity,
-    MintAllowListParams calldata params,
-    bytes32[] calldata proof
+    MintAllowListParams params,
+    bytes32[] proof
   ) external;
 }
