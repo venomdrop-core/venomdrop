@@ -6,7 +6,7 @@ import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
 
 contract Collection is TIP4_1Collection {
-  constructor(TvmCell codeNft) public TIP4_1Collection(codeNft) {
+  constructor(TvmCell codeNft) TIP4_1Collection(codeNft) {
     tvm.accept();
   }
 
