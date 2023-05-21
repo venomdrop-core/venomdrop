@@ -4,7 +4,7 @@ import { FactorySource } from "../build/factorySource";
 import { CreateAccountOutput } from "locklift/types";
 
 
-describe("Test Collection contract", async function () {
+describe("Test VenomDropCollection contract", async function () {
   let collection: Contract<FactorySource["Collection"]>;
   let ownerSigner: Signer;
   let minterSigner: Signer;
@@ -40,7 +40,7 @@ describe("Test Collection contract", async function () {
     it("Deploy contract", async function () {
       const nftArtifacts = locklift.factory.getContractArtifacts("Nft");
       ({ contract: collection } = await locklift.factory.deployContract({
-        contract: "Collection",
+        contract: "VenomDropCollection",
         publicKey: ownerSigner.publicKey,
         initParams: {},
         constructorParams: {

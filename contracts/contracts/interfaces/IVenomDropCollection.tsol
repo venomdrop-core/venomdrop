@@ -1,0 +1,14 @@
+pragma ever-solidity ^0.62.0;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "../structs/VenomDrop.tsol";
+
+interface IVenomDropCollection {
+  /**
+   * @notice Set the list of allowed VenomDrop contracts
+   */
+  function setAllowedVenomDrops(
+      address[] venomDropAddrs
+  ) external;
+}

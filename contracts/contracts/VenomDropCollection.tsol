@@ -2,12 +2,14 @@ pragma ever-solidity >=0.62.0;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
+import "./interfaces/IVenomDropCollection.tsol";
+import "@itgold/everscale-tip/contracts/TIP6/TIP6.sol";
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
 import "./utils/Ownable.tsol";
 import "./libraries/OwnableErrors.tsol";
 
-contract Collection is TIP4_1Collection, Ownable {
+contract VenomDropCollection is TIP4_1Collection, Ownable {
 
   address private _owner;
   uint private _maxSupply;
@@ -17,6 +19,11 @@ contract Collection is TIP4_1Collection, Ownable {
     tvm.accept();
     _allowedVenomDrops = allowedVenomDrops;
     _transferOwnership(owner);
+
+    _supportedInterfaces[ bytes4(tvm.functionId(ITIP6.supportsInterface)) ] = true;
+    _supportedInterfaces[
+        bytes4(tvm.functionId(IVenomDropCollection.setAllowedVenomDrops))
+    ] = true;
   }
 
   // UTILS
