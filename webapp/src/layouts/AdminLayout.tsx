@@ -215,8 +215,8 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                   </div>
                 </nav>
               </div>
-              <div className="flex flex-shrink-0 border-t border-gray-800 p-4">
-                <a href="#" className="group block w-full flex-shrink-0">
+              <div className="flex flex-shrink-0 border-t border-gray-800 px-4 py-7">
+                <a href="#" className="group block w-full flex-shrink-0 pt-1">
                   <div className="flex items-center">
                     <div>
                       <img
@@ -262,7 +262,7 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
             </div>
           </div>
           <div className="relative z-0 flex flex-1 overflow-hidden">
-            <main className="relative z-0 flex-1 overflow-y-auto focus:outline-none xl:order-last bg-slate-950 bg-opacity-80">
+            <main className="relative z-0 flex-1 overflow-y-auto focus:outline-none xl:order-last bg-slate-950 bg-opacity-80 h-screen">
               {children}
             </main>
           </div>
