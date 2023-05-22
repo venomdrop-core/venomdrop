@@ -1,8 +1,8 @@
+import { AdminLayout } from "./layouts/AdminLayout"
+
 function App() {
   return (
-    <>
-      Add Content Here
-    </>
+    <AdminLayout />
   )
 }
 
