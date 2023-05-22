@@ -1,9 +1,0 @@
-pragma ever-solidity >=0.62.0;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
-
-library OwnableErrors {
-  uint16 constant CALLER_IS_NOT_THE_OWNER = 1000;
-  uint16 constant NEW_OWNER_IS_THE_ZERO_ADDRESS = 1010;
-}

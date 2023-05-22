@@ -6,7 +6,7 @@ import "./interfaces/IVenomDropCollection.tsol";
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
 import "./utils/Ownable.tsol";
-import "./libraries/OwnableErrors.tsol";
+import "./libraries/Errors.tsol";
 
 contract VenomDropCollection is TIP4_1Collection, Ownable {
   uint static _id;
@@ -17,6 +17,33 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   constructor(TvmCell codeNft, address owner) public TIP4_1Collection(codeNft) {
     tvm.accept();
     _transferOwnership(owner);
+  }
+
+  // UTILS
+
+  /**
+   * @notice Validate Mint Stages.
+   *         The mint stages should not have date overlap.
+   *
+   * @param mintStages the list of mint stages
+   */
+  function _validateMintStages(MintStage[] mintStages) pure internal {
+    uint256 numStages = mintStages.length;
+    for (uint256 i = 0; i < numStages; i++) {
+        MintStage mintStage = mintStages[i];
+        
+        require(mintStage.startTime > 0, Errors.START_DATE_SHOULD_BE_GREATER_THAN_ZERO);
+        
+        bool isLast = i == mintStages.length - 1;
+        if (!isLast && mintStage.endTime == 0) {
+          revert(Errors.ONLY_LAST_STAGE_CAN_HAVE_END_DATE_EQUAL_ZERO);
+        }
+        
+        for (uint256 j = i + 1; j < numStages; j++) {
+            MintStage nextStage = mintStages[j];
+            require(nextStage.startTime > mintStage.endTime, Errors.INVALID_STAGES_TIMELINE);
+        }
+    }
   }
 
   // PRIVATE FUNCTIONS
@@ -46,7 +73,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
    * @notice Set all mint stages for the collection
    */
   function setMintStages(MintStage[] mintStages) public onlyOwner {
-    // TODO: Add validations here
+    _validateMintStages(mintStages);
     _mintStages = mintStages;
   }
 

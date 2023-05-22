@@ -11,7 +11,7 @@ pragma AbiHeader pubkey;
  */
 
  import "./Context.tsol";
- import "../libraries/OwnableErrors.tsol";
+ import "../libraries/Errors.tsol";
 
 /**
  * @dev Contract module which provides a basic access control mechanism, where
@@ -56,7 +56,7 @@ abstract contract Ownable is Context {
      * @dev Throws if the sender is not the owner.
      */
     function _checkOwner() internal view virtual {
-        require(owner() == _msgSender(), OwnableErrors.CALLER_IS_NOT_THE_OWNER);
+        require(owner() == _msgSender(), Errors.CALLER_IS_NOT_THE_OWNER);
     }
 
     /**
@@ -75,7 +75,7 @@ abstract contract Ownable is Context {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), OwnableErrors.NEW_OWNER_IS_THE_ZERO_ADDRESS);
+        require(newOwner != address(0), Errors.NEW_OWNER_IS_THE_ZERO_ADDRESS);
         _transferOwnership(newOwner);
     }
 

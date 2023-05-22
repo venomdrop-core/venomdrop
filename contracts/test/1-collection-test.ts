@@ -66,29 +66,5 @@ describe("Test VenomDropCollection contract", async function () {
         await expect(traceTree).to.have.error(1000);
       });
     });
-
-    describe('setMintStages', () => {
-      it('should set the mint stages properly as owner', async () => {
-        await locklift.transactions.waitFinalized(
-          collection.methods.setMaxSupply({
-            maxSupply: 12345,
-          }).send({ from: owner.address, amount: toNano(6) })
-        );
-        expect(BigInt((await collection.methods.getMaxSupply().call()).maxSupply)).to.be.equal(12345n);
-      });
-      it('should revert if user is not owner', async () => {
-        const { traceTree } = await locklift.tracing.trace(
-          collection.methods.setMaxSupply({
-            maxSupply: 12345,
-          }).send({ from: minter.address, amount: toNano(6) }),
-          {
-            allowedCodes: {
-              compute: [1000],
-            },
-          }
-        );
-        await expect(traceTree).to.have.error(1000);
-      });
-    });
   });
 });

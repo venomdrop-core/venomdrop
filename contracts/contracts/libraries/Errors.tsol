@@ -1,0 +1,36 @@
+pragma ever-solidity >=0.62.0;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+library Errors {
+  /**
+   * @notice Validation error that throws when:
+   *         - There is an attempt to call a function restricted to the owner from other address
+   */
+  uint16 constant CALLER_IS_NOT_THE_OWNER = 1000;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - There is an attempt to transfer the owner to a zero address
+   */
+  uint16 constant NEW_OWNER_IS_THE_ZERO_ADDRESS = 1010;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - There is some some mint stage has startDate=0
+   */
+  uint16 constant START_DATE_SHOULD_BE_GREATER_THAN_ZERO = 1020;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - There is some some mint stage (except the last) that has endDate=0
+   */
+  uint16 constant ONLY_LAST_STAGE_CAN_HAVE_END_DATE_EQUAL_ZERO = 1030;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - Stages are not ordered chronologically
+   *         - There is an overlap of dates
+   */
+  uint16 constant INVALID_STAGES_TIMELINE = 1020;
+}

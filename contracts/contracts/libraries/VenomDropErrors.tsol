@@ -1,8 +1,0 @@
-pragma ever-solidity >=0.62.0;
-pragma AbiHeader expire;
-pragma AbiHeader pubkey;
-
-
-library VenomDropErrors {
-  uint16 constant CALLER_IS_NOT_A_VENOMDROP_COLLECTION = 2000;
-}
