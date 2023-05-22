@@ -124,7 +124,7 @@ describe('VenomDropCollection: mint stages', async () => {
         );
         await expect(traceTree).to.have.error(1020);
       });
-      it('should revert if there the stages are not ordered chronologically', async () => {
+      it('should revert if the stages are not ordered chronologically', async () => {
         const { traceTree } = await locklift.tracing.trace(
           collection.methods.setMintStages({
             mintStages: [
