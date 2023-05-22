@@ -33,4 +33,11 @@ library Errors {
    *         - There is an overlap of dates
    */
   uint16 constant INVALID_STAGES_TIMELINE = 1020;
+
+
+  /**
+   * @notice Validation error that throws when:
+   *         - There is no current mint stage right now
+   */
+  uint16 constant THERE_IS_NO_CURRENT_STAGE = 1030;
 }

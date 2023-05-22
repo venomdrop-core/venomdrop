@@ -1,13 +1,8 @@
 import { Contract, Signer, toNano } from "locklift";
 import { FactorySource } from "../build/factorySource";
-import { createAccounts, deployVenomCollection } from "./utils";
+import { createAccounts, deployVenomCollection, newTimestamp } from "./utils";
 import { Account } from "everscale-standalone-client";
 import { expect } from "chai";
-
-
-const newTimestamp = (dateStr: string): number => {
-  return new Date(dateStr).getTime()/1000;
-}
 
 describe('VenomDropCollection: mint stages', async () => {
   let collection: Contract<FactorySource["VenomDropCollection"]>;

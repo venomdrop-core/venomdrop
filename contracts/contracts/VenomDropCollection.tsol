@@ -46,6 +46,17 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
     }
   }
 
+  function _getCurrentMintStage() private view returns (MintStage mintStage) {
+    uint256 numStages = _mintStages.length;
+    for (uint256 i = 0; i < numStages; i++) {
+      MintStage stage = _mintStages[i];
+      if(block.timestamp > stage.startTime && block.timestamp < stage.endTime) {
+        return stage;
+      }
+    }
+    revert(Errors.THERE_IS_NO_CURRENT_STAGE);
+  }
+
   // PRIVATE FUNCTIONS
 
   function _mintNft() private {
@@ -75,6 +86,14 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   function setMintStages(MintStage[] mintStages) public onlyOwner {
     _validateMintStages(mintStages);
     _mintStages = mintStages;
+  }
+
+  /**
+   * @notice Mint NFT
+   */
+  function mint() public {
+    MintStage mintStage = _getCurrentMintStage();
+    _mintNft();
   }
 
   // PUBLIC VIEWS
