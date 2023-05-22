@@ -13,22 +13,21 @@ import {
 
 import VenomDropLogoSrc from "../assets/venomdrop-logo.svg";
 import classNames from "classnames";
+import { Link, useLocation, useParams } from "react-router-dom";
 
 const MenuLink: React.FC<{
   label: string;
-  to: string;
-  active?: boolean;
+  path: string;
   icon: React.FC<{ className?: string }>;
-}> = ({
-  label,
-  to,
-  active,
-  icon: Icon,
-}) => {
+}> = ({ label, path, icon: Icon }) => {
+  const location = useLocation();
+  const { slug } = useParams();
+  const to = `/collections/${slug}/edit${path}`;
+  const active = to === location.pathname;
   return (
-    <a
+    <Link
       key={label}
-      href={to}
+      to={to}
       className={classNames(
         active
           ? "bg-gray-800 text-white"
@@ -45,32 +44,36 @@ const MenuLink: React.FC<{
         aria-hidden="true"
       />
       {label}
-    </a>
+    </Link>
   );
 };
-
-const user = {
-  name: "Name Test",
-  imageUrl:
-    "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
-};
-const navigation = [
-  { label: "Dashboard", to: "#", icon: ChartBarIcon, active: false },
-  { label: "Collection Details", to: "#", icon: RectangleStackIcon, active: false },
-  { label: "Graphics", to: "#", icon: RectangleGroupIcon, active: false },
-  { label: "Drop Settings", to: "#", icon: SparklesIcon, active: false },
-  { label: "Pre-Reveal", to: "#", icon: PhotoIcon, active: false },
-];
-const secondaryNavigation = [
-  { label: "Drop Page", to: "#", icon: ArrowTopRightOnSquareIcon },
-];
-
 interface AdminProps {
   children: React.ReactNode;
 }
 
 export const AdminLayout: FC<AdminProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const user = {
+    name: "Name Test",
+    imageUrl:
+      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
+  };
+  const navigation = [
+    { label: "Dashboard", path: "/dashboard", icon: ChartBarIcon, active: location.pathname.endsWith('/edit/dashboard') },
+    {
+      label: "Collection Details",
+      path: "/details",
+      icon: RectangleStackIcon,
+      active: false,
+    },
+    { label: "Graphics", path: "/graphics", icon: RectangleGroupIcon, active: false },
+    { label: "Drop Settings", path: "/settings", icon: SparklesIcon, active: false },
+    { label: "Pre-Reveal", path: "/pre-reveal", icon: PhotoIcon, active: false },
+  ];
+  const secondaryNavigation = [
+    { label: "Drop Page", path: "/drop-page", icon: ArrowTopRightOnSquareIcon },
+  ];
 
   return (
     <>
@@ -137,14 +140,18 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                     </div>
                     <nav aria-label="Sidebar" className="mt-5">
                       <div className="space-y-1 px-2">
-                        {navigation.map((item) => <MenuLink {...item} />)}
+                        {navigation.map((item) => (
+                          <MenuLink {...item} />
+                        ))}
                       </div>
                       <hr
                         className="my-5 border-t border-slate-800"
                         aria-hidden="true"
                       />
                       <div className="space-y-1 px-2">
-                        {secondaryNavigation.map((item) => <MenuLink {...item} />)}
+                        {secondaryNavigation.map((item) => (
+                          <MenuLink {...item} />
+                        ))}
                       </div>
                     </nav>
                   </div>
@@ -193,14 +200,18 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                 </div>
                 <nav className="mt-5 flex-1" aria-label="Sidebar">
                   <div className="space-y-1 px-2">
-                    {navigation.map((item) => <MenuLink {...item} />)}
+                    {navigation.map((item) => (
+                      <MenuLink {...item} />
+                    ))}
                   </div>
                   <hr
                     className="my-5 border-t border-gray-800"
                     aria-hidden="true"
                   />
                   <div className="flex-1 space-y-1 px-2">
-                    {secondaryNavigation.map((item) => <MenuLink {...item} />)}
+                    {secondaryNavigation.map((item) => (
+                      <MenuLink {...item} />
+                    ))}
                   </div>
                 </nav>
               </div>
