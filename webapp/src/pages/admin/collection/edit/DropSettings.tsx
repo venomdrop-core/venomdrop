@@ -41,7 +41,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
         </InputWrapper>
         <InputWrapper
           label="Mint Stages"
-          description="Configure the mint stages of your collection"
+          description="Configure the mint stages for your collection"
         >
           <MintStagesInput />
         </InputWrapper>
