@@ -6,6 +6,7 @@ import {
   RadioGroupCards,
   Option,
 } from "../../../../components/RadioGroupCards";
+import { MintStagesInput } from "../../../../components/MintStagesInput";
 
 export interface DropSettingsProps {}
 
@@ -37,6 +38,12 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
           description="Total supply for collection"
         >
           <input className="input input-bordered w-full" type="number"></input>
+        </InputWrapper>
+        <InputWrapper
+          label="Mint Stages"
+          description="Configure the mint stages of your collection"
+        >
+          <MintStagesInput />
         </InputWrapper>
       </AdminForm>
     </AdminLayout>
