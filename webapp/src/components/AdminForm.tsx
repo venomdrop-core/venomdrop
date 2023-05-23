@@ -10,7 +10,7 @@ export const AdminForm: FC<AdminFormProps> = ({ title, children, submitLabel = '
   return (
     <form>
       <div className="flex flex-col h-screen">
-        <div className="flex-1">
+        <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-lg py-8">
             <div className="space-y-12">
               <div className="border-b border-gray-900/10 pb-12">
