@@ -1,12 +1,12 @@
 import { FC } from "react";
-import { AdminLayout } from "../../../../layouts/AdminLayout";
-import { InputWrapper } from "../../../../components/InputWrapper";
-import { AdminForm } from "../../../../components/AdminForm";
+import { AdminLayout } from "../../../layouts/AdminLayout";
+import { InputWrapper } from "../../../components/InputWrapper";
+import { AdminForm } from "../../../components/AdminForm";
 import {
   RadioGroupCards,
   Option,
-} from "../../../../components/RadioGroupCards";
-import { MintStagesInput } from "../../../../components/MintStagesInput";
+} from "../../../components/RadioGroupCards";
+import { MintStagesInput } from "../../../components/MintStagesInput";
 
 export interface DropSettingsProps {}
 

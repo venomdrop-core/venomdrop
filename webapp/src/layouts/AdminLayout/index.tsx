@@ -11,7 +11,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
-import VenomDropLogoSrc from "../assets/venomdrop-logo.svg";
+import VenomDropLogoSrc from "../../assets/venomdrop-logo.svg";
 import classNames from "classnames";
 import { Link, useLocation, useParams } from "react-router-dom";
 

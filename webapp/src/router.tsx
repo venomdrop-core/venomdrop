@@ -1,15 +1,20 @@
 import {
   createBrowserRouter,
 } from "react-router-dom";
-import { Dashboard } from "./pages/admin/collection/edit/Dashboard";
-import { Details } from "./pages/admin/collection/edit/Details";
-import { Graphics } from "./pages/admin/collection/edit/Graphics";
-import { DropSettings } from "./pages/admin/collection/edit/DropSettings";
+import { Dashboard } from "./pages/collections/edit/Dashboard";
+import { Details } from "./pages/collections/edit/Details";
+import { Graphics } from "./pages/collections/edit/Graphics";
+import { DropSettings } from "./pages/collections/edit/DropSettings";
+import { CollectionsIndex } from "./pages/collections/CollectionsIndex";
 
 export const router = createBrowserRouter([
   {
     path: "/collections/:slug/edit/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/collections",
+    element: <CollectionsIndex />,
   },
   {
     path: "/collections/:slug/edit/details",

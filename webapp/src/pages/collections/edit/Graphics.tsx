@@ -1,9 +1,9 @@
 import { FC } from "react";
-import { AdminLayout } from "../../../../layouts/AdminLayout";
-import { InputWrapper } from "../../../../components/InputWrapper";
-import { CategorySelect } from "../../../../components/CategorySelect";
-import { AdminForm } from "../../../../components/AdminForm";
-import { ImageUploadInput } from "../../../../components/ImageUploadInput";
+import { AdminLayout } from "../../../layouts/AdminLayout";
+import { InputWrapper } from "../../../components/InputWrapper";
+import { CategorySelect } from "../../../components/CategorySelect";
+import { AdminForm } from "../../../components/AdminForm";
+import { ImageUploadInput } from "../../../components/ImageUploadInput";
 
 export interface GraphicsProps {}
 

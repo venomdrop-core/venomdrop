@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { AdminLayout } from "../../../../layouts/AdminLayout";
-import { InputWrapper } from "../../../../components/InputWrapper";
-import { CategorySelect } from "../../../../components/CategorySelect";
-import { AdminForm } from "../../../../components/AdminForm";
+import { AdminLayout } from "../../../layouts/AdminLayout";
+import { InputWrapper } from "../../../components/InputWrapper";
+import { CategorySelect } from "../../../components/CategorySelect";
+import { AdminForm } from "../../../components/AdminForm";
 
 export interface DetailsProps {}
 
