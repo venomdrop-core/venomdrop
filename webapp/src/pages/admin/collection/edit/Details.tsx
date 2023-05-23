@@ -2,70 +2,46 @@ import { FC } from "react";
 import { AdminLayout } from "../../../../layouts/AdminLayout";
 import { InputWrapper } from "../../../../components/InputWrapper";
 import { CategorySelect } from "../../../../components/CategorySelect";
+import { AdminForm } from "../../../../components/AdminForm";
 
 export interface DetailsProps {}
 
 export const Details: FC<DetailsProps> = (props) => {
   return (
     <AdminLayout>
-      <form>
-        <div className="flex flex-col h-screen">
-          <div className="flex-1">
-            <div className="mx-auto max-w-lg py-8">
-              <div className="space-y-12">
-                <div className="border-b border-gray-900/10 pb-12">
-                  <h2 className="font-semibold leading-7 text-2xl text-white mt-8">
-                    Collection Details
-                  </h2>
-
-                  <div className="mt-12">
-                    <InputWrapper label="Name" description="Set a project name">
-                      <input
-                        type="text"
-                        name="slug"
-                        className="input input-bordered w-full"
-                      />
-                    </InputWrapper>
-                    <InputWrapper
-                      label="Description"
-                      description="Set a project name"
-                    >
-                      <textarea
-                        name="description"
-                        className="textarea textarea-bordered w-full text-base"
-                      ></textarea>
-                    </InputWrapper>
-                    <InputWrapper
-                      label="URL"
-                      description="Set a custom URL on VenomDrop"
-                    >
-                      <div className="input input-bordered flex">
-                        <span className="flex select-none items-center pl-0 text-gray-400 text-base">
-                          https://venomdrop.xyz/collections/
-                        </span>
-                        <input
-                          type="text"
-                          name="slug"
-                          className="input border-0 focus:border-0 focus:ring-0 focus:outline-none bg-transparent pl-0.5 text-white"
-                        />
-                      </div>
-                    </InputWrapper>
-                    <InputWrapper
-                      label="Category"
-                      description="Boost the visibility of your listings on VenomDrop by assigning them a relevant category"
-                    >
-                      <CategorySelect />
-                    </InputWrapper>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <AdminForm title="Collection Details" submitLabel="Save Collection">
+        <InputWrapper label="Name" description="Set a project name">
+          <input
+            type="text"
+            name="slug"
+            className="input input-bordered w-full"
+          />
+        </InputWrapper>
+        <InputWrapper label="Description" description="Set a project name">
+          <textarea
+            name="description"
+            className="textarea textarea-bordered w-full text-base"
+          ></textarea>
+        </InputWrapper>
+        <InputWrapper label="URL" description="Set a custom URL on VenomDrop">
+          <div className="input input-bordered flex">
+            <span className="flex select-none items-center pl-0 text-gray-400 text-base">
+              https://venomdrop.xyz/collections/
+            </span>
+            <input
+              type="text"
+              name="slug"
+              className="input border-0 focus:border-0 focus:ring-0 focus:outline-none bg-transparent pl-0.5 text-white"
+            />
           </div>
-          <div className="flex flex-shrink-0 border-t border-gray-800 p-6 px-12 flex-row-reverse">
-            <button className="btn btn-primary">Save Collection</button>
-          </div>
-        </div>
-      </form>
+        </InputWrapper>
+        <InputWrapper
+          label="Category"
+          description="Boost the visibility of your listings on VenomDrop by assigning them a relevant category"
+        >
+          <CategorySelect />
+        </InputWrapper>
+      </AdminForm>
     </AdminLayout>
   );
 };
