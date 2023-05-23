@@ -68,7 +68,7 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
       active: false,
     },
     { label: "Graphics", path: "/graphics", icon: RectangleGroupIcon, active: false },
-    { label: "Drop Settings", path: "/settings", icon: SparklesIcon, active: false },
+    { label: "Drop Settings", path: "/drop-settings", icon: SparklesIcon, active: false },
     { label: "Pre-Reveal", path: "/pre-reveal", icon: PhotoIcon, active: false },
   ];
   const secondaryNavigation = [

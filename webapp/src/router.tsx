@@ -4,6 +4,7 @@ import {
 import { Dashboard } from "./pages/admin/collection/edit/Dashboard";
 import { Details } from "./pages/admin/collection/edit/Details";
 import { Graphics } from "./pages/admin/collection/edit/Graphics";
+import { DropSettings } from "./pages/admin/collection/edit/DropSettings";
 
 export const router = createBrowserRouter([
   {
@@ -17,5 +18,9 @@ export const router = createBrowserRouter([
   {
     path: "/collections/:slug/edit/graphics",
     element: <Graphics />,
+  },
+  {
+    path: "/collections/:slug/edit/drop-settings",
+    element: <DropSettings />,
   },
 ]);
