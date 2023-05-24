@@ -1,56 +1,8 @@
 import React, { Fragment, useState } from 'react'
+import classNames from 'classnames'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
-import { CameraIcon, GlobeAltIcon, MusicalNoteIcon, PaintBrushIcon, RocketLaunchIcon, TagIcon, TrophyIcon, UserCircleIcon, UserGroupIcon } from '@heroicons/react/24/outline'
-import classNames from 'classnames'
-
-const CATEGORIES = [
-  {
-    slug: 'art',
-    name: 'Art',
-    icon: PaintBrushIcon,
-  },
-  {
-    slug: 'domain-names',
-    name: 'Domain Names',
-    icon: TagIcon,
-  },
-  {
-    slug: 'gaming',
-    name: 'Gaming',
-    icon: RocketLaunchIcon,
-  },
-  {
-    slug: 'memberships',
-    name: 'Memberships',
-    icon: UserGroupIcon,
-  },
-  {
-    slug: 'music',
-    name: 'Music',
-    icon: MusicalNoteIcon,
-  },
-  {
-    slug: 'pfps',
-    name: 'PFPs',
-    icon: UserCircleIcon,
-  },
-  {
-    slug: 'photography',
-    name: 'Photography',
-    icon: CameraIcon,
-  },
-  {
-    slug: 'sports',
-    name: 'Sports',
-    icon: TrophyIcon,
-  },
-  {
-    slug: 'virtual-worlds',
-    name: 'Virtual Worlds',
-    icon: GlobeAltIcon,
-  },
-]
+import { CATEGORIES } from '../consts'
 
 export const CategorySelect: React.FC = () => {
   const [selected, setSelected] = useState(CATEGORIES[0])
