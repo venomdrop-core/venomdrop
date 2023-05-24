@@ -9,7 +9,7 @@ import classNames from 'classnames'
 import VenomDropSrc from '../../../assets/venomdrop-logo.svg';
 import { CATEGORIES } from '../../../consts'
 import { Link } from 'react-router-dom'
-import { VenomWalletIcon } from '../../../components/icons/VenomWalletIcon'
+import { ProfileInfo } from './ProfileInfo'
 
 
 const MENU_LINKS = [
@@ -31,12 +31,6 @@ export const Topbar: FC = () => {
     href: `/categories/${c.slug}`,
   })), []);
 
-  const connectWalletBtn = (
-    <button className="btn md:btn-ghost btn-primary">
-      <VenomWalletIcon className="h-5 w-5 text-gray-50 mr-2" />
-      Connect Wallet
-    </button> 
-  );
 
   return (
     <header className="bg-slate-950">
@@ -107,7 +101,7 @@ export const Topbar: FC = () => {
           ))}
         </Popover.Group>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          {connectWalletBtn}
+          <ProfileInfo />
         </div>
       </nav>
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -168,7 +162,6 @@ export const Topbar: FC = () => {
                     {link.name}
                   </a>
                 ))}
-                {connectWalletBtn}
               </div>
             </div>
           </div>
