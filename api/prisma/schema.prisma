@@ -14,3 +14,10 @@ model Account {
   id      String @id @default(uuid())
   address String @unique
 }
+
+model AuthNonce {
+  id         String   @id @default(uuid())
+  address    String
+  nonce      String
+  expiration DateTime
+}
