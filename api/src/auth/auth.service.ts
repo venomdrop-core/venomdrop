@@ -1,7 +1,14 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { Base64 } from 'js-base64';
 import { PrismaService } from 'src/prisma.service';
 import { VenomService } from 'src/venom.service';
+import { CompleteAuthInput, CreateNonceInput } from './auth.dto';
+import { generateAuthMessage } from 'src/utils/generateAuthMessage';
 
 const DEFAULT_NONCE_EXPIRATION = 30 * 60 * 1000; // 30 min
 const ERROR_INVALID_VENOM_ADDRESS =
@@ -33,11 +40,13 @@ export class AuthService {
     }
   }
 
-  async createNonce({ address }: { address: string }) {
+  async createNonce({ address, contractType, publicKey }: CreateNonceInput) {
     await this.validateHexAddress(address);
     const authNonce = await this.prismaService.authNonce.create({
       data: {
         address: address,
+        contractType,
+        publicKey,
         expiration: this.newExpirationDate(),
         nonce: randomUUID(),
       },
@@ -45,5 +54,43 @@ export class AuthService {
     return {
       nonce: authNonce.nonce,
     };
+  }
+
+  async completeAuth({ nonce, signedMessage }: CompleteAuthInput) {
+    const authNonce = await this.prismaService.authNonce.findUnique({
+      where: {
+        nonce,
+      },
+    });
+    if (!authNonce) {
+      throw new UnauthorizedException('Invalid Nonce');
+    }
+    const { address, publicKey, contractType } = authNonce;
+    // Checking the signature
+    const message = generateAuthMessage(address, nonce);
+    const { isValid: isSignatureValid } =
+      await this.venomService.verifySignature({
+        publicKey: publicKey,
+        signature: signedMessage,
+        dataHash: Base64.encode(message),
+      });
+    if (!isSignatureValid) {
+      throw new UnauthorizedException('Invalid Signature');
+    }
+    // Checking if the PublicKey matches the Account Address
+    const addressMatchesPublicKey =
+      await this.venomService.verifyWalletAddressMatchesPublicKey({
+        address,
+        contractType,
+        publicKey,
+      });
+    if (!addressMatchesPublicKey) {
+      throw new UnauthorizedException('Address<>PublicKey mismatch');
+    }
+    console.log({
+      isSignatureValid,
+      addressMatchesPublicKey,
+    });
+    return 'opa';
   }
 }

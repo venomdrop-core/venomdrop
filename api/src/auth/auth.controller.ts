@@ -19,8 +19,7 @@ export class AuthController {
   async createNonce(
     @Body() input: CreateNonceInput,
   ): Promise<CreateNonceResponse> {
-    const { address } = input;
-    return this.authService.createNonce({ address });
+    return this.authService.createNonce(input);
   }
 
   @Post('complete')
@@ -30,7 +29,8 @@ export class AuthController {
   async complete(
     @Body() input: CompleteAuthInput,
   ): Promise<CompleteAuthResponse> {
-    // TODO: Implement Signature Validation and JWT Token generation
+    await this.authService.completeAuth(input);
+    // TODO: Implement the JWT generation
     return {
       token: 'NOT_IMPLEMENTED',
     };

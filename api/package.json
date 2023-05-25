@@ -30,6 +30,7 @@
     "@prisma/client": "^4.14.1",
     "everscale-inpage-provider": "^0.3.61",
     "everscale-standalone-client": "^2.1.19",
+    "js-base64": "^3.7.5",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "uuid": "^9.0.0"

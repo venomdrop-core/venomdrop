@@ -1,7 +1,7 @@
 import React, { FC } from 'react'
 import { Modal } from './Modal';
 import VenomDropSrc from '../assets/venomdrop-logo.svg';
-import { createNonce } from '../api/auth';
+import { completeAuth, createNonce } from '../api/auth';
 import { useMutation } from '@tanstack/react-query';
 import { useVenomWallet } from '../hooks/useVenomWallet';
 import { generateAuthMessage } from '../utils/generateAuthMessage';
@@ -12,18 +12,31 @@ export interface RequiredAuthProps {
 }
 
 export const RequiredAuth: FC<RequiredAuthProps> = ({ children }) => {
-  const { address, accountInteraction, venomProvider } = useVenomWallet();
+  const { accountInteraction, venomProvider } = useVenomWallet()
+  
+  accountInteraction?.contractType;
+
   const createNonceMutation = useMutation({
     mutationFn: createNonce,
   });
 
+  const completeAuthMutation = useMutation({
+    mutationFn: completeAuth,
+  });
+
   const auth = async () => {
-    if (!address || !accountInteraction) {
+    if (!accountInteraction) {
       // TODO: Handle better if the wallet is not connected at this point
       return;
     }
+    const { contractType, publicKey } = accountInteraction;
+    const address = accountInteraction.address.toString();
+
+    // Create Nonce
     const { nonce } = await createNonceMutation.mutateAsync({
-      address,
+      address: address.toString(),
+      contractType,
+      publicKey,
     });
 
     const message = generateAuthMessage(address, nonce);
@@ -32,8 +45,16 @@ export const RequiredAuth: FC<RequiredAuthProps> = ({ children }) => {
       publicKey: accountInteraction?.publicKey,
       withSignatureId: false,
     });
-    const { signature } = signed;
-    // TODO: Send the signature to API to complete the authentication
+    if (!signed || !signed?.signature || !signed.signatureHex) {
+      alert('Not signed!!');
+      return;
+    }
+    const res = await completeAuthMutation.mutateAsync({
+      nonce,
+      signedMessage: signed.signature,
+    });
+
+    // TODO: Get from res the JWT and store in localStorage
   }
  
 

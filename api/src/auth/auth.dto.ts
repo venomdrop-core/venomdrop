@@ -2,9 +2,19 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateNonceInput {
   @ApiProperty({
-    description: 'The account address to generate the nonce',
+    description: 'The account address',
   })
   address: string;
+
+  @ApiProperty({
+    description: 'The account contract type EverWallet or WalletV3',
+  })
+  contractType: string;
+
+  @ApiProperty({
+    description: 'The account public key',
+  })
+  publicKey: string;
 }
 
 export class CreateNonceResponse {
@@ -17,9 +27,9 @@ export class CreateNonceResponse {
 
 export class CompleteAuthInput {
   @ApiProperty({
-    description: 'The account address that generated the signed message',
+    description: 'The nonce generated on /auth/nonce',
   })
-  address: string;
+  nonce: string;
 
   @ApiProperty({
     description: 'The signed message using Venom Wallet on frontend',
