@@ -1,8 +1,16 @@
+import { Address, ProviderRpcClient } from "everscale-inpage-provider";
 import { createContext } from "react";
 
+export interface AccountInteraction {
+  address: Address;
+  publicKey: string;
+  contractType: string;
+}
 
 export interface VenomWalletContext {
   address?: string;
+  accountInteraction?: AccountInteraction;
+  venomProvider?: ProviderRpcClient;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
 }

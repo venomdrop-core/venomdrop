@@ -19,6 +19,7 @@
     "everscale-inpage-provider": "^0.3.61",
     "everscale-standalone-client": "^2.1.19",
     "identicon.js": "^2.3.3",
+    "js-base64": "^3.7.5",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
     "react": "^18.2.0",

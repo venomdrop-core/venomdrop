@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from 'react'
 import { initVenomConnect } from '../lib/venomConnect';
 import VenomConnect from 'venom-connect';
-import { venomWalletContext } from '../contexts/venomWallet';
+import { AccountInteraction, venomWalletContext } from '../contexts/venomWallet';
 import { ProviderRpcClient } from 'everscale-inpage-provider';
 
 export interface VenomWalletProviderProps {
@@ -9,6 +9,7 @@ export interface VenomWalletProviderProps {
 }
 
 export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) => {
+  const [accountInteraction, setAccountInteraction] = useState<AccountInteraction>();
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>();
   const init = async () => {
     const _venomConnect = await initVenomConnect();
@@ -21,14 +22,17 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
   const [standaloneProvider, setStandAloneProvider] = useState<ProviderRpcClient | undefined>();
   const [address, setAddress] = useState<string>();
   // This method allows us to gen a wallet address from inpage provider
-  const getAddress = async (provider: any) => {
+  const getAccountInteraction = async (provider: any): Promise<AccountInteraction> => {
     const providerState = await provider?.getProviderState?.();
-    return providerState?.permissions.accountInteraction?.address.toString();
-  };
+    return providerState?.permissions.accountInteraction;
+  }
   // Any interaction with venom-wallet (address fetching is included) needs to be authentificated
   const checkAuth = async (_venomConnect: VenomConnect) => {
     const auth = await _venomConnect?.checkAuth();
-    if (auth) await getAddress(_venomConnect);
+    if (auth) {
+      const account = await getAccountInteraction(_venomConnect);
+      return account?.address?.toString();
+    }
   };
   // Method for getting a standalone provider from venomConnect instance
   const initStandalone = async () => {
@@ -37,8 +41,12 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
   };
   // When our provider is ready, we need to get the address
   const onProviderReady = async (provider: ProviderRpcClient) => {
-    const venomWalletAddress = provider ? await getAddress(provider) : undefined;
-    setAddress(venomWalletAddress);
+    if (!provider) {
+      return;
+    }
+    const accountInteraction = await getAccountInteraction(provider);
+    setAccountInteraction(accountInteraction);
+    setAddress(accountInteraction.address.toString());
   };
   useEffect(() => {
     // connect event handler
@@ -66,9 +74,9 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
     venomProvider?.disconnect();
     setAddress(undefined);
   };
-
+  
   return (
-    <venomWalletContext.Provider value={{ connect, disconnect, address }}>
+    <venomWalletContext.Provider value={{ connect, disconnect, address, accountInteraction, venomProvider }}>
       {children}
     </venomWalletContext.Provider>
   )
