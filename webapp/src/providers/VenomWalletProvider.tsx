@@ -3,12 +3,14 @@ import { initVenomConnect } from '../lib/venomConnect';
 import VenomConnect from 'venom-connect';
 import { AccountInteraction, venomWalletContext } from '../contexts/venomWallet';
 import { ProviderRpcClient } from 'everscale-inpage-provider';
+import { useQueryClient } from '@tanstack/react-query';
 
 export interface VenomWalletProviderProps {
   children: React.ReactNode;
 }
 
 export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) => {
+  const queryClient = useQueryClient()
   const [accountInteraction, setAccountInteraction] = useState<AccountInteraction>();
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>();
   const init = async () => {
@@ -73,6 +75,9 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
   const disconnect = async () => {
     venomProvider?.disconnect();
     setAddress(undefined);
+    // In case there is a session with that wallet, clear it
+    localStorage.removeItem('venomdrop-access-token');
+    queryClient.invalidateQueries({ queryKey: ['me'] });
   };
   
   return (
