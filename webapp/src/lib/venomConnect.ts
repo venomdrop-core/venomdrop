@@ -2,10 +2,33 @@ import { VenomConnect } from 'venom-connect';
 import { ProviderRpcClient } from 'everscale-inpage-provider';
 import { EverscaleStandaloneClient } from 'everscale-standalone-client';
 
+
+const NETWORK_CONFIG: {
+  [key: string]: any
+} = {
+  local: {
+    networkId: 0,
+  },
+  devnet: {
+    networkId: 1002,
+    fallback: () => EverscaleStandaloneClient.create({
+      connection: {
+        id: 1002,
+        type: 'jrpc',
+        data: {
+          endpoint: 'https://jrpc-devnet.venom.foundation',
+        },
+      },
+    })
+  }
+}
+
+
 export const initVenomConnect = async () => {
+  const network = NETWORK_CONFIG[import.meta.env.VITE_VENOM_NETWORK];
   return new VenomConnect({
     theme: 'dark',
-    checkNetworkId: 1002,
+    checkNetworkId: network.networkId,
     providersOptions: {
       venomwallet: {
         walletWaysToConnect: [
@@ -17,16 +40,7 @@ export const initVenomConnect = async () => {
               forceUseFallback: true,
             },
             packageOptionsStandalone: {
-              fallback: () =>
-                EverscaleStandaloneClient.create({
-                  connection: {
-                    id: 1002,
-                    type: 'jrpc',
-                    data: {
-                      endpoint: 'https://jrpc-devnet.venom.foundation',
-                    },
-                  },
-                }),
+              fallback: network.fallback,
               forceUseFallback: true,
             },
 
