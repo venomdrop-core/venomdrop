@@ -3,11 +3,16 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import { Base64 } from 'js-base64';
 import { PrismaService } from 'src/prisma.service';
 import { VenomService } from 'src/venom.service';
-import { CompleteAuthInput, CreateNonceInput } from './auth.dto';
+import {
+  CompleteAuthInput,
+  CompleteAuthResponse,
+  CreateNonceInput,
+} from './auth.dto';
 import { generateAuthMessage } from 'src/utils/generateAuthMessage';
 
 const DEFAULT_NONCE_EXPIRATION = 30 * 60 * 1000; // 30 min
@@ -19,6 +24,7 @@ export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly venomService: VenomService,
+    private jwtService: JwtService,
   ) {}
 
   private newExpirationDate(expiresIn = DEFAULT_NONCE_EXPIRATION): Date {
@@ -56,7 +62,10 @@ export class AuthService {
     };
   }
 
-  async completeAuth({ nonce, signedMessage }: CompleteAuthInput) {
+  async completeAuth({
+    nonce,
+    signedMessage,
+  }: CompleteAuthInput): Promise<CompleteAuthResponse> {
     const authNonce = await this.prismaService.authNonce.findUnique({
       where: {
         nonce,
@@ -87,10 +96,20 @@ export class AuthService {
     if (!addressMatchesPublicKey) {
       throw new UnauthorizedException('Address<>PublicKey mismatch');
     }
-    console.log({
-      isSignatureValid,
-      addressMatchesPublicKey,
+    const account = await this.prismaService.account.upsert({
+      create: {
+        address,
+      },
+      update: {},
+      where: {
+        address,
+      },
     });
-    return 'opa';
+    return {
+      token: await this.jwtService.signAsync({
+        id: account.id,
+        address: account.address,
+      }),
+    };
   }
 }

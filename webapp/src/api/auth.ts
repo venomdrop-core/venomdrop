@@ -19,7 +19,16 @@ export const completeAuth = async ({
 }: {
   nonce: string,
   signedMessage: string,
-}): Promise<{ nonce: string; }> => {
+}): Promise<{ token: string; }> => {
   const { data } = await api.post('/auth/complete', { nonce, signedMessage });
   return data;
+};
+
+export const getMe = async (): Promise<{ id: string; account: string } | null > => {
+  try {    
+    const { data } = await api.get('/auth/me');
+    return data;
+  } catch (error) {
+    return null;
+  }
 };

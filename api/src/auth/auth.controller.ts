@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   CompleteAuthInput,
@@ -6,7 +13,9 @@ import {
   CreateNonceInput,
   CreateNonceResponse,
 } from './auth.dto';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
+import { Account } from '@prisma/client';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -29,10 +38,13 @@ export class AuthController {
   async complete(
     @Body() input: CompleteAuthInput,
   ): Promise<CompleteAuthResponse> {
-    await this.authService.completeAuth(input);
-    // TODO: Implement the JWT generation
-    return {
-      token: 'NOT_IMPLEMENTED',
-    };
+    return this.authService.completeAuth(input);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Get('/me')
+  me(@Request() req: any): Account {
+    return req.user;
   }
 }

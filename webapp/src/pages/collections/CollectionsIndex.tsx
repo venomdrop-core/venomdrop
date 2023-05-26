@@ -1,6 +1,6 @@
 import React, { FC } from 'react'
 import { MainLayout } from '../../layouts/MainLayout'
-import { RequiredAuth } from '../../components/RequiredAuth'
+import { AuthRequired } from '../../components/AuthRequired'
 
 export interface CollectionsIndexProps {
   
@@ -9,9 +9,9 @@ export interface CollectionsIndexProps {
 export const CollectionsIndex: FC<CollectionsIndexProps> = (props) => {
   return (
     <MainLayout>
-      <RequiredAuth>
+      <AuthRequired>
         Hello World
-      </RequiredAuth>
+      </AuthRequired>
     </MainLayout>
   )
 }
