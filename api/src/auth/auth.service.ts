@@ -13,7 +13,7 @@ import {
   CompleteAuthResponse,
   CreateNonceInput,
 } from './auth.dto';
-import { generateAuthMessage } from 'src/utils/generateAuthMessage';
+import { generateAuthMessage } from 'src/common/utils/generateAuthMessage';
 
 const DEFAULT_NONCE_EXPIRATION = 30 * 60 * 1000; // 30 min
 const ERROR_INVALID_VENOM_ADDRESS =

@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
@@ -15,17 +14,19 @@ import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Account } from '@prisma/client';
+import { Me } from 'src/auth/auth.me.decorator';
 
 @ApiTags('Collections')
-@ApiBearerAuth()
 @Controller('collections')
 export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
 
   @UseGuards(AuthGuard)
   @Post()
-  create(@Req() req: any, @Body() createCollectionDto: CreateCollectionDto) {
-    const account = req.user as Account;
+  create(
+    @Me() account: Account,
+    @Body() createCollectionDto: CreateCollectionDto,
+  ) {
     return this.collectionsService.create(account, createCollectionDto);
   }
 
@@ -39,6 +40,8 @@ export class CollectionsController {
     return this.collectionsService.findOne(+id);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Patch(':id')
   update(
     @Param('id') id: string,
@@ -47,6 +50,8 @@ export class CollectionsController {
     return this.collectionsService.update(+id, updateCollectionDto);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.collectionsService.remove(+id);

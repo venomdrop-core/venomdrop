@@ -13,7 +13,7 @@ import {
   EverscaleStandaloneClient,
   WalletV3Account,
 } from 'everscale-standalone-client/nodejs';
-import { abi } from './contracts/abi';
+import { abi } from './common/contracts/abi';
 
 TonClient.useBinaryLibrary(libNode);
 
