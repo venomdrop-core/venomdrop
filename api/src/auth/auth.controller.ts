@@ -13,9 +13,7 @@ import {
   CreateNonceInput,
   CreateNonceResponse,
 } from './auth.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
-import { Account } from '@prisma/client';
-import { AuthGuard } from './auth.guard';
+import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -40,12 +38,5 @@ export class AuthController {
     @Body() input: CompleteAuthInput,
   ): Promise<CompleteAuthResponse> {
     return this.authService.completeAuth(input);
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @Get('/me')
-  me(@Request() req: any): Account {
-    return req.user;
   }
 }
