@@ -9,7 +9,7 @@ contract VenomDropCollectionFactory {
   TvmCell private _codeCollection;
   TvmCell private _codeNft;
 
-  event VenomDropCollectionDeployed(address collection, address owner);
+  event VenomDropCollectionDeployed(address collection, address indexed owner, address indexed creator);
 
   constructor(TvmCell codeCollection, TvmCell codeNft) public {
     tvm.accept();
@@ -20,8 +20,14 @@ contract VenomDropCollectionFactory {
   function deployCollection(address owner, uint id) public {
     require(msg.value > 0.4 ever, 101);
     tvm.rawReserve(0, 4);
-    TvmCell stateInitCollection = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: _codeCollection });
-    address collection = new VenomDropCollection{ stateInit: stateInitCollection, value: 0, flag: 128 }(_codeNft, owner);
-    emit VenomDropCollectionDeployed(collection, owner);
+    address collection = new VenomDropCollection{
+      value: 1 ton,
+      code: _codeCollection,
+      varInit: {
+        _id: id,
+        _creator: msg.sender
+      }
+    }(_codeNft, owner);
+    emit VenomDropCollectionDeployed(collection, owner, msg.sender);
   }
 }

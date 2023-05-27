@@ -9,6 +9,7 @@ import "./utils/Ownable.tsol";
 import "./libraries/Errors.tsol";
 
 contract VenomDropCollection is TIP4_1Collection, Ownable {
+  address static _creator;
   uint static _id;
   address private _owner;
   uint private _maxSupply;

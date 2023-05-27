@@ -1,45 +1,61 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 
-import { FC } from 'react'
+import { FC, useMemo } from 'react'
 import { Modal, ModalProps } from './Modal'
 import { useVenomWallet } from '../hooks/useVenomWallet'
 import { abi } from '../contracts/abi';
 import { getRandomNonce } from '../utils/getRandomNonce';
 import { toNano } from '../utils/toNano';
 import { Address } from 'everscale-inpage-provider';
-import BigNumber from "bignumber.js";
+
+const FACTORY_ADDRESS = import.meta.env.VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS;
 
 export const CreateCollectionModal: FC<ModalProps> = (props) => {
   const { venomProvider, accountInteraction } = useVenomWallet();
+  const factory = useMemo(() => {
+    return venomProvider ? new venomProvider.Contract(abi.VenomDropCollectionFactory, FACTORY_ADDRESS): null;
+  }, [venomProvider]);
 
   const deploy = async (): Promise<Address> => {
-    if (!accountInteraction || !venomProvider) {
-      throw new Error('Wallet not connected');
-    }
-    const factoryAddr = import.meta.env.VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS;
-    const factory = new venomProvider.Contract(abi.VenomDropCollectionFactory, factoryAddr);
-    const tx = await factory.methods.deployCollection({
-      id: getRandomNonce(),
-      owner: accountInteraction.address,
-    }).send({
-      from: accountInteraction.address,
-      amount: toNano('6'),
+    return new Promise((resolve, reject) => {
+      if (!accountInteraction || !venomProvider || !factory) {
+        throw new Error('Wallet not connected');
+      }
+      // Subscribe for the factory events
+      const sub = new venomProvider.Subscriber();
+      const events = factory.events(sub);
+      events.on(event => {
+        if (event.event === 'VenomDropCollectionDeployed' && event.data.creator.equals(accountInteraction.address)) {
+          sub.unsubscribe();
+          resolve(event.data.collection);
+        }
+      });
+  
+      factory.methods.deployCollection({
+        id: getRandomNonce(),
+        owner: accountInteraction.address,
+      }).send({
+        from: accountInteraction.address,
+        amount: toNano('6'),
+      }).then((txn) => {
+        if (txn.aborted) {
+          sub.unsubscribe();
+          reject(new Error('Deployment transaction aborted'));
+        }
+      })
+      setTimeout(() => {
+        sub.unsubscribe();
+        reject(new Error('Could not retrieve the deployed contract'));
+      }, 30000);
     });
-
-    if (tx.outMessages.length === 0 || tx.outMessages[0].bounced) {
-        throw new Error('Could not deploy the VenomDrop Collection contract');
-    }
-
-    const collectionAddress = tx.outMessages[0].dst as Address;
-    const collectionBalance = await venomProvider.getBalance(collectionAddress);
-    if (BigNumber(collectionBalance).eq(0)) {
-      throw new Error('Looks like the contract was not deployed properly');
-    }
-    return collectionAddress;
   };
 
   const createCollection = async () => {
-    const contractAddress = await deploy();
-    console.log({ contractAddress });
+    if (!accountInteraction || !venomProvider) {
+      throw new Error('Wallet not connected');
+    }
+    const collectionAddress = await deploy();
+    console.log({ collectionAddress });
     // TODO: Add form for collection and save alongside the contract address
     //       The the backend should verify whether the contract belongs to the logged user or not
   };
