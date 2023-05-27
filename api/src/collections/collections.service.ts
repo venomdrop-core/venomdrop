@@ -1,9 +1,14 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { PrismaService } from 'src/prisma.service';
 import { VenomService } from 'src/venom.service';
-import { Account } from '@prisma/client';
+import { Account, Prisma } from '@prisma/client';
 import { ApiPageOptions } from 'src/common/decorators/page.decorator';
 
 @Injectable()
@@ -69,8 +74,33 @@ export class CollectionsService {
     return collection;
   }
 
-  update(id: number, updateCollectionDto: UpdateCollectionDto) {
-    return `This action updates a #${id} collection`;
+  async update(account: Account, slug: string, data: UpdateCollectionDto) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const updateData: Prisma.CollectionUpdateInput = {
+      name: data.name,
+      description: data.description,
+      slug: data.slug,
+    };
+    if (data.categorySlug) {
+      updateData.category = {
+        connect: {
+          slug: data.categorySlug,
+        },
+      };
+    }
+    const collection = await this.prismaService.collection.update({
+      where: {
+        slug,
+      },
+      data: updateData,
+    });
+    if (!collection) {
+      throw new NotFoundException();
+    }
+    return collection;
   }
 
   remove(id: number) {

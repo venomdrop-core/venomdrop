@@ -52,12 +52,13 @@ export class CollectionsController {
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
-  @Patch(':id')
+  @Patch(':slug')
   update(
-    @Param('id') id: string,
+    @Me() account: Account,
+    @Param('slug') slug: string,
     @Body() updateCollectionDto: UpdateCollectionDto,
   ) {
-    return this.collectionsService.update(+id, updateCollectionDto);
+    return this.collectionsService.update(account, slug, updateCollectionDto);
   }
 
   @ApiBearerAuth()
