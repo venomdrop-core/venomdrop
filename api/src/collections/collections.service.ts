@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { PrismaService } from 'src/prisma.service';
@@ -57,8 +57,16 @@ export class CollectionsService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} collection`;
+  async findOne(slug: string) {
+    const collection = await this.prismaService.collection.findUnique({
+      where: {
+        slug,
+      },
+    });
+    if (!collection) {
+      throw new NotFoundException();
+    }
+    return collection;
   }
 
   update(id: number, updateCollectionDto: UpdateCollectionDto) {

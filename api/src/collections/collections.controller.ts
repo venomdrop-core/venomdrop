@@ -45,9 +45,9 @@ export class CollectionsController {
     return this.collectionsService.findAll({ page });
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.collectionsService.findOne(+id);
+  @Get(':slug')
+  findOne(@Param('slug') slug: string) {
+    return this.collectionsService.findOne(slug);
   }
 
   @ApiBearerAuth()
