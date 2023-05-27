@@ -11,8 +11,9 @@ datasource db {
 }
 
 model Account {
-  id      String @id @default(uuid())
-  address String @unique
+  id          String       @id @default(uuid())
+  address     String       @unique
+  collections Collection[]
 }
 
 model AuthNonce {
@@ -22,4 +23,23 @@ model AuthNonce {
   publicKey    String
   nonce        String   @unique
   expiration   DateTime
+}
+
+model Category {
+  id          String       @id @default(uuid())
+  name        String
+  slug        String       @unique
+  collections Collection[]
+}
+
+model Collection {
+  id              String   @id @default(uuid())
+  ownerId         String
+  owner           Account  @relation(fields: [ownerId], references: [id])
+  contractAddress String   @unique
+  name            String
+  slug            String   @unique
+  description     String
+  categoryId      String
+  category        Category @relation(fields: [categoryId], references: [id])
 }
