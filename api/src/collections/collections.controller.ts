@@ -60,11 +60,4 @@ export class CollectionsController {
   ) {
     return this.collectionsService.update(account, slug, updateCollectionDto);
   }
-
-  @ApiBearerAuth()
-  @UseGuards(AuthGuard)
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.collectionsService.remove(+id);
-  }
 }

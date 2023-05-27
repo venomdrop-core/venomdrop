@@ -102,8 +102,4 @@ export class CollectionsService {
     }
     return collection;
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} collection`;
-  }
 }
