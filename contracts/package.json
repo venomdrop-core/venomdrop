@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "build": "npx locklift build",
+    "build": "npx locklift build && npx ts-node ./tools/scripts/copyABI.ts",
     "deploy": "npx locklift run -s ./scripts/2-deploy-factory.ts",
     "test": "npx locklift test --network local"
   },
