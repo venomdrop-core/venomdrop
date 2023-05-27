@@ -1,6 +1,12 @@
 import { CameraIcon, GlobeAltIcon, MusicalNoteIcon, PaintBrushIcon, RocketLaunchIcon, TagIcon, TrophyIcon, UserCircleIcon, UserGroupIcon } from '@heroicons/react/24/outline'
 
-export const CATEGORIES = [
+export interface Category {
+  slug: string;
+  name: string;
+  icon: any;
+}
+
+export const CATEGORIES: Category[] = [
   {
     slug: 'art',
     name: 'Art',

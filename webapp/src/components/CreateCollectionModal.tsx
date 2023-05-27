@@ -7,6 +7,7 @@ import { abi } from '../contracts/abi';
 import { getRandomNonce } from '../utils/getRandomNonce';
 import { toNano } from '../utils/toNano';
 import { Address } from 'everscale-inpage-provider';
+import { InputWrapper } from './InputWrapper';
 
 const FACTORY_ADDRESS = import.meta.env.VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS;
 
@@ -66,6 +67,33 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
   return (
     <Modal {...props}>
       <div className="p-8">
+
+      <InputWrapper label="Name" description="Set a project name">
+          <input
+            type="text"
+            name="slug"
+            className="input input-bordered w-full"
+          />
+        </InputWrapper>
+        <InputWrapper label="Description" description="Set a project name">
+          <textarea
+            name="description"
+            className="textarea textarea-bordered w-full text-base"
+          ></textarea>
+        </InputWrapper>
+        <InputWrapper label="URL" description="Set a custom URL on VenomDrop">
+          <div className="input input-bordered flex">
+            <span className="flex select-none items-center pl-0 text-gray-400 text-base">
+              https://venomdrop.xyz/collections/
+            </span>
+            <input
+              type="text"
+              name="slug"
+              className="input border-0 focus:border-0 focus:ring-0 focus:outline-none bg-transparent pl-0.5 text-white"
+            />
+          </div>
+        </InputWrapper>
+
         <button className="btn btn-primary btn-block" onClick={createCollection}>
           Create Collection
         </button>

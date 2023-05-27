@@ -8,7 +8,7 @@ export interface CollectionsIndexProps {
 
 export const CollectionsIndex: FC<CollectionsIndexProps> = (props) => {
   return (
-    <MainLayout>
+    <MainLayout authRequired>
       <CreateCollectionModal open setOpen={() => ({})} />
     </MainLayout>
   )

@@ -1,11 +1,22 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import classNames from 'classnames'
 import { Listbox, Transition } from '@headlessui/react'
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'
 import { CATEGORIES } from '../consts'
 
-export const CategorySelect: React.FC = () => {
-  const [selected, setSelected] = useState(CATEGORIES[0])
+export interface CategorySelectProps {
+  value: string;
+  onChange: (slug: string) => void;
+}
+
+export const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange }) => {
+  const [selected, setSelected] = useState(CATEGORIES.find(c => c.slug === value) || CATEGORIES[0]);
+  useEffect(() => {
+    onChange(selected.slug);
+  }, [selected]);
+  useEffect(() => {
+    setSelected(CATEGORIES.find(c => c.slug === value ) || CATEGORIES[0]);
+  }, [value]);
   return (
     <Listbox value={selected} onChange={setSelected}>
       {({ open }) => (
@@ -30,7 +41,7 @@ export const CategorySelect: React.FC = () => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-base-100 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+              <Listbox.Options className="absolute z-50 mt-1 max-h-56 w-full overflow-auto rounded-md bg-base-100 py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                 {CATEGORIES.map((category) => (
                   <Listbox.Option
                     key={category.slug}

@@ -4,11 +4,12 @@ export interface AdminFormProps {
   title: string;
   children: React.ReactNode;
   submitLabel: string;
+  onSubmit?: React.FormEventHandler<HTMLFormElement>;
 }
 
-export const AdminForm: FC<AdminFormProps> = ({ title, children, submitLabel = 'Save' }) => {
+export const AdminForm: FC<AdminFormProps> = ({ title, children, submitLabel = 'Save', onSubmit }) => {
   return (
-    <form>
+    <form onSubmit={onSubmit}>
       <div className="flex flex-col h-screen">
         <div className="flex-1 overflow-y-auto">
           <div className="mx-auto max-w-lg py-8">
