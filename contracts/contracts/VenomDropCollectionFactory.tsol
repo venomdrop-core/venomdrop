@@ -1,0 +1,27 @@
+pragma ever-solidity >=0.62.0;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "./utils/Ownable.tsol";
+import "./VenomDropCollection.tsol";
+
+contract VenomDropCollectionFactory {
+  TvmCell private _codeCollection;
+  TvmCell private _codeNft;
+
+  event VenomDropCollectionDeployed(address collection, address owner);
+
+  constructor(TvmCell codeCollection, TvmCell codeNft) public {
+    tvm.accept();
+    _codeCollection = codeCollection;
+    _codeNft = codeNft;
+  }
+
+  function deployCollection(address owner, uint id) public {
+    require(msg.value > 0.4 ever, 101);
+    tvm.rawReserve(0, 4);
+    TvmCell stateInitCollection = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: _codeCollection });
+    address collection = new VenomDropCollection{ stateInit: stateInitCollection, value: 0, flag: 128 }(_codeNft, owner);
+    emit VenomDropCollectionDeployed(collection, owner);
+  }
+}

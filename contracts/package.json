@@ -3,6 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "build": "npx locklift build",
+    "deploy": "npx locklift run -s ./scripts/2-deploy-factory.ts",
     "test": "npx locklift test --network local"
   },
   "author": "",
