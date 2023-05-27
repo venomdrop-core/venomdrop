@@ -1,9 +1,8 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Me } from 'src/auth/auth.me.decorator';
-import { MeDto } from './me.dto';
-import { Account } from '@prisma/client';
+import { Me } from 'src/common/decorators/me.decorator';
+import { Account } from './account.dto';
 
 @ApiTags('Me')
 @ApiBearerAuth()
@@ -12,7 +11,7 @@ import { Account } from '@prisma/client';
 export class MeController {
   @ApiResponse({
     description: 'The authenticated account',
-    type: MeDto,
+    type: Account,
   })
   @Get()
   me(@Me() me: Account) {

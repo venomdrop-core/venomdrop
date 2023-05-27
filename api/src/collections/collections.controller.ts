@@ -11,10 +11,16 @@ import {
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { Account } from '@prisma/client';
-import { Me } from 'src/auth/auth.me.decorator';
+import { Me } from 'src/common/decorators/me.decorator';
+import {
+  ApiPage,
+  ApiPageOptions,
+  ApiQueryPage,
+} from 'src/common/decorators/page.decorator';
+import { Collection } from './dto/collection.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -30,9 +36,13 @@ export class CollectionsController {
     return this.collectionsService.create(account, createCollectionDto);
   }
 
+  @ApiQueryPage()
+  @ApiResponse({
+    type: [Collection],
+  })
   @Get()
-  findAll() {
-    return this.collectionsService.findAll();
+  findAll(@ApiPage() page: ApiPageOptions) {
+    return this.collectionsService.findAll({ page });
   }
 
   @Get(':id')

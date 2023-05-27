@@ -4,6 +4,7 @@ import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { PrismaService } from 'src/prisma.service';
 import { VenomService } from 'src/venom.service';
 import { Account } from '@prisma/client';
+import { ApiPageOptions } from 'src/common/decorators/page.decorator';
 
 @Injectable()
 export class CollectionsService {
@@ -50,8 +51,10 @@ export class CollectionsService {
     });
   }
 
-  findAll() {
-    return `This action returns all collections`;
+  findAll({ page }: { page: ApiPageOptions }) {
+    return this.prismaService.collection.findMany({
+      ...page,
+    });
   }
 
   findOne(id: number) {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class MeDto {
+export class Account {
   @ApiProperty({
     description: 'The account id on VenomDrop',
   })
