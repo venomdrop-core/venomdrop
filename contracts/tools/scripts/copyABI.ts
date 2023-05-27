@@ -2,7 +2,10 @@ import fs from "fs";
 import * as fsPath from "path";
 
 const BUILD_PATH = './build';
-const OUTPUT = '../webapp/src/contracts'
+const OUTPUTS = [
+  '../webapp/src/contracts',
+  '../api/src/contracts',
+]
 
 const getAbiFiles = (): Array<string> => {
   return fs.readdirSync(BUILD_PATH).filter(el => el.endsWith(".abi.json"));
@@ -63,10 +66,12 @@ const main = () => {
       "",
     )} as const\n\nexport type ABI = typeof abi`;
   
-    fs.writeFileSync(
-      fsPath.join(OUTPUT, "./abi.ts"),
-      abiSources + "\n" + factorySourceObj + "\n" + typingSources,
-    );
+    OUTPUTS.forEach(output => {
+      fs.writeFileSync(
+        fsPath.join(output, "./abi.ts"),
+        abiSources + "\n" + factorySourceObj + "\n" + typingSources,
+      );
+    })
 }
 
 main();

@@ -13,6 +13,7 @@ import {
   EverscaleStandaloneClient,
   WalletV3Account,
 } from 'everscale-standalone-client/nodejs';
+import { abi } from './contracts/abi';
 
 TonClient.useBinaryLibrary(libNode);
 
@@ -20,6 +21,10 @@ const ERROR_WALLET_CONTRACT_NOT_ACTIVE = 'Wallet Contract is not active';
 const COULD_NOT_VALIDATE_WALLET = 'Could not validate wallet';
 
 const getConnectionConfig = (): ConnectionProperties => {
+  const { VENOM_NETWORK_TYPE } = process.env;
+  if (VENOM_NETWORK_TYPE === 'local') {
+    return 'local';
+  }
   const config: ConnectionProperties = {
     id: 1010,
     type: 'jrpc',
@@ -69,6 +74,19 @@ export class VenomService extends ProviderRpcClient implements OnModuleInit {
 
   async enableShutdownHooks() {
     this.disconnect();
+  }
+
+  async validCollectionContractForOwner(
+    contractAddress: string,
+    ownerAddress: string,
+  ) {
+    const collection = new this.Contract(
+      abi.VenomDropCollection,
+      new Address(contractAddress),
+    );
+    const { value0: owner } = await collection.methods.owner().call();
+    // TODO: Validate if the contract also implements the VenomDropCollection interface (TIP-6)
+    return owner.equals(ownerAddress);
   }
 
   /**

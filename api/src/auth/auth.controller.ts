@@ -13,10 +13,11 @@ import {
   CreateNonceInput,
   CreateNonceResponse,
 } from './auth.dto';
-import { ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Account } from '@prisma/client';
 import { AuthGuard } from './auth.guard';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
