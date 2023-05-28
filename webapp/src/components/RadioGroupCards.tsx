@@ -1,9 +1,15 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { useState } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import { CheckCircleIcon } from '@heroicons/react/20/solid'
 import classNames from 'classnames'
 
+
+export interface RadioGroupCardsProps {
+  options: Option[];
+  value: string;
+  onChange: (slug: string) => void;
+}
 
 export interface Option {
   title: string;
@@ -12,12 +18,14 @@ export interface Option {
   bottomInfo?: React.ReactNode | string;
 }
 
-export interface RadioGroupCardsProps {
-  options: Option[];
-}
-
-export const RadioGroupCards: FC<RadioGroupCardsProps> = ({ options }) => {
-  const [selectedOption, setSelectedOption] = useState(options[0])
+export const RadioGroupCards: FC<RadioGroupCardsProps> = ({ options, value, onChange }) => {
+  const [selectedOption, setSelectedOption] = useState<Option>(options.find(o => o.value === value) || options[0]);
+  useEffect(() => {
+    onChange(selectedOption.value);
+  }, [selectedOption]);
+  useEffect(() => {
+    setSelectedOption(options.find(o => o.value === value ) || options[0]);
+  }, [value]);
   return (
     <RadioGroup value={selectedOption} onChange={setSelectedOption}>
       <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">

@@ -25,6 +25,7 @@ export interface MintStagesTimelineProps {
 export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
   mintStages,
 }) => {
+  console.log(mintStages);
   return (
     <div>
       <ul role="list" className="-mb-8">
@@ -73,7 +74,7 @@ export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
                         <div className="text-sm text-gray-500 mt-2">
                           {formatDate(mintStage.startTime)}{" "}
                           <ArrowLongRightIcon className="w-4 h-4 inline" />{" "}
-                          {formatDate(mintStage.endTime)}
+                          {formatDate(new Date(mintStage.endTime))}
                         </div>
                         <div
                           className="text-sm text-gray-500 mt-2 inline-flex items-center tooltip tooltip-right"
