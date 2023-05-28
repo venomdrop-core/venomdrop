@@ -59,6 +59,9 @@ export class CollectionsService {
   findAll({ page }: { page: ApiPageOptions }) {
     return this.prismaService.collection.findMany({
       ...page,
+      include: {
+        category: true,
+      },
     });
   }
 
@@ -66,6 +69,9 @@ export class CollectionsService {
     const collection = await this.prismaService.collection.findUnique({
       where: {
         slug,
+      },
+      include: {
+        category: true,
       },
     });
     if (!collection) {
@@ -100,6 +106,30 @@ export class CollectionsService {
     if (!collection) {
       throw new NotFoundException();
     }
+    return collection;
+  }
+
+  async updateGraphics(
+    account: Account,
+    slug: string,
+    graphics: {
+      logoImageSrc?: string;
+      coverImageSrc?: string;
+      featuredImageSrc?: string;
+    },
+  ) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const collection = await this.prismaService.collection.update({
+      where: {
+        slug,
+      },
+      data: {
+        ...graphics,
+      },
+    });
     return collection;
   }
 }

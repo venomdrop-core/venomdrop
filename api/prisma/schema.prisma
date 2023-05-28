@@ -33,13 +33,16 @@ model Category {
 }
 
 model Collection {
-  id              String   @id @default(uuid())
-  ownerId         String
-  owner           Account  @relation(fields: [ownerId], references: [id])
-  contractAddress String   @unique
-  name            String
-  slug            String   @unique
-  description     String
-  categoryId      String
-  category        Category @relation(fields: [categoryId], references: [id])
+  id               String   @id @default(uuid())
+  ownerId          String
+  owner            Account  @relation(fields: [ownerId], references: [id])
+  contractAddress  String   @unique
+  name             String
+  slug             String   @unique
+  description      String
+  categoryId       String
+  category         Category @relation(fields: [categoryId], references: [id])
+  logoImageSrc     String?
+  coverImageSrc    String?
+  featuredImageSrc String?
 }
