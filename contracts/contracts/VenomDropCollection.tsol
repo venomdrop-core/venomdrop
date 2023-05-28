@@ -170,4 +170,16 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   function getMintStages() public view returns (MintStage[] mintStages) {
     return _mintStages;
   }
+
+  /**
+   * @notice get the collection info
+   */
+  function getInfo() public view returns (CollectionInfo info) {
+    return CollectionInfo({
+      hasMaxSupply: getHasMaxSupply(),
+      maxSupply: getMaxSupply(),
+      totalSupply: _totalSupply,
+      mintStages: getMintStages()
+    });
+  }
 }

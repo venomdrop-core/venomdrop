@@ -57,6 +57,10 @@ describe('VenomDropCollection: supply', async () => {
           await locklift.tracing.trace(mint(collection, 1));
           await locklift.tracing.trace(mint(collection, 1));
           await expectTotalSupply(collection, 2);
+          const { info } = await collection.methods.getInfo().call();
+          expect(info.hasMaxSupply).to.be.equal(true);
+          expect(+info.maxSupply).to.be.equal(2);
+          expect(+info.totalSupply).to.be.equal(2);
         });
         it('should revert if there is no supply available', async () => {
           const { traceTree } = await locklift.tracing.trace(
@@ -125,6 +129,10 @@ describe('VenomDropCollection: supply', async () => {
           );
           await expect(traceTree).to.not.have.error(1050);
           await expectTotalSupply(collection, 5);
+          const { info } = await collection.methods.getInfo().call();
+          expect(info.hasMaxSupply).to.be.equal(false);
+          expect(+info.maxSupply).to.be.equal(0);
+          expect(+info.totalSupply).to.be.equal(5);
         });
       });
     });
