@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useState } from "react";
 import { AdminLayout } from "../../../layouts/AdminLayout";
 import { InputWrapper } from "../../../components/InputWrapper";
 import { AdminForm } from "../../../components/AdminForm";
@@ -7,6 +7,10 @@ import {
   Option,
 } from "../../../components/RadioGroupCards";
 import { MintStagesInput } from "../../../components/MintStagesInput";
+import { useParams } from "react-router-dom";
+import { useCollection } from "../../../hooks/useCollection";
+import { useContractSettings } from "../../../hooks/useContractSettings";
+import { MintStage } from "../../../types/mintStage";
 
 export interface DropSettingsProps {}
 
@@ -24,6 +28,12 @@ const SUPPLY_MODE_OPTIONS: Option[] = [
 ];
 
 export const DropSettings: FC<DropSettingsProps> = (props) => {
+  const { slug } = useParams();
+  const { data: collection } = useCollection(slug);
+  const { data: settings } = useContractSettings(collection?.contractAddress);
+  const [mintStages, setMintStages] = useState<MintStage[]>([]);
+  console.log(collection);
+  console.log(settings);
   return (
     <AdminLayout>
       <AdminForm title="Drop Settings" submitLabel="Save Collection">
@@ -43,7 +53,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
           label="Mint Stages"
           description="Configure the mint stages for your collection"
         >
-          <MintStagesInput />
+          <MintStagesInput mintStages={mintStages} setMintStages={setMintStages} />
         </InputWrapper>
       </AdminForm>
     </AdminLayout>

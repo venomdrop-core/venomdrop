@@ -28,6 +28,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.44.1",
     "react-router-dom": "^6.11.2",
+    "react-tailwindcss-datepicker": "^1.6.1",
     "sort-by": "^1.2.0",
     "venom-connect": "^1.0.20"
   },

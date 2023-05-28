@@ -1,12 +1,22 @@
+import { FC } from "react";
 import {
   UsersIcon,
   GlobeAmericasIcon,
   ArrowLongRightIcon,
 } from "@heroicons/react/24/outline";
 import classNames from "classnames";
-import React, { FC } from "react";
 import { MintStage } from "../types/mintStage";
 import { VenomIcon } from "./icons/VenomIcon";
+import { fromNano } from "../utils/fromNano";
+
+const formatDate = (date: any) => {
+  return new Date(date).toLocaleDateString("en-us", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+  });
+};
 
 export interface MintStagesTimelineProps {
   mintStages: MintStage[];
@@ -61,12 +71,16 @@ export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
                       <strong className="text-base">{mintStage.name}</strong>
                       <div>
                         <div className="text-sm text-gray-500 mt-2">
-                          22 May 22:30{" "}
-                          <ArrowLongRightIcon className="w-4 h-4 inline" /> 23
-                          May 22:30
+                          {formatDate(mintStage.startTime)}{" "}
+                          <ArrowLongRightIcon className="w-4 h-4 inline" />{" "}
+                          {formatDate(mintStage.endTime)}
                         </div>
-                        <div className="text-sm text-gray-500 mt-2 inline-flex items-center tooltip tooltip-right" data-tip="Mint Price">
-                          <VenomIcon className="w-3 h-3 inline mr-2" /> 155
+                        <div
+                          className="text-sm text-gray-500 mt-2 inline-flex items-center tooltip tooltip-right"
+                          data-tip="Mint Price"
+                        >
+                          <VenomIcon className="w-3 h-3 inline mr-2" />{" "}
+                          {fromNano(mintStage.price)}
                         </div>
                       </div>
                     </div>

@@ -3,4 +3,5 @@ export interface MintStage {
   startTime: Date;
   endTime: Date;
   type: 'public' | 'allowlist';
+  price: string;
 }

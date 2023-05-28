@@ -10,6 +10,7 @@ export interface Collection {
   logoImageSrc?: string;
   coverImageSrc?: string;
   featuredImageSrc?: string;
+  contractAddress: string;
 }
 
 export const getCollection = async (
