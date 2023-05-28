@@ -2,6 +2,7 @@ pragma ever-solidity >=0.62.0;
 pragma AbiHeader expire;
 pragma AbiHeader pubkey;
 
+import "./structs/VenomDrop.tsol";
 import "./interfaces/IVenomDropCollection.tsol";
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Collection.sol";
 import "./Nft.tsol";
@@ -12,6 +13,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   address static _creator;
   uint static _id;
   address private _owner;
+  bool private _hasMaxSupply;
   uint private _maxSupply;
   MintStage[] private _mintStages;
 
@@ -19,6 +21,12 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
     tvm.accept();
     _transferOwnership(owner);
   }
+
+
+  // TODO: Make those variables configurable by mint stage
+  uint128 _remainOnNft = 0.3 ton;
+  uint128 _mintNftValue = _remainOnNft + 0.1 ton;
+  uint128 _processingValue = 0.1 ton;
 
   // UTILS
 
@@ -28,22 +36,22 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
    *
    * @param mintStages the list of mint stages
    */
-  function _validateMintStages(MintStage[] mintStages) pure internal {
+  function _validateMintStages(MintStage[] mintStages) internal pure {
     uint256 numStages = mintStages.length;
     for (uint256 i = 0; i < numStages; i++) {
-        MintStage mintStage = mintStages[i];
-        
-        require(mintStage.startTime > 0, Errors.START_DATE_SHOULD_BE_GREATER_THAN_ZERO);
-        
-        bool isLast = i == mintStages.length - 1;
-        if (!isLast && mintStage.endTime == 0) {
-          revert(Errors.ONLY_LAST_STAGE_CAN_HAVE_END_DATE_EQUAL_ZERO);
-        }
-        
-        for (uint256 j = i + 1; j < numStages; j++) {
-            MintStage nextStage = mintStages[j];
-            require(nextStage.startTime > mintStage.endTime, Errors.INVALID_STAGES_TIMELINE);
-        }
+      MintStage mintStage = mintStages[i];
+
+      require(mintStage.startTime > 0, Errors.START_DATE_SHOULD_BE_GREATER_THAN_ZERO);
+
+      bool isLast = i == mintStages.length - 1;
+      if (!isLast && mintStage.endTime == 0) {
+        revert(Errors.ONLY_LAST_STAGE_CAN_HAVE_END_DATE_EQUAL_ZERO);
+      }
+
+      for (uint256 j = i + 1; j < numStages; j++) {
+        MintStage nextStage = mintStages[j];
+        require(nextStage.startTime > mintStage.endTime, Errors.INVALID_STAGES_TIMELINE);
+      }
     }
   }
 
@@ -51,28 +59,56 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
     uint256 numStages = _mintStages.length;
     for (uint256 i = 0; i < numStages; i++) {
       MintStage stage = _mintStages[i];
-      if(block.timestamp > stage.startTime && block.timestamp < stage.endTime) {
+      if (block.timestamp > stage.startTime && block.timestamp < stage.endTime) {
         return stage;
       }
     }
     revert(Errors.THERE_IS_NO_CURRENT_STAGE);
   }
 
-  // PRIVATE FUNCTIONS
+  // INTERNAL FUNCTIONS
 
-  function _mintNft() private {
-    require(msg.value > 0.4 ever, 101);
+  function _invokeMint(
+    address owner,
+    uint32 amount,
+    uint32 currentIteration
+  ) internal pure virtual {
+    if(currentIteration < amount) {
+      VenomDropCollection(address(this)).mintNft{value: 0, flag: 128}(owner, amount, currentIteration);
+    } else {
+      owner.transfer({value: 0, flag: 128, bounce: false});
+    }
+  }
+
+  // PUBLIC FUNCTIONS
+
+  function mintNft(
+    address owner,
+    uint32 amount,
+    uint32 currentIteration
+  ) external virtual {
+    // Ensure the collection has a mint stage available now
+    _getCurrentMintStage();
+    require(msg.sender == address(this), Errors.CALLER_IS_NOT_COLLECTION);
+    require(!_hasMaxSupply || _totalSupply < _maxSupply, Errors.MAX_SUPPLY_EXCEEDED);
     tvm.rawReserve(0, 4);
-
     uint256 id = uint256(_totalSupply);
     _totalSupply++;
 
     TvmCell codeNft = _buildNftCode(address(this));
     TvmCell stateNft = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: codeNft });
-    new Nft{ stateInit: stateNft, value: 0, flag: 128 }(msg.sender, msg.sender, 0.3 ever);
+    new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(owner, owner, _remainOnNft);
+
+    currentIteration++;
+    _invokeMint(owner, amount, currentIteration);
   }
 
-  // PUBLIC FUNCTIONS
+  /**
+   * @notice set the max supply for the collection
+   */
+  function setHasMaxSupply(bool hasMaxSupply) public onlyOwner {
+    _hasMaxSupply = hasMaxSupply;
+  }
 
   /**
    * @notice set the max supply for the collection
@@ -90,14 +126,36 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   }
 
   /**
-   * @notice Mint NFT
+   * @notice Mint NFTs
    */
-  function mint() public {
-    MintStage mintStage = _getCurrentMintStage();
-    _mintNft();
+  function mint(uint32 amount) external view virtual {
+    // Ensure the collection has a mint stage available now
+    _getCurrentMintStage();
+    require(amount > 0, Errors.INVALID_MINT_QUANTITY);
+    require(!_hasMaxSupply || _totalSupply + amount <= _maxSupply, Errors.MAX_SUPPLY_EXCEEDED);
+    require(msg.value >= (_mintNftValue + _processingValue) * amount, Errors.INSUFFICIENT_FUNDS);
+    tvm.rawReserve(0, 4);
+    _invokeMint(msg.sender, amount, 0);
+  }
+
+
+  /**
+   * @notice Configure multiple contract options at a time
+   */
+  function multiconfigure(MultiConfigureOptions options) public onlyOwner {
+    setHasMaxSupply(options.hasMaxSupply);
+    setMaxSupply(options.maxSupply);
+    setMintStages(options.mintStages);
   }
 
   // PUBLIC VIEWS
+
+  /**
+   * @notice returns true if the collecition is limited
+   */
+  function getHasMaxSupply() public view returns (bool hasMaxSupply) {
+    return _hasMaxSupply;
+  }
 
   /**
    * @notice get the max supply for the collection

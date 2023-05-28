@@ -4,7 +4,7 @@ import * as fsPath from "path";
 const BUILD_PATH = './build';
 const OUTPUTS = [
   '../webapp/src/contracts',
-  '../api/src/contracts',
+  '../api/src/common/contracts',
 ]
 
 const getAbiFiles = (): Array<string> => {

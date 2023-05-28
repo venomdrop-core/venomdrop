@@ -1,3 +1,4 @@
+import { replaceEnvKeyValue } from "../utils/replaceEnvVar";
 
 
 /**
@@ -19,7 +20,10 @@ async function main() {
     value: locklift.utils.toNano(5),
   });
 
-  console.log(`VenomDropCollectionFactory deployed at: ${collection.address.toString()}`);
+  const collectionAddress = collection.address.toString();
+
+  console.log(`VenomDropCollectionFactory deployed at: ${collectionAddress}`);
+  replaceEnvKeyValue('../webapp/.env', 'VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS', collectionAddress);
 }
 
 main()

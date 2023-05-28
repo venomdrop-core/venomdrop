@@ -40,4 +40,28 @@ library Errors {
    *         - There is no current mint stage right now
    */
   uint16 constant THERE_IS_NO_CURRENT_STAGE = 1030;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - The mint quantity is invalid
+   */
+  uint16 constant INVALID_MINT_QUANTITY = 1040;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - The maximum supply limit for this NFT collection has been reached
+   */
+  uint16 constant MAX_SUPPLY_EXCEEDED = 1050;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - When the caller is not collection
+   */
+  uint16 constant CALLER_IS_NOT_COLLECTION = 1060;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - Insufficient Funds for the transaction
+   */
+  uint16 constant INSUFFICIENT_FUNDS = 1070;
 }

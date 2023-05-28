@@ -13,13 +13,14 @@ export const deployVenomCollection = async (_id: number, signer: Signer, ownerAd
     contract: "VenomDropCollection",
     publicKey: signer.publicKey,
     initParams: {
+      _creator: ownerAddress,
       _id,
     },
     constructorParams: {
       codeNft: nftArtifacts.code,
       owner: ownerAddress,
     },
-    value: locklift.utils.toNano(20),
+    value: locklift.utils.toNano(100),
   });
 
   expect(await locklift.provider.getBalance(collection.address).then(balance => Number(balance))).to.be.above(0);
