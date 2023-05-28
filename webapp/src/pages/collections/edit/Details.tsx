@@ -7,6 +7,7 @@ import { Controller, useForm } from "react-hook-form";
 import { getCollection, updateCollection } from "../../../api/collections";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useCollection } from "../../../hooks/useCollection";
 
 export interface DetailsProps {}
 
@@ -20,11 +21,7 @@ interface FormData {
 export const Details: FC<DetailsProps> = (props) => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { data: collection } = useQuery({
-    queryKey: ["collections", slug],
-    queryFn: () => getCollection(slug || ""),
-    enabled: !!slug,
-  });
+  const { data: collection } = useCollection(slug);
   const updateMutation = useMutation({
     mutationFn: (data: FormData) => updateCollection(collection!.slug, data),
   });
@@ -34,8 +31,7 @@ export const Details: FC<DetailsProps> = (props) => {
     formState: { errors },
     control,
     reset,
-  } = useForm<FormData>({
-  });
+  } = useForm<FormData>({});
   useEffect(() => {
     if (collection) {
       reset({

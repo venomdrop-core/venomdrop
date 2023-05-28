@@ -26,7 +26,7 @@ export const completeAuth = async ({
 
 export const getMe = async (): Promise<{ id: string; account: string } | null > => {
   try {    
-    const { data } = await api.get('/auth/me');
+    const { data } = await api.get('/me');
     return data;
   } catch (error) {
     return null;

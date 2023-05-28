@@ -7,6 +7,9 @@ export interface Collection {
   category: {
     slug: string;
   };
+  logoImageSrc?: string;
+  coverImageSrc?: string;
+  featuredImageSrc?: string;
 }
 
 export const getCollection = async (
@@ -30,5 +33,14 @@ export const updateCollection = async (
   }
 ): Promise<Collection> => {
   const { data } = await api.patch(`/collections/${slug}`, input);
+  return data;
+};
+
+
+export const updateCollectionGraphics = async (
+  slug: string,
+  formData: FormData,
+): Promise<Collection> => {
+  const { data } = await api.post(`/collections/${slug}/graphics`, formData);
   return data;
 };
