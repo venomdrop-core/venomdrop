@@ -24,6 +24,7 @@ const ALLOWED_GRAPHIC_MIMETYPE_EXTENSIONS: {
   'image/jpeg': 'jpeg',
   'image/png': 'png',
   'image/webp': 'webp',
+  'image/gif': 'gif',
 };
 
 const generateFileKey = (file: Express.Multer.File): string => {
