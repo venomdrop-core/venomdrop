@@ -78,7 +78,7 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
           <div>
             <h2 className="text-gray-100 text-3xl">Mint</h2>
             <div className="mt-16">
-              <MintBox currentMintStage={currentMintStage} mintStages={mintStages} />
+              <MintBox currentMintStage={currentMintStage} mintStages={mintStages} info={info} />
             </div>
           </div>
         </div>

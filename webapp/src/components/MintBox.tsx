@@ -3,13 +3,29 @@ import { FC, useMemo, useState } from "react";
 import { MintStage } from "../types/mintStage";
 import { fromNano } from "../utils/fromNano";
 import { formatDate } from "../utils/dates";
+import { useCollectionContract } from "../hooks/useCollectionContract";
+import { useParams } from "react-router-dom";
+import { useVenomWallet } from "../hooks/useVenomWallet";
+import { toNano } from "../utils/toNano";
 
 export interface MintBoxProps {
   mintStages: MintStage[];
   currentMintStage?: MintStage | null;
+  info?: {
+    hasMaxSupply: boolean;
+    maxSupply: string;
+    totalSupply: string;
+  };
 }
 
-export const MintBox: FC<MintBoxProps> = ({ currentMintStage, mintStages }) => {
+export const MintBox: FC<MintBoxProps> = ({
+  currentMintStage,
+  mintStages,
+  info,
+}) => {
+  const { slug } = useParams();
+  const contract = useCollectionContract(slug);
+  const { accountInteraction } = useVenomWallet();
   const [count, setCount] = useState(0);
 
   const increment = () => setCount((x) => x + 1);
@@ -17,12 +33,51 @@ export const MintBox: FC<MintBoxProps> = ({ currentMintStage, mintStages }) => {
 
   const nextMintStage = useMemo(() => {
     const now = new Date();
-    const nextMingStage = mintStages.findLast(ms => ms.startTime > now);
+    const nextMingStage = mintStages.findLast((ms) => ms.startTime > now);
     return nextMingStage;
   }, [mintStages]);
 
+  const onMintClick = async () => {
+    if (!accountInteraction) {
+      return;
+    }
+    const txn = await contract?.methods
+      .mint({
+        amount: count,
+      })
+      .send({
+        from: accountInteraction.address,
+        amount: toNano("1"),
+        // amount: to
+      });
+    console.log(txn);
+  };
+
+  const supplyPercent = useMemo(() => {
+    if (!info || !info.hasMaxSupply) {
+      return 0;
+    }
+    const current = parseInt(info.totalSupply);
+    const max = parseInt(info.maxSupply);
+    if (!current || current === 0 || !max || max === 0) {
+      return 0;
+    }
+    return 100*current/max;
+  }, [info]);
+
   return (
     <div className="border border-slate-800 p-8 rounded-lg bg-slate-900">
+      <div className="mb-6">
+        <div>
+          Supply{" "}
+          {info?.hasMaxSupply
+            ? `(${info.totalSupply}/${info.maxSupply})`
+            : "(Unlimited)"}
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+          <div className="bg-primary h-2.5 rounded-full" style={{ width: `${supplyPercent}%` }}></div>
+        </div>
+      </div>
       {currentMintStage ? (
         <div className="text-gray-100 text-lg font-bold">
           {currentMintStage?.name}
@@ -36,7 +91,7 @@ export const MintBox: FC<MintBoxProps> = ({ currentMintStage, mintStages }) => {
             Starts on {formatDate(nextMintStage?.startTime)}
           </div>
         </>
-      ): null}
+      ) : null}
       {currentMintStage && (
         <div className="text-gray-300 mt-2 font-semibold">
           {fromNano(currentMintStage.price)} VENOM
@@ -63,6 +118,7 @@ export const MintBox: FC<MintBoxProps> = ({ currentMintStage, mintStages }) => {
         <button
           className="btn btn-primary ml-4 px-6"
           disabled={!currentMintStage}
+          onClick={() => onMintClick()}
         >
           Mint
         </button>
