@@ -47,11 +47,13 @@ const MenuLink: React.FC<{
     </Link>
   );
 };
+
 interface AdminProps {
   children: React.ReactNode;
 }
 
 export const AdminLayout: FC<AdminProps> = ({ children }) => {
+  const { slug } = useParams();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const user = {
@@ -60,20 +62,51 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
   };
   const navigation = [
-    { label: "Dashboard", path: "/dashboard", icon: ChartBarIcon, active: location.pathname.endsWith('/edit/dashboard') },
+    {
+      label: "Dashboard",
+      path: "/dashboard",
+      icon: ChartBarIcon,
+      active: location.pathname.endsWith("/edit/dashboard"),
+    },
     {
       label: "Collection Details",
       path: "/details",
       icon: RectangleStackIcon,
       active: false,
     },
-    { label: "Graphics", path: "/graphics", icon: RectangleGroupIcon, active: false },
-    { label: "Drop Settings", path: "/drop-settings", icon: SparklesIcon, active: false },
-    { label: "Pre-Reveal", path: "/pre-reveal", icon: PhotoIcon, active: false },
+    {
+      label: "Graphics",
+      path: "/graphics",
+      icon: RectangleGroupIcon,
+      active: false,
+    },
+    {
+      label: "Drop Settings",
+      path: "/drop-settings",
+      icon: SparklesIcon,
+      active: false,
+    },
+    {
+      label: "Pre-Reveal",
+      path: "/pre-reveal",
+      icon: PhotoIcon,
+      active: false,
+    },
   ];
-  const secondaryNavigation = [
-    { label: "Drop Page", path: "/drop-page", icon: ArrowTopRightOnSquareIcon },
-  ];
+
+  const dropPageLink = (
+    <a
+      className="text-gray-400 hover:bg-gray-800 hover:text-gray-100 group flex items-center px-2 py-2 text-sm font-medium rounded-md"
+      href={`/collections/${slug}`}
+      target="_blank"
+    >
+      <ArrowTopRightOnSquareIcon
+        className="text-gray-400 group-hover:text-white mr-3 flex-shrink-0 h-6 w-6"
+        aria-hidden="true"
+      />
+      Drop Page
+    </a>
+  );
 
   return (
     <>
@@ -149,9 +182,7 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                         aria-hidden="true"
                       />
                       <div className="space-y-1 px-2">
-                        {secondaryNavigation.map((item) => (
-                          <MenuLink {...item} />
-                        ))}
+                        {dropPageLink}
                       </div>
                     </nav>
                   </div>
@@ -209,9 +240,7 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                     aria-hidden="true"
                   />
                   <div className="flex-1 space-y-1 px-2">
-                    {secondaryNavigation.map((item) => (
-                      <MenuLink {...item} />
-                    ))}
+                    {dropPageLink}
                   </div>
                 </nav>
               </div>

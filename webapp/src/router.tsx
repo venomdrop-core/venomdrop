@@ -6,6 +6,7 @@ import { Details } from "./pages/collections/edit/Details";
 import { Graphics } from "./pages/collections/edit/Graphics";
 import { DropSettings } from "./pages/collections/edit/DropSettings";
 import { CollectionsIndex } from "./pages/collections/CollectionsIndex";
+import { CollectionMintPage } from "./pages/collections/CollectionMintPage";
 
 export const router = createBrowserRouter([
   {
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
   {
     path: "/collections",
     element: <CollectionsIndex />,
+  },
+  {
+    path: "/collections/:slug",
+    element: <CollectionMintPage />,
   },
   {
     path: "/collections/:slug/edit/details",

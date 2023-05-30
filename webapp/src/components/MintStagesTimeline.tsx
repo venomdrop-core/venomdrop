@@ -66,7 +66,7 @@ export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
                     )}
                   </span>
                 </div>
-                <div className="bg-base-300 w-full p-6 rounded-lg">
+                <div className="bg-slate-900 w-full p-6 rounded-lg">
                   <div>
                     <div>
                       <strong className="text-base">{mintStage.name}</strong>
