@@ -8,15 +8,7 @@ import classNames from "classnames";
 import { MintStage } from "../types/mintStage";
 import { VenomIcon } from "./icons/VenomIcon";
 import { fromNano } from "../utils/fromNano";
-
-const formatDate = (date: any) => {
-  return new Date(date).toLocaleDateString("en-us", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-  });
-};
+import { formatDate } from "../utils/dates";
 
 export interface MintStagesTimelineProps {
   mintStages: MintStage[];

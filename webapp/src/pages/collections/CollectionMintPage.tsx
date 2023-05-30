@@ -1,16 +1,33 @@
-import React, { FC } from "react";
+import React, { FC, useMemo } from "react";
 import { useCollection } from "../../hooks/useCollection";
 import { useParams } from "react-router-dom";
 import { Topbar } from "../../layouts/MainLayout/components/Topbar";
 import { CollectionMintStagesTimeline } from "../../components/CollectionMintStagesTimeline";
 import { MintBox } from "../../components/MintBox";
+import { useCurrentMintStage } from "../../hooks/useCollectionCurrentMintStage";
+import { MintStagesTimeline } from "../../components/MintStagesTimeline";
+import { useCollectionInfo } from "../../hooks/useCollectionInfo";
+import { parseContractMintStage } from "../../utils/parseContractMintStage";
+import { unixToDate } from "../../utils/dates";
 
 export interface CollectionMintPageProps {}
 
 export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
   const { slug } = useParams();
+  const { data: info } = useCollectionInfo(slug);
   const { data: collection } = useCollection(slug);
+  const currentMintStage = useMemo(() => {
+    const now = new Date();
+    const contractMintStage = (info?.mintStages || []).find(ms => {
+      return now > unixToDate(ms.startTime) && now < unixToDate(ms.endTime);
+    });
+    if (!contractMintStage) {
+      return null;
+    }
+    return parseContractMintStage(contractMintStage);
+  }, [info]);
   const aboutText = collection?.description.replaceAll("\n", "<br />") || "";
+  const mintStages = (info?.mintStages || []).map(parseContractMintStage);
   return (
     <div className="w-screen h-screen overflow-y-scroll bg-slate-950">
       <div className="w-full h-[600px] relative">
@@ -53,14 +70,15 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
             <div>
               <h2 className="text-gray-100 text-3xl">Schedule</h2>
               <div className="mt-16 ">
-                <CollectionMintStagesTimeline slug={slug} />
+                {/* <CollectionMintStagesTimeline slug={slug} /> */}
+                <MintStagesTimeline mintStages={mintStages} />
               </div>
             </div>
           </div>
           <div>
             <h2 className="text-gray-100 text-3xl">Mint</h2>
             <div className="mt-16">
-              <MintBox />
+              <MintBox currentMintStage={currentMintStage} mintStages={mintStages} />
             </div>
           </div>
         </div>

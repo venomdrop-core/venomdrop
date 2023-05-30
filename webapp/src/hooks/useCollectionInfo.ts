@@ -7,8 +7,9 @@ export const useCollectionInfo = (slug?: string) => {
     queryKey: ['contractInfo', slug],
     queryFn: async () => {
       const { info } = await contract!.methods.getInfo().call();
+      console.log(info);
       return info;
     },
-    enabled: !!contract,
+    enabled: !!(contract && slug && contract.address),
   });
 }
