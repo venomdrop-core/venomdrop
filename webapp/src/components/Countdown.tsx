@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import ReactCountdown from "react-countdown";
 
 export interface CountdownProps {
@@ -7,7 +7,7 @@ export interface CountdownProps {
 
 export const Countdown: FC<CountdownProps> = ({ date }) => {
   const renderItem = (unit: string, value: number) => (
-    <div className="flex text-center justify-center items-center text-sm bg-[rgba(0,0,0,0.25)] p-4 rounded-lg text-white w-20 h-20 mr-2">
+    <div className="flex text-center justify-center items-center text-sm border border-[rgba(255,255,255,0.1)] bg-[rgba(0,0,0,0.25)] p-4 rounded-lg text-white w-20 h-20 mr-2">
       <div>
         <div>{value}</div>
         <div>{unit}</div>

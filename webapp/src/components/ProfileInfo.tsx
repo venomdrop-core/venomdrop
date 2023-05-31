@@ -3,6 +3,7 @@ import { useVenomWallet } from "../hooks/useVenomWallet";
 import { VenomWalletIcon } from "./icons/VenomWalletIcon";
 import { getIdenticonSrc } from "../utils/getIdenticonSrc";
 import { ArrowRightOnRectangleIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 export const ProfileInfo: FC = () => {
   const { connect, disconnect, address } = useVenomWallet();
@@ -26,10 +27,10 @@ export const ProfileInfo: FC = () => {
             className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52"
           >
             <li>
-              <button>
+              <Link to="/collections">
                 <RectangleStackIcon className="w-5 h-5" />
                 My Collections
-              </button>
+              </Link>
             </li>
             <li>
               <button onClick={disconnect}>

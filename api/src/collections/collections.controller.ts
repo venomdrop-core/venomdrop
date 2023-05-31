@@ -15,6 +15,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -46,12 +47,18 @@ export class CollectionsController {
   }
 
   @ApiQueryPage()
+  @ApiQuery({
+    name: 'owner',
+    type: 'string',
+    required: false,
+  })
   @ApiResponse({
     type: [Collection],
   })
   @Get()
-  findAll(@ApiPage() page: ApiPageOptions) {
-    return this.collectionsService.findAll({ page });
+  findAll(@ApiPage() page: ApiPageOptions, @Req() req: Request) {
+    const owner = req.query.owner ? (req.query.owner as string) : undefined;
+    return this.collectionsService.findAll({ page, filter: { owner } });
   }
 
   @Get(':slug')

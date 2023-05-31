@@ -56,12 +56,25 @@ export class CollectionsService {
     });
   }
 
-  findAll({ page }: { page: ApiPageOptions }) {
+  findAll({
+    page,
+    filter,
+  }: {
+    page: ApiPageOptions;
+    filter: { owner?: string };
+  }) {
+    const where: Prisma.CollectionFindManyArgs['where'] = {};
+    if (filter?.owner) {
+      where.owner = {
+        address: filter.owner,
+      };
+    }
     return this.prismaService.collection.findMany({
       ...page,
       include: {
         category: true,
       },
+      where,
     });
   }
 

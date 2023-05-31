@@ -1,4 +1,5 @@
 import { api } from "../lib/api";
+import { Page } from "./utils";
 
 export interface Collection {
   name: string;
@@ -22,6 +23,34 @@ export const getCollection = async (
   } catch (error) {
     return null;
   }
+};
+
+export const getCollections = async (page: Page, filter: { owner?: string } = {}): Promise<Collection[] | null> => {
+  try {
+    const { data } = await api.get('/collections', {
+      params: {
+        ...page,
+        ...filter,
+      },
+    });
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+
+export const createCollection = async (
+  input: {
+    name: string;
+    description: string;
+    slug: string;
+    categorySlug: string;
+    contractAddress: string;
+  }
+): Promise<Collection> => {
+  const { data } = await api.post('/collections', input);
+  return data;
 };
 
 export const updateCollection = async (
