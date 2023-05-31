@@ -6,8 +6,9 @@ import {
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import classNames from 'classnames'
-import VenomDropSrc from '../../../assets/venomdrop-logo.svg';
-import { CATEGORIES } from '../../../consts'
+import VenomDropSrc from '../assets/venomdrop-logo.svg';
+import VenomDropWhiteSrc from '../assets/venomdrop-logo-white.png';
+import { CATEGORIES } from '../consts'
 import { Link } from 'react-router-dom'
 import { ProfileInfo } from './ProfileInfo'
 
@@ -23,7 +24,11 @@ const MENU_LINKS = [
   },
 ];
 
-export const Topbar: FC = () => {
+interface TopbarProps {
+  className?: string;
+}
+
+export const Topbar: FC<TopbarProps> = ({ className }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const categories = useMemo(() => CATEGORIES.map(c => ({
@@ -33,12 +38,12 @@ export const Topbar: FC = () => {
 
 
   return (
-    <header className="bg-slate-950">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
+    <header className={className}>
+      <nav className="container mx-auto flex items-center justify-between py-6" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link to="/" className="-m-1.5 p-1.5">
             <span className="sr-only">VenomDrop</span>
-            <img className="h-7 w-auto" src={VenomDropSrc} alt="" />
+            <img className="h-8 w-auto" src={VenomDropWhiteSrc} alt="" />
           </Link>
         </div>
         <div className="flex lg:hidden">
@@ -53,7 +58,7 @@ export const Topbar: FC = () => {
         </div>
         <Popover.Group className="hidden lg:flex lg:gap-x-12">
           <Popover className="relative">
-            <Popover.Button className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-100">
+            <Popover.Button className="flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-100">
               Explore
               <ChevronDownIcon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
             </Popover.Button>
@@ -95,7 +100,7 @@ export const Topbar: FC = () => {
           </Popover>
 
           {MENU_LINKS.map(link => (
-            <a href={link.href} className="text-sm font-semibold leading-6 text-gray-200">
+            <a href={link.href} className="text-lg font-semibold leading-6 text-gray-200">
               {link.name}
             </a>
           ))}
@@ -112,7 +117,7 @@ export const Topbar: FC = () => {
               <span className="sr-only">VenomDrop</span>
               <img
                 className="h-6 w-auto"
-                src={VenomDropSrc}
+                src={VenomDropWhiteSrc}
                 alt=""
               />
             </a>

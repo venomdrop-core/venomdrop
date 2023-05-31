@@ -47,8 +47,7 @@ export const MintBox: FC<MintBoxProps> = ({
       })
       .send({
         from: accountInteraction.address,
-        amount: toNano("1"),
-        // amount: to
+        amount: toNano("1"), // FIXME: Send the mint price
       });
     console.log(txn);
   };

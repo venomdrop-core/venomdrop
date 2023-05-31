@@ -7,8 +7,13 @@ import { Graphics } from "./pages/collections/edit/Graphics";
 import { DropSettings } from "./pages/collections/edit/DropSettings";
 import { CollectionsIndex } from "./pages/collections/CollectionsIndex";
 import { CollectionMintPage } from "./pages/collections/CollectionMintPage";
+import { Home } from "./pages/Home";
 
 export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+  },
   {
     path: "/collections/:slug/edit/dashboard",
     element: <Dashboard />,

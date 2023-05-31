@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { useVenomWallet } from "../../../hooks/useVenomWallet";
-import { VenomWalletIcon } from "../../../components/icons/VenomWalletIcon";
-import { getIdenticonSrc } from "../../../utils/getIdenticonSrc";
+import { useVenomWallet } from "../hooks/useVenomWallet";
+import { VenomWalletIcon } from "./icons/VenomWalletIcon";
+import { getIdenticonSrc } from "../utils/getIdenticonSrc";
 import { ArrowRightOnRectangleIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 
 export const ProfileInfo: FC = () => {
@@ -9,7 +9,7 @@ export const ProfileInfo: FC = () => {
   return (
     <>
       {!address ? (
-        <button className="btn md:btn-ghost btn-primary" onClick={connect}>
+        <button className="btn border-[rgba(166,173,187,0.2)] bg-[rgba(166,173,187,0.2)] hover:bg-[rgba(166,173,187,0.4)] hover:border-[rgba(166,173,187,0.4)]" onClick={connect}>
           <VenomWalletIcon className="h-5 w-5 text-gray-50 mr-2" />
           Connect Wallet
         </button>

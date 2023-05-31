@@ -1,5 +1,5 @@
 import React, { FC } from 'react'
-import { Topbar } from './components/Topbar'
+import { Topbar } from '../../components/Topbar'
 import { AuthRequired } from '../../components/AuthRequired';
 
 export interface MainLayoutProps {

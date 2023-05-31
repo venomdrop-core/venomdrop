@@ -1,7 +1,7 @@
 import React, { FC, useMemo } from "react";
 import { useCollection } from "../../hooks/useCollection";
 import { useParams } from "react-router-dom";
-import { Topbar } from "../../layouts/MainLayout/components/Topbar";
+import { Topbar } from "../../components/Topbar";
 import { CollectionMintStagesTimeline } from "../../components/CollectionMintStagesTimeline";
 import { MintBox } from "../../components/MintBox";
 import { useCurrentMintStage } from "../../hooks/useCollectionCurrentMintStage";
@@ -9,6 +9,7 @@ import { MintStagesTimeline } from "../../components/MintStagesTimeline";
 import { useCollectionInfo } from "../../hooks/useCollectionInfo";
 import { parseContractMintStage } from "../../utils/parseContractMintStage";
 import { unixToDate } from "../../utils/dates";
+import { CollectionStatusBadge } from "../../components/CollectionStatusBadge";
 
 export interface CollectionMintPageProps {}
 
@@ -51,15 +52,9 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
             <h1 className="py-8 text-4xl font-semibold text-white">
               {collection?.name}
             </h1>
-            <div className="inline-flex items-center bg-[rgba(0,0,0,0.25)] p-4 rounded-lg">
-              <span className="relative flex h-3 w-3 mr-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-              </span>
-              <div className="font-bold">
-                Minting now
-              </div>
-            </div>
+            {collection && (
+              <CollectionStatusBadge collection={collection} />
+            )}
           </div>
         </div>
       </div>
