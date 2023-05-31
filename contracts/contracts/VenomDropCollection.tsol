@@ -26,7 +26,6 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   // TODO: Make those variables configurable by mint stage
   uint128 _remainOnNft = 0.3 ton;
   uint128 _mintNftValue = _remainOnNft + 0.1 ton;
-  uint128 _processingValue = 0.1 ton;
 
   // UTILS
 
@@ -130,10 +129,10 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
    */
   function mint(uint32 amount) external view virtual {
     // Ensure the collection has a mint stage available now
-    _getCurrentMintStage();
+   MintStage mintStage = _getCurrentMintStage();
     require(amount > 0, Errors.INVALID_MINT_QUANTITY);
     require(!_hasMaxSupply || _totalSupply + amount <= _maxSupply, Errors.MAX_SUPPLY_EXCEEDED);
-    require(msg.value >= (_mintNftValue + _processingValue) * amount, Errors.INSUFFICIENT_FUNDS);
+    require(msg.value >= (_mintNftValue + mintStage.price) * amount, Errors.INSUFFICIENT_FUNDS);
     tvm.rawReserve(0, 4);
     _invokeMint(msg.sender, amount, 0);
   }

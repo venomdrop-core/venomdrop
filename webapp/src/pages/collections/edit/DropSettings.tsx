@@ -17,6 +17,7 @@ import { dateToUnix, unixToDate } from "../../../utils/dates";
 import { useVenomWallet } from "../../../hooks/useVenomWallet";
 import { toNano } from "../../../utils/toNano";
 import classNames from "classnames";
+import { parseContractMintStage } from "../../../utils/parseContractMintStage";
 
 export interface DropSettingsProps {}
 
@@ -55,13 +56,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
   useEffect(() => {
     if (info) {
       const maxSupply = info.maxSupply;
-      setMintStages(info.mintStages.map((m) => ({
-        startTime: unixToDate(m.startTime),
-        endTime: unixToDate(m.endTime),
-        name: 'Name Test',
-        price: m.price,
-        type: 'public',
-      })));
+      setMintStages(info.mintStages.map(parseContractMintStage));
       reset({ maxSupply, supplyMode: info.hasMaxSupply ? 'limited': 'unlimited' });
     }
   }, [info]);
@@ -77,13 +72,13 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
         hasMaxSupply: data.supplyMode === 'limited',
         maxSupply: data.supplyMode === 'limited' ? data.maxSupply: 0,
         mintStages: mintStages.map(ms => ({
+          name: ms.name,
           startTime: dateToUnix(new Date(ms.startTime)),
           endTime: dateToUnix(new Date(ms.endTime)),
           price: ms.price,
-          maxTotalMintableByWallet: 0, // TODO: Fix it when implement this feature
         })),
       }
-    }).send({ from: accountInteraction?.address, amount: toNano('6') });
+    }).send({ from: accountInteraction?.address, amount: toNano('0.1') });
     console.log(txn);
   }
   const supplyModeWatch = watch('supplyMode');

@@ -9,7 +9,7 @@ export interface MainLayoutProps {
 
 export const MainLayout: FC<MainLayoutProps> = ({ children, authRequired }) => {
   return (
-    <div className="bg-slate-900 h-screen w-screen">
+    <div className="bg-slate-900 h-screen w-screen overflow-y-auto">
       <Topbar />
       {authRequired ? <AuthRequired>{children}</AuthRequired>: children}
     </div>

@@ -19,10 +19,10 @@ pragma AbiHeader pubkey;
  * @param maxTotalMintableByWallet Maximum total number of mints (Up to 65,535)
  */
 struct MintStage {
+  string name;
   uint64 price;
   uint32 startTime;
   uint32 endTime;
-  uint16 maxTotalMintableByWallet;
 }
 
 /**

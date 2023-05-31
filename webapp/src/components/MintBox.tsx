@@ -8,6 +8,8 @@ import { useParams } from "react-router-dom";
 import { useVenomWallet } from "../hooks/useVenomWallet";
 import { toNano } from "../utils/toNano";
 
+const MINT_NFT_VALUE = toNano('0.4');
+
 export interface MintBoxProps {
   mintStages: MintStage[];
   currentMintStage?: MintStage | null;
@@ -37,17 +39,19 @@ export const MintBox: FC<MintBoxProps> = ({
     return nextMingStage;
   }, [mintStages]);
 
+
   const onMintClick = async () => {
-    if (!accountInteraction) {
+    if (!accountInteraction || !currentMintStage) {
       return;
     }
+    const amountTotal = (parseInt(MINT_NFT_VALUE) + parseInt(currentMintStage.price)) * count;
     const txn = await contract?.methods
       .mint({
         amount: count,
       })
       .send({
         from: accountInteraction.address,
-        amount: toNano("1"), // FIXME: Send the mint price
+        amount: amountTotal.toString(),
       });
     console.log(txn);
   };
