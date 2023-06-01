@@ -22,7 +22,7 @@ describe('VenomDropCollection: minting', async () => {
     it('should revert if there is no current mint stage', async () => {
       await setOutdatedMintStages(collection, owner.address);
       const { traceTree } = await locklift.tracing.trace(
-        collection.methods.mint({ amount: 1 }).send({ from: owner.address, amount: toNano(6) }),
+        collection.methods.mint({ amount: 1, proof: [] }).send({ from: owner.address, amount: toNano(6) }),
         {
           allowedCodes: {
             compute: [1030],
@@ -35,7 +35,7 @@ describe('VenomDropCollection: minting', async () => {
     it('should mint NFT properly if there is a mint stage', async () => {
       await setOngoingMintStages(collection, owner.address);
       const { traceTree } = await locklift.tracing.trace(
-        collection.methods.mint({ amount: 1 }).send({ from: owner.address, amount: toNano(6) }),
+        collection.methods.mint({ amount: 1, proof: [] }).send({ from: owner.address, amount: toNano(6) }),
         {
           allowedCodes: {
             compute: [1030],

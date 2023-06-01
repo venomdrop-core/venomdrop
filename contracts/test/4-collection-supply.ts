@@ -29,9 +29,10 @@ describe('VenomDropCollection: supply', async () => {
           maxSupply,
           mintStages: [
             {
+              name: 'Test',
+              merkleTreeRoot: 0,
               startTime: 1,
               endTime: newTimestamp("2099-01-01 00:00:00"),
-              maxTotalMintableByWallet: 100,
               price: 10,
             }
           ],

@@ -25,9 +25,10 @@ describe('VenomDropCollection: mint stages', async () => {
           collection.methods.setMintStages({
             mintStages: [
               {
+                name: 'Mint Stage Test',
                 startTime: newTimestamp("2023-05-21 12:50:00"),
                 endTime: newTimestamp("2023-05-22 12:50:00"),
-                maxTotalMintableByWallet: 3,
+                merkleTreeRoot: 0,
                 price: toNano(6),
               }
             ],
@@ -38,7 +39,6 @@ describe('VenomDropCollection: mint stages', async () => {
         const [stage] = mintStages;
         expect(stage.startTime).to.be.equal(newTimestamp("2023-05-21 12:50:00").toString());
         expect(stage.endTime).to.be.equal(newTimestamp("2023-05-22 12:50:00").toString());
-        expect(stage.maxTotalMintableByWallet).to.be.equal('3');
         expect(stage.price).to.be.equal(toNano(6).toString());
       });
       it('should revert if any stage other than the last one has endTime=0', async () => {
@@ -46,16 +46,18 @@ describe('VenomDropCollection: mint stages', async () => {
           collection.methods.setMintStages({
             mintStages: [
               {
+                name: 'Mint Stage Test 1',
                 startTime: newTimestamp("2023-05-21 12:50:00"),
                 endTime: 0,
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               },
               {
+                name: 'Mint Stage Test 2',
                 startTime: newTimestamp("2023-05-21 12:50:00"),
                 endTime: newTimestamp("2023-05-21 12:50:00"),
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               }
             ],
           }).send({ from: owner.address, amount: toNano(6)}),
@@ -72,16 +74,18 @@ describe('VenomDropCollection: mint stages', async () => {
           collection.methods.setMintStages({
             mintStages: [
               {
+                name: 'Mint Stage Test 1',
                 startTime: newTimestamp("2023-05-21 12:50:00"),
                 endTime: newTimestamp("2023-05-22 12:50:00"),
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               },
               {
+                name: 'Mint Stage Test 1',
                 startTime: newTimestamp("2023-05-23 12:50:00"),
                 endTime: 0,
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               }
             ],
           }).send({ from: owner.address, amount: toNano(6)}),
@@ -98,16 +102,18 @@ describe('VenomDropCollection: mint stages', async () => {
           collection.methods.setMintStages({
             mintStages: [
               {
+                name: 'Mint Stage Test 1',
                 startTime: newTimestamp("2023-05-21 12:50:00"),
                 endTime: newTimestamp("2023-05-23 12:50:00"),
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               },
               {
+                name: 'Mint Stage Test 2',
                 startTime: newTimestamp("2023-05-22 12:50:00"),
                 endTime: newTimestamp("2023-05-25 12:50:00"),
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               }
             ],
           }).send({ from: owner.address, amount: toNano(6)}),
@@ -124,16 +130,18 @@ describe('VenomDropCollection: mint stages', async () => {
           collection.methods.setMintStages({
             mintStages: [
               {
+                name: 'Mint Stage Test 1',
                 startTime: newTimestamp("2023-05-24 12:50:00"),
                 endTime: newTimestamp("2023-05-25 12:50:00"),
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               },
               {
+                name: 'Mint Stage Test 1',
                 startTime: newTimestamp("2023-05-21 12:50:00"),
                 endTime: newTimestamp("2023-05-23 12:50:00"),
-                maxTotalMintableByWallet: 3,
                 price: toNano(6),
+                merkleTreeRoot: 0,
               },
             ],
           }).send({ from: owner.address, amount: toNano(6)}),

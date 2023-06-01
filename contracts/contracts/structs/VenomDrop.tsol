@@ -23,6 +23,7 @@ struct MintStage {
   uint64 price;
   uint32 startTime;
   uint32 endTime;
+  bytes32 merkleTreeRoot;
 }
 
 /**

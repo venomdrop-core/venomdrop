@@ -64,4 +64,10 @@ library Errors {
    *         - Insufficient Funds for the transaction
    */
   uint16 constant INSUFFICIENT_FUNDS = 1070;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - The caller is not in the allowlist to mint the NFT
+   */
+  uint16 constant CALLER_IS_NOT_IN_ALLOWLIST = 1080;
 }

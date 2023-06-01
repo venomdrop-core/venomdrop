@@ -52,16 +52,18 @@ export const setOutdatedMintStages = async (collection: Contract<FactorySource["
   await locklift.transactions.waitFinalized(collection.methods.setMintStages({
     mintStages: [
       {
+        name: "Mint Stage Test 1",
         startTime: newTimestamp("2022-05-21 12:50:00"),
         endTime: newTimestamp("2022-05-22 12:50:00"),
-        maxTotalMintableByWallet: 3,
         price: toNano(6),
+        merkleTreeRoot: 0,
       },
       {
+        name: "Mint Stage Test 2",
         startTime: newTimestamp("2022-05-23 12:50:00"),
         endTime: newTimestamp("2022-05-24 12:50:00"),
-        maxTotalMintableByWallet: 3,
         price: toNano(6),
+        merkleTreeRoot: 0,
       },
     ],
   }).send({ from, amount: toNano(6) }));
@@ -71,16 +73,18 @@ export const setOngoingMintStages = async (collection: Contract<FactorySource["V
   await locklift.transactions.waitFinalized(collection.methods.setMintStages({
     mintStages: [
       {
+        name: "Mint Stage Test 1",
         startTime: 1, // The local node starts with block.timestamp=1
         endTime: newTimestamp("2099-01-01 00:00:00"),
-        maxTotalMintableByWallet: 3,
         price: toNano(6),
+        merkleTreeRoot: 0,
       },
       {
+        name: "Mint Stage Test 2",
         startTime: newTimestamp("2099-05-23 12:50:00"),
         endTime: newTimestamp("2099-05-24 12:50:00"),
-        maxTotalMintableByWallet: 3,
         price: toNano(6),
+        merkleTreeRoot: 0,
       },
     ],
   }).send({ from, amount: toNano(6) }));

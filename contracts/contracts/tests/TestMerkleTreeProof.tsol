@@ -1,0 +1,36 @@
+pragma ever-solidity >=0.62.0;
+pragma AbiHeader expire;
+pragma AbiHeader pubkey;
+
+import "locklift/src/console.tsol";
+import "../utils/MerkleProof.tsol";
+
+/**
+ * This contract is used to test if we are hashing the MarkleTree leaf correctly on contract side
+ */
+contract TestMerkleTreeProof {
+  function hashString(string value) public returns (uint256 res) {
+    return sha256(value);
+  }
+
+  function hashUint(uint256 value) public returns (uint256 res) {
+    return sha256(abi.encode(value).toSlice());
+  }
+
+  function hashAddress(address addr) public returns (uint256 res) {
+    return sha256(abi.encode(addr.value).toSlice());
+  }
+
+  function concatHashFn(address addr1, address addr2) public returns (uint256 res) {
+    return sha256(abi.encode(bytes32(addr1.value), bytes32(addr2.value)).toSlice());
+  }
+
+  function concatHashFnReturnsBytes32(address addr1, address addr2) public returns (bytes32 res) {
+    return bytes32(sha256(abi.encode(bytes32(addr1.value), bytes32(addr2.value)).toSlice()));
+  }
+
+  function verify(bytes32[] proof, bytes32 root, address addr) public returns (bool verified) {
+    bytes32 leaf = bytes32(addr.value);
+    return MerkleProof.verify(proof, root, leaf);
+  }
+}
