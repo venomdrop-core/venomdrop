@@ -17,7 +17,6 @@ export interface MintStagesTimelineProps {
 export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
   mintStages,
 }) => {
-  console.log(mintStages);
   return (
     <div>
       <ul role="list" className="-mb-8">
@@ -34,18 +33,18 @@ export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
                 <div>
                   <span
                     className={classNames(
-                      mintStage.type === "public"
+                      mintStage.type === "PUBLIC"
                         ? "bg-green-500"
                         : "bg-blue-500",
                       "h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-base-100 mt-4 mr-2 tooltip tooltip-left"
                     )}
                     data-tip={
-                      mintStage.type === "public"
+                      mintStage.type === "PUBLIC"
                         ? "Public Mint"
                         : "Allowlist Mint"
                     }
                   >
-                    {mintStage.type === "public" ? (
+                    {mintStage.type === "PUBLIC" ? (
                       <GlobeAmericasIcon
                         className="h-5 w-5 text-white"
                         aria-hidden="true"

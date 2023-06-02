@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { MintStageType, Prisma } from '@prisma/client';
 
 export class AllowlistDataItemDto {
   @ApiProperty({
@@ -9,6 +10,15 @@ export class AllowlistDataItemDto {
 }
 
 export class MintStageDto {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  price: string;
+
+  @ApiProperty()
+  type: MintStageType;
+
   @ApiProperty()
   startDate: Date;
 

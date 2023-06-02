@@ -208,10 +208,14 @@ export class CollectionsService {
           collectionId: c.id,
           mintStages: {
             createMany: {
-              data: mintStageGroupDto.mintStages.map((ms) => {
+              data: mintStageGroupDto.mintStages.map((ms, idx) => {
                 const allowlistData =
                   ms.allowlistData as unknown as Prisma.JsonArray;
                 const createData = {
+                  idx,
+                  name: ms.name,
+                  price: parseInt(ms.price),
+                  type: ms.type,
                   active: false,
                   allowlistData,
                   startDate: new Date(ms.startDate),
@@ -223,16 +227,24 @@ export class CollectionsService {
           },
         },
         include: {
-          mintStages: true,
+          mintStages: {
+            orderBy: {
+              idx: 'asc',
+            },
+          },
         },
       });
 
     const merkleTreeRoots: string[] = [];
 
     for (let i = 0; i < mintStageGroup.mintStages.length; i++) {
-      const mintStageId = mintStageGroup.mintStages[i].id;
-      const tree = await this.getMintStageMerkleTree(mintStageId);
-      merkleTreeRoots.push(tree.getHexRoot());
+      const mintStage = mintStageGroup.mintStages[i];
+      if (mintStage.type === 'ALLOWLIST') {
+        const tree = await this.getMintStageMerkleTree(mintStage.id);
+        merkleTreeRoots.push(tree.getHexRoot());
+      } else {
+        merkleTreeRoots.push('0x0');
+      }
     }
 
     return {

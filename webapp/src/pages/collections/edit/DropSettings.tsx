@@ -73,10 +73,16 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
     }
     const mintStageGroupRes = await createMintStageGroupMutation.mutateAsync({
       mintStages: mintStages.map(ms => ({
+        name: ms.name,
+        price: ms.price,
+        type: ms.type,
         startDate: new Date(ms.startTime).toISOString(),
         endDate: new Date(ms.endTime).toISOString(),
         allowlistData: [
           // TODO: Load a parsed address list from a CSV file here
+          {
+            address: '0:fc2ebfa6b7cbeb78157b38fb185e9c3345cb0ea9294f8eec0361c6fb786959f2'
+          }
         ],
       }))
     });
@@ -84,13 +90,16 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
       options: {
         hasMaxSupply: data.supplyMode === 'limited',
         maxSupply: data.supplyMode === 'limited' ? data.maxSupply: 0,
-        mintStages: mintStages.map((ms, idx) => ({
-          name: ms.name,
-          startTime: dateToUnix(new Date(ms.startTime)),
-          endTime: dateToUnix(new Date(ms.endTime)),
-          price: ms.price,
-          merkleTreeRoot: mintStageGroupRes.merkleTreeRoots[idx],
-        })),
+        mintStages: mintStages.map((ms, idx) => {
+          const merkleTreeRoot = mintStageGroupRes.merkleTreeRoots[idx];
+          return {
+            name: ms.name,
+            startTime: dateToUnix(new Date(ms.startTime)),
+            endTime: dateToUnix(new Date(ms.endTime)),
+            price: ms.price,
+            merkleTreeRoot,
+          };
+        }),
       }
     }).send({ from: accountInteraction?.address, amount: toNano('0.1') });
 

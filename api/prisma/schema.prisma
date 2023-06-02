@@ -14,7 +14,7 @@ model Account {
   id          String       @id @default(uuid())
   address     String       @unique
   collections Collection[]
-  createdAt   DateTime?     @default(now())
+  createdAt   DateTime?    @default(now())
   updatedAt   DateTime?    @updatedAt
 }
 
@@ -48,7 +48,7 @@ model Collection {
   coverImageSrc    String?
   featuredImageSrc String?
   mintStageGroups  CollectionMintStageGroup[]
-  createdAt        DateTime?                   @default(now())
+  createdAt        DateTime?                  @default(now())
   updatedAt        DateTime?                  @updatedAt
 }
 
@@ -57,14 +57,23 @@ model CollectionMintStageGroup {
   collectionId String
   collection   Collection            @relation(fields: [collectionId], references: [id])
   mintStages   CollectionMintStage[]
-  createdAt    DateTime?              @default(now())
+  createdAt    DateTime?             @default(now())
   updatedAt    DateTime?             @updatedAt
+}
+
+enum MintStageType {
+  PUBLIC
+  ALLOWLIST
 }
 
 model CollectionMintStage {
   id               String                   @id @default(uuid())
   mintStageGroupId String
   mintStageGroup   CollectionMintStageGroup @relation(fields: [mintStageGroupId], references: [id])
+  idx              Int
+  name             String
+  price            Int
+  type             MintStageType
   startDate        DateTime
   endDate          DateTime
   allowlistData    Json

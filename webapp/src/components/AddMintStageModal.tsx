@@ -27,7 +27,7 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({ setMintStages, m
       name,
       startTime: range.startDate as Date,
       endTime: range.endDate as Date,
-      type: 'public', // TODO: Make it dynamic when we implement the allowlist feature
+      type: 'ALLOWLIST', // TODO: Make it dynamic when we implement the allowlist feature
       price: toNano(price),
     }
     setMintStages(mintStages => ([...mintStages, mintStage]))

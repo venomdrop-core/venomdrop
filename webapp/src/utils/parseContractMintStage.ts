@@ -6,6 +6,7 @@ type ContractMintStage = {
   price: string;
   startTime: string;
   endTime: string;
+  merkleTreeRoot: string;
 }
 
 export const parseContractMintStage = (contractMintStage: ContractMintStage): MintStage => ({
@@ -13,5 +14,5 @@ export const parseContractMintStage = (contractMintStage: ContractMintStage): Mi
   price: contractMintStage.price,
   startTime: unixToDate(contractMintStage.startTime),
   endTime: unixToDate(contractMintStage.endTime),
-  type: 'public', // FIXME: add allowlist when enabled
+  type: parseInt(contractMintStage.merkleTreeRoot) === 0 ? 'PUBLIC': 'ALLOWLIST',
 });

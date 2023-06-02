@@ -19,21 +19,22 @@ export interface AllowlistDto {
 }
 
 export interface MintStageDto {
-  startDate: string
-  endDate: string
-  allowlistData: AllowlistDto[]
+  name: string;
+  price: string;
+  type: 'ALLOWLIST' | 'PUBLIC';
+  startDate: string;
+  endDate: string;
+  allowlistData: AllowlistDto[];
 }
 
 export interface MintStageGroupDto {
-  mintStages: MintStageDto[]
+  mintStages: MintStageDto[];
 }
 
 export interface CreateMintStageGroupResponseDto {
   mintStageGroupId: string;
   merkleTreeRoots: string[];
 }
-
-
 
 export const getCollection = async (
   slug: string
