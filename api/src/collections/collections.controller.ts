@@ -31,6 +31,10 @@ import { Collection } from './dto/collection.dto';
 import { Graphics } from './dto/graphics.dto';
 import { Request } from 'express';
 import { GraphicsInterceptors } from './decorators/graphics.interceptors.decorator';
+import {
+  CreateMintStageGroupResponseDto,
+  MintStageGroupDto,
+} from './dto/mintstage-group.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -112,5 +116,27 @@ export class CollectionsController {
       }
     });
     return this.collectionsService.updateGraphics(account, slug, graphics);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiBody({
+    description: 'Mint Stage Group',
+    type: MintStageGroupDto,
+  })
+  @ApiResponse({
+    type: CreateMintStageGroupResponseDto,
+  })
+  @Post(':slug/mintstage-groups')
+  createMintStageGroup(
+    @Me() account: Account,
+    @Param('slug') slug: string,
+    @Body() mintStageGroupDto: MintStageGroupDto,
+  ): Promise<CreateMintStageGroupResponseDto> {
+    return this.collectionsService.createMintStageGroup(
+      account,
+      slug,
+      mintStageGroupDto,
+    );
   }
 }

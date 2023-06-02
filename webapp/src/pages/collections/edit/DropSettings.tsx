@@ -8,16 +8,17 @@ import {
 } from "../../../components/RadioGroupCards";
 import { MintStagesInput } from "../../../components/MintStagesInput";
 import { useParams } from "react-router-dom";
-import { useCollection } from "../../../hooks/useCollection";
 import { useCollectionInfo } from "../../../hooks/useCollectionInfo";
 import { MintStage } from "../../../types/mintStage";
 import { Controller, useForm } from "react-hook-form";
 import { useCollectionContract } from "../../../hooks/useCollectionContract";
-import { dateToUnix, unixToDate } from "../../../utils/dates";
+import { dateToUnix } from "../../../utils/dates";
 import { useVenomWallet } from "../../../hooks/useVenomWallet";
 import { toNano } from "../../../utils/toNano";
 import classNames from "classnames";
 import { parseContractMintStage } from "../../../utils/parseContractMintStage";
+import { useMutation } from "@tanstack/react-query";
+import { MintStageGroupDto, createMintStageGroup } from "../../../api/collections";
 
 export interface DropSettingsProps {}
 
@@ -44,6 +45,9 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
   const { slug } = useParams();
   const contract = useCollectionContract(slug);
   const { data: info } = useCollectionInfo(slug);
+  const createMintStageGroupMutation = useMutation({
+    mutationFn: (data: MintStageGroupDto) => createMintStageGroup(slug!, data),
+  });
   const {
     register,
     handleSubmit,
@@ -67,19 +71,30 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
       alert('Error: Could not load contract');
       return;
     }
+    const mintStageGroupRes = await createMintStageGroupMutation.mutateAsync({
+      mintStages: mintStages.map(ms => ({
+        startDate: new Date(ms.startTime).toISOString(),
+        endDate: new Date(ms.endTime).toISOString(),
+        allowlistData: [
+          // TODO: Load a parsed address list from a CSV file here
+        ],
+      }))
+    });
     const txn = await contract.methods.multiconfigure({
       options: {
         hasMaxSupply: data.supplyMode === 'limited',
         maxSupply: data.supplyMode === 'limited' ? data.maxSupply: 0,
-        mintStages: mintStages.map(ms => ({
+        mintStages: mintStages.map((ms, idx) => ({
           name: ms.name,
           startTime: dateToUnix(new Date(ms.startTime)),
           endTime: dateToUnix(new Date(ms.endTime)),
           price: ms.price,
+          merkleTreeRoot: mintStageGroupRes.merkleTreeRoots[idx],
         })),
       }
     }).send({ from: accountInteraction?.address, amount: toNano('0.1') });
-    console.log(txn);
+
+    // TODO: Call Activate MintStage Group Here
   }
   const supplyModeWatch = watch('supplyMode');
   return (

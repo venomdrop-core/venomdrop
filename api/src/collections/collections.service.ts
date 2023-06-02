@@ -4,12 +4,26 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Account, Prisma } from '@prisma/client';
+import { SHA256 } from 'crypto-js';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
 import { PrismaService } from 'src/prisma.service';
 import { VenomService } from 'src/venom.service';
-import { Account, Prisma } from '@prisma/client';
 import { ApiPageOptions } from 'src/common/decorators/page.decorator';
+import {
+  CreateMintStageGroupResponseDto,
+  MintStageGroupDto,
+} from './dto/mintstage-group.dto';
+import MerkleTree from 'merkletreejs';
+import { Address } from 'everscale-inpage-provider';
+
+function getAddrHex(address: Address): string {
+  const addr = address.toString();
+  const uint256 = BigInt(addr.replace('0:', '0x'));
+  const hex = uint256.toString(16).padStart(64, '0');
+  return hex;
+}
 
 @Injectable()
 export class CollectionsService {
@@ -144,5 +158,86 @@ export class CollectionsService {
       },
     });
     return collection;
+  }
+
+  async getMintStageMerkleTree(id: string): Promise<MerkleTree> {
+    const mintStage =
+      await this.prismaService.collectionMintStage.findUniqueOrThrow({
+        where: {
+          id,
+        },
+      });
+
+    const jsonData = mintStage.allowlistData;
+
+    if (!jsonData || !Array.isArray(jsonData)) {
+      throw new Error('Could not parse allowlist data');
+    }
+
+    const allowlistData = jsonData as Prisma.JsonArray;
+
+    const addresses = allowlistData
+      .map((row: { address: string }) => row.address)
+      .map((addr) => new Address(addr));
+
+    const leaves = addresses
+      .map(getAddrHex)
+      .map((hex: string) => Buffer.from(hex, 'hex'));
+
+    const tree = new MerkleTree(leaves, SHA256, {
+      hashLeaves: false,
+      sortLeaves: true,
+      sortPairs: true,
+    });
+
+    return tree;
+  }
+
+  async createMintStageGroup(
+    account: Account,
+    slug: string,
+    mintStageGroupDto: MintStageGroupDto,
+  ): Promise<CreateMintStageGroupResponseDto> {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const mintStageGroup =
+      await this.prismaService.collectionMintStageGroup.create({
+        data: {
+          collectionId: c.id,
+          mintStages: {
+            createMany: {
+              data: mintStageGroupDto.mintStages.map((ms) => {
+                const allowlistData =
+                  ms.allowlistData as unknown as Prisma.JsonArray;
+                const createData = {
+                  active: false,
+                  allowlistData,
+                  startDate: new Date(ms.startDate),
+                  endDate: new Date(ms.endDate),
+                };
+                return createData;
+              }),
+            },
+          },
+        },
+        include: {
+          mintStages: true,
+        },
+      });
+
+    const merkleTreeRoots: string[] = [];
+
+    for (let i = 0; i < mintStageGroup.mintStages.length; i++) {
+      const mintStageId = mintStageGroup.mintStages[i].id;
+      const tree = await this.getMintStageMerkleTree(mintStageId);
+      merkleTreeRoots.push(tree.getHexRoot());
+    }
+
+    return {
+      mintStageGroupId: mintStageGroup.id,
+      merkleTreeRoots,
+    };
   }
 }

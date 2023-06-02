@@ -14,6 +14,27 @@ export interface Collection {
   contractAddress: string;
 }
 
+export interface AllowlistDto {
+  address: string
+}
+
+export interface MintStageDto {
+  startDate: string
+  endDate: string
+  allowlistData: AllowlistDto[]
+}
+
+export interface MintStageGroupDto {
+  mintStages: MintStageDto[]
+}
+
+export interface CreateMintStageGroupResponseDto {
+  mintStageGroupId: string;
+  merkleTreeRoots: string[];
+}
+
+
+
 export const getCollection = async (
   slug: string
 ): Promise<Collection | null> => {
@@ -72,5 +93,11 @@ export const updateCollectionGraphics = async (
   formData: FormData,
 ): Promise<Collection> => {
   const { data } = await api.post(`/collections/${slug}/graphics`, formData);
+  return data;
+};
+
+
+export const createMintStageGroup = async (slug: string, mintStageGroupDto: MintStageGroupDto): Promise<CreateMintStageGroupResponseDto> => {
+  const { data } = await api.post(`/collections/${slug}/mintstage-groups`, mintStageGroupDto);
   return data;
 };

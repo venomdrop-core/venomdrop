@@ -14,6 +14,8 @@ model Account {
   id          String       @id @default(uuid())
   address     String       @unique
   collections Collection[]
+  createdAt   DateTime?     @default(now())
+  updatedAt   DateTime?    @updatedAt
 }
 
 model AuthNonce {
@@ -33,16 +35,38 @@ model Category {
 }
 
 model Collection {
-  id               String   @id @default(uuid())
+  id               String                     @id @default(uuid())
   ownerId          String
-  owner            Account  @relation(fields: [ownerId], references: [id])
-  contractAddress  String   @unique
+  owner            Account                    @relation(fields: [ownerId], references: [id])
+  contractAddress  String                     @unique
   name             String
-  slug             String   @unique
+  slug             String                     @unique
   description      String
   categoryId       String
-  category         Category @relation(fields: [categoryId], references: [id])
+  category         Category                   @relation(fields: [categoryId], references: [id])
   logoImageSrc     String?
   coverImageSrc    String?
   featuredImageSrc String?
+  mintStageGroups  CollectionMintStageGroup[]
+  createdAt        DateTime?                   @default(now())
+  updatedAt        DateTime?                  @updatedAt
+}
+
+model CollectionMintStageGroup {
+  id           String                @id @default(uuid())
+  collectionId String
+  collection   Collection            @relation(fields: [collectionId], references: [id])
+  mintStages   CollectionMintStage[]
+  createdAt    DateTime?              @default(now())
+  updatedAt    DateTime?             @updatedAt
+}
+
+model CollectionMintStage {
+  id               String                   @id @default(uuid())
+  mintStageGroupId String
+  mintStageGroup   CollectionMintStageGroup @relation(fields: [mintStageGroupId], references: [id])
+  startDate        DateTime
+  endDate          DateTime
+  allowlistData    Json
+  active           Boolean
 }
