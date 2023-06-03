@@ -40,7 +40,7 @@ describe('VenomDropCollection: supply', async () => {
       }).send({ from: owner.address, amount: toNano('6') });
     }
     const mint = async (collection: VenomDropCollectionContract, amount: number) => {
-      return collection.methods.mint({ amount }).send({ from: minter.address, amount: toNano(6 * amount) });
+      return collection.methods.mint({ amount, proof: [] }).send({ from: minter.address, amount: toNano(6 * amount) });
     }
     const expectTotalSupply = async (collection: VenomDropCollectionContract, expectedTotalSupply: number) => {
       const { count: totalSupply } = await collection.methods.totalSupply({ answerId: 0 }).call();
