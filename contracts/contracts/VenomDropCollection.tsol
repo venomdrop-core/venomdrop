@@ -17,6 +17,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   bool private _hasMaxSupply;
   uint private _maxSupply;
   MintStage[] private _mintStages;
+  string private _initialMintJson;
 
   constructor(TvmCell codeNft, address owner) public TIP4_1Collection(codeNft) {
     tvm.accept();
@@ -88,7 +89,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
 
     TvmCell codeNft = _buildNftCode(address(this));
     TvmCell stateNft = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: codeNft });
-    new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(owner, owner, _remainOnNft);
+    new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(owner, owner, _remainOnNft, _initialMintJson);
 
     currentIteration++;
     _invokeMint(owner, amount, currentIteration);
@@ -114,6 +115,13 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   function setMintStages(MintStage[] mintStages) public onlyOwner {
     _validateMintStages(mintStages);
     _mintStages = mintStages;
+  }
+
+  /**
+   * @notice Set the initial mint JSON (Pre-Reveal)
+   */
+  function setInitialMintJson(string initialMintJson) public onlyOwner {
+    _initialMintJson = initialMintJson;
   }
 
   /**
@@ -165,6 +173,13 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
    */
   function getMintStages() public view returns (MintStage[] mintStages) {
     return _mintStages;
+  }
+
+  /**
+   * @notice get the initial mint json (Pre-Reveal)
+   */
+  function getInitialMintJson() public view returns (string initialMintJson) {
+    return _initialMintJson;
   }
 
   /**
