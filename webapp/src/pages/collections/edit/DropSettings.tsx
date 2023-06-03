@@ -78,12 +78,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
         type: ms.type,
         startDate: new Date(ms.startTime).toISOString(),
         endDate: new Date(ms.endTime).toISOString(),
-        allowlistData: [
-          // TODO: Load a parsed address list from a CSV file here
-          {
-            address: '0:fc2ebfa6b7cbeb78157b38fb185e9c3345cb0ea9294f8eec0361c6fb786959f2'
-          }
-        ],
+        allowlistData: (ms.allowlist || []).map(address => ({ address })),
       }))
     });
     const txn = await contract.methods.multiconfigure({

@@ -28,7 +28,7 @@ export const RadioGroupCards: FC<RadioGroupCardsProps> = ({ options, value, onCh
   }, [value]);
   return (
     <RadioGroup value={selectedOption} onChange={setSelectedOption}>
-      <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
+      <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-4">
         {options.map((option) => (
           <RadioGroup.Option
             key={option.value}
