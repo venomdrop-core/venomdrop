@@ -7,7 +7,7 @@ import Datepicker from "react-tailwindcss-datepicker";
 import { DateRangeType } from "react-tailwindcss-datepicker/dist/types";
 import { toNano } from "../utils/toNano";
 import { RadioGroupCards, Option } from "./RadioGroupCards";
-import { CsvUploadArea } from "./CsvUploadArea";
+import { AllowlistInput } from "./AllowlistInput";
 
 export interface AddMintStageModalProps extends ModalProps {
   mintStages: MintStage[];
@@ -132,7 +132,7 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({
           />
           {mode === "ALLOWLIST" && (
             <div className="mt-4">
-              <CsvUploadArea
+              <AllowlistInput
                 allowlist={allowlist}
                 setAllowlist={(addresses) => setAllowlist(addresses)}
               />

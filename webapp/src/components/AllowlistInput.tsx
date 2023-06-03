@@ -10,12 +10,12 @@ interface CsvDataRow {
   "Venom Wallet Address": string;
 }
 
-export interface CsvUploadAreaProps {
+export interface AllowlistInputProps {
   allowlist: string[];
   setAllowlist: (addresses: string[]) => void;
 }
 
-export const CsvUploadArea: FC<CsvUploadAreaProps> = ({
+export const AllowlistInput: FC<AllowlistInputProps> = ({
   allowlist,
   setAllowlist,
 }) => {
