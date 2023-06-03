@@ -29,6 +29,9 @@ export const MintStagesInput: FC<MintStagesInputProps> = ({
   setMintStages,
 }) => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const removeMintStageByIndex = (idx: number) => {
+    setMintStages(ms => [...ms.filter((_, i) => i !== idx)]);
+  }
   return (
     <div>
       <AddMintStageModal
@@ -42,7 +45,7 @@ export const MintStagesInput: FC<MintStagesInputProps> = ({
           No Mint Stage Added
         </div>
       ) : (
-        <MintStagesTimeline mintStages={mintStages} />
+        <MintStagesTimeline mintStages={mintStages} editMode onRemoveMintStageClick={removeMintStageByIndex} />
       )}
       <div>
         <button

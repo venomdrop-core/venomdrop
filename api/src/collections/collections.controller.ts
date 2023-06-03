@@ -20,7 +20,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/auth.guard';
-import { Account } from '@prisma/client';
+import {
+  Account,
+  CollectionMintStage,
+  CollectionMintStageGroup,
+} from '@prisma/client';
 import { Me } from 'src/common/decorators/me.decorator';
 import {
   ApiPage,
@@ -153,6 +157,19 @@ export class CollectionsController {
     @Param('id') id: string,
   ): Promise<{ status: boolean }> {
     return this.collectionsService.activateMintStageGroup(account, slug, id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiResponse({
+    type: MintStageGroupDto,
+  })
+  @Get(':slug/mintstage-groups/active')
+  getActiveMintStageGroup(
+    @Me() account: Account,
+    @Param('slug') slug: string,
+  ): Promise<CollectionMintStageGroup & { mintStages: CollectionMintStage[] }> {
+    return this.collectionsService.getCurrentMintStageGroup(account, slug);
   }
 
   @ApiResponse({

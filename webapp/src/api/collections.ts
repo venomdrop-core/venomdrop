@@ -108,8 +108,17 @@ export const activateMintStageGroup = async (slug: string, mintStageGroupId: str
   return data;
 };
 
-
-export const getMintProof = async (slug: string, address: string): Promise<{ proof: string[] }> => {
+export const getMintProof = async (slug: string, address: string): Promise<{ proof: string[], eligible: boolean }> => {
   const { data } = await api.get(`/collections/${slug}/mint-proof/${address}`);
   return data;
+};
+
+
+export const getActiveMintStageGroup = async (slug: string): Promise<MintStageGroupDto | null> => {
+  try {
+    const { data } = await api.get(`/collections/${slug}/mintstage-groups/active`);
+    return data;
+  } catch (error) {
+    return null;
+  }
 };

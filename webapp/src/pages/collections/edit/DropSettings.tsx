@@ -17,8 +17,8 @@ import { useVenomWallet } from "../../../hooks/useVenomWallet";
 import { toNano } from "../../../utils/toNano";
 import classNames from "classnames";
 import { parseContractMintStage } from "../../../utils/parseContractMintStage";
-import { useMutation } from "@tanstack/react-query";
-import { MintStageGroupDto, activateMintStageGroup, createMintStageGroup } from "../../../api/collections";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { MintStageGroupDto, activateMintStageGroup, createMintStageGroup, getActiveMintStageGroup } from "../../../api/collections";
 
 export interface DropSettingsProps {}
 
@@ -45,6 +45,11 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
   const { slug } = useParams();
   const contract = useCollectionContract(slug);
   const { data: info } = useCollectionInfo(slug);
+  const { data: activeMintStageGroup } = useQuery({
+    queryFn: () => getActiveMintStageGroup(slug!),
+    queryKey: ["active-mint-group", slug],
+  });
+  console.log(activeMintStageGroup);
   const createMintStageGroupMutation = useMutation({
     mutationFn: (data: MintStageGroupDto) => createMintStageGroup(slug!, data),
   });
@@ -63,7 +68,18 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
   useEffect(() => {
     if (info) {
       const maxSupply = info.maxSupply;
-      setMintStages(info.mintStages.map(parseContractMintStage));
+      // setMintStages(info.mintStages.map(parseContractMintStage));
+      if (activeMintStageGroup) {
+        const mintStages: MintStage[] = activeMintStageGroup.mintStages.map(ms => ({
+          name: ms.name,
+          startTime: new Date(ms.startDate),
+          endTime: new Date(ms.endDate),
+          price: ms.price,
+          type: ms.type,
+          allowlist: ms.allowlistData.map(row => row.address),
+        }));
+        setMintStages(mintStages);
+      }
       reset({ maxSupply, supplyMode: info.hasMaxSupply ? 'limited': 'unlimited' });
     }
   }, [info]);
@@ -93,7 +109,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
           console.log(merkleTreeRoot);
           return {
             name: ms.name,
-            startTime: 1, // TODO: Use real start time after tests
+            startTime: idx === 0 ? 1 : dateToUnix(new Date(ms.startTime)), // TODO: Use real start time after tests
             endTime: dateToUnix(new Date(ms.endTime)),
             price: ms.price,
             merkleTreeRoot,

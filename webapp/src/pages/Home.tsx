@@ -14,7 +14,7 @@ import { useCollections } from "../hooks/useCollections";
 export interface HomeProps {}
 
 export const Home: FC<HomeProps> = (props) => {
-  const slug = "my-collection-works";
+  const slug = "test2";
   const { data: info } = useCollectionInfo(slug);
   const { data: collection } = useCollection(slug);
   const { data: collections } = useCollections();

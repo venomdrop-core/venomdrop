@@ -3,6 +3,7 @@ import {
   UsersIcon,
   GlobeAmericasIcon,
   ArrowLongRightIcon,
+  TrashIcon,
 } from "@heroicons/react/24/outline";
 import classNames from "classnames";
 import { MintStage } from "../types/mintStage";
@@ -12,10 +13,14 @@ import { formatDate } from "../utils/dates";
 
 export interface MintStagesTimelineProps {
   mintStages: MintStage[];
+  editMode?: boolean;
+  onRemoveMintStageClick?: (idx: number) => void;
 }
 
 export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
   mintStages,
+  onRemoveMintStageClick,
+  editMode = false,
 }) => {
   return (
     <div>
@@ -78,6 +83,13 @@ export const MintStagesTimeline: FC<MintStagesTimelineProps> = ({
                     </div>
                   </div>
                 </div>
+                {editMode && (
+                  <div>
+                    <button className="btn btn-circle btn-sm" type="button" onClick={() => onRemoveMintStageClick && onRemoveMintStageClick(idx)}>
+                      <TrashIcon className="h-6 w-6" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </li>

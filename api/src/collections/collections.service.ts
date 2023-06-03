@@ -320,9 +320,42 @@ export class CollectionsService {
     const tree = await this.getMintStageMerkleTree(currentMintStage.id);
     const leaf = Buffer.from(getAddrHex(new Address(address)), 'hex');
     const proof = tree.getHexProof(leaf);
+    const eligible = tree.verify(
+      tree.getProof(leaf),
+      leaf,
+      tree.getRoot().toString('hex'),
+    );
     return {
       address,
       proof,
+      eligible,
     };
+  }
+
+  async getCurrentMintStageGroup(account: Account, slug: string) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const mintStageGroup =
+      await this.prismaService.collectionMintStageGroup.findFirst({
+        where: {
+          active: true,
+          collection: {
+            slug,
+          },
+        },
+        include: {
+          mintStages: {
+            orderBy: {
+              idx: 'asc',
+            },
+          },
+        },
+      });
+    if (!mintStageGroup) {
+      throw new NotFoundException('MintStageGroup not found');
+    }
+    return mintStageGroup;
   }
 }

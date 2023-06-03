@@ -11,7 +11,7 @@ export const FeaturedCollectionCard: FC<FeaturedCollectionCardProps> = ({
   collection,
 }) => {
   return (
-    <Link to="/collections/my-collection-works">
+    <Link to={`/collections/${collection.slug}`}>
       <div className="w-full h-[420px] relative ">
         <div
           className="w-full h-full absolute bg-cover bg-center rounded-3xl"

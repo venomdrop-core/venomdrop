@@ -10,9 +10,8 @@ import { toNano } from "../utils/toNano";
 import { useQuery } from "@tanstack/react-query";
 import { getMintProof } from "../api/collections";
 
-
 // TODO: Increase it in case of error 37
-const MINT_NFT_VALUE = toNano('0.4');
+const MINT_NFT_VALUE = toNano("1");
 
 export interface MintBoxProps {
   mintStages: MintStage[];
@@ -34,13 +33,14 @@ export const MintBox: FC<MintBoxProps> = ({
   const { accountInteraction } = useVenomWallet();
   const { data: mintProofRes } = useQuery({
     queryKey: [slug, accountInteraction?.address],
-    queryFn: () => getMintProof(slug || '', accountInteraction?.address?.toString() || ''),
-    enabled: (!!accountInteraction?.address && !!slug),
-  })
-  const [count, setCount] = useState(0);
+    queryFn: () =>
+      getMintProof(slug || "", accountInteraction?.address?.toString() || ""),
+    enabled: !!accountInteraction?.address && !!slug,
+  });
+  const [count, setCount] = useState(1);
 
   const increment = () => setCount((x) => x + 1);
-  const decrement = () => setCount((x) => (x > 1 ? x - 1 : 0));
+  const decrement = () => setCount((x) => (x > 1 ? x - 1 : 1));
 
   const nextMintStage = useMemo(() => {
     const now = new Date();
@@ -52,11 +52,13 @@ export const MintBox: FC<MintBoxProps> = ({
     if (!accountInteraction || !currentMintStage) {
       return;
     }
-    const amountTotal = (parseInt(MINT_NFT_VALUE) + parseInt(currentMintStage.price)) * count;
+    const amountTotal =
+      (parseInt(MINT_NFT_VALUE) + parseInt(currentMintStage.price)) * count;
     const txn = await contract?.methods
       .mint({
         amount: count,
-        proof: currentMintStage.type === 'PUBLIC' ? []: (mintProofRes?.proof || []),
+        proof:
+          currentMintStage.type === "PUBLIC" ? [] : mintProofRes?.proof || [],
       })
       .send({
         from: accountInteraction.address,
@@ -74,21 +76,34 @@ export const MintBox: FC<MintBoxProps> = ({
     if (!current || current === 0 || !max || max === 0) {
       return 0;
     }
-    return 100*current/max;
+    return (100 * current) / max;
   }, [info]);
+
+  const noCurrentMintStage = !currentMintStage;
+  const accountNotEligible =
+    currentMintStage?.type === "ALLOWLIST" && !mintProofRes?.eligible;
+
+  const mintDisabled = noCurrentMintStage || accountNotEligible;
 
   return (
     <div className="border border-slate-800 p-8 rounded-lg bg-slate-900">
       <div className="mb-6">
-        <div>
-          Supply{" "}
-          {info?.hasMaxSupply
-            ? `(${info.totalSupply}/${info.maxSupply})`
-            : "(Unlimited)"}
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
-          <div className="bg-primary h-2.5 rounded-full" style={{ width: `${supplyPercent}%` }}></div>
-        </div>
+        {info && (
+          <div>
+            Supply
+            {` (${info?.totalSupply} of ${
+              info?.hasMaxSupply ? info.maxSupply : "Unlimited"
+            })`}
+          </div>
+        )}
+        {info?.hasMaxSupply && (
+          <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+            <div
+              className="bg-primary h-2.5 rounded-full"
+              style={{ width: `${supplyPercent}%` }}
+            ></div>
+          </div>
+        )}
       </div>
       {currentMintStage ? (
         <div className="text-gray-100 text-lg font-bold">
@@ -114,7 +129,7 @@ export const MintBox: FC<MintBoxProps> = ({
           <button
             className="btn btn-ghost font-bold text-xl"
             onClick={() => decrement()}
-            disabled={!currentMintStage}
+            disabled={mintDisabled}
           >
             <MinusIcon className="w-4 h-4" />
           </button>
@@ -122,19 +137,25 @@ export const MintBox: FC<MintBoxProps> = ({
           <button
             className="btn btn-ghost font-bold text-xl"
             onClick={() => increment()}
-            disabled={!currentMintStage}
+            disabled={mintDisabled}
           >
             <PlusIcon className="w-4 h-4" />
           </button>
         </div>
         <button
           className="btn btn-primary ml-4 px-6"
-          disabled={!currentMintStage}
+          disabled={mintDisabled}
           onClick={() => onMintClick()}
         >
           Mint
         </button>
       </div>
+      {!accountInteraction?.address && (
+        <div className="mt-6 text-gray-500">Connect your wallet to mint</div>
+      )}
+      {accountInteraction?.address && accountNotEligible && (
+        <div className="mt-6 text-yellow-600">You are not eligible to mint at this stage</div>
+      )}
     </div>
   );
 };

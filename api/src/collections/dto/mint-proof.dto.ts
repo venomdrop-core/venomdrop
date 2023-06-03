@@ -6,4 +6,7 @@ export class MintProofResponseDto {
 
   @ApiProperty()
   proof: string[];
+
+  @ApiProperty()
+  eligible: boolean;
 }
