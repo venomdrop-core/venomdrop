@@ -7,7 +7,11 @@ import { useCollectionContract } from "../hooks/useCollectionContract";
 import { useParams } from "react-router-dom";
 import { useVenomWallet } from "../hooks/useVenomWallet";
 import { toNano } from "../utils/toNano";
+import { useQuery } from "@tanstack/react-query";
+import { getMintProof } from "../api/collections";
 
+
+// TODO: Increase it in case of error 37
 const MINT_NFT_VALUE = toNano('0.4');
 
 export interface MintBoxProps {
@@ -28,6 +32,11 @@ export const MintBox: FC<MintBoxProps> = ({
   const { slug } = useParams();
   const contract = useCollectionContract(slug);
   const { accountInteraction } = useVenomWallet();
+  const { data: mintProofRes } = useQuery({
+    queryKey: [slug, accountInteraction?.address],
+    queryFn: () => getMintProof(slug || '', accountInteraction?.address?.toString() || ''),
+    enabled: (!!accountInteraction?.address && !!slug),
+  })
   const [count, setCount] = useState(0);
 
   const increment = () => setCount((x) => x + 1);
@@ -39,7 +48,6 @@ export const MintBox: FC<MintBoxProps> = ({
     return nextMingStage;
   }, [mintStages]);
 
-
   const onMintClick = async () => {
     if (!accountInteraction || !currentMintStage) {
       return;
@@ -48,6 +56,7 @@ export const MintBox: FC<MintBoxProps> = ({
     const txn = await contract?.methods
       .mint({
         amount: count,
+        proof: currentMintStage.type === 'PUBLIC' ? []: (mintProofRes?.proof || []),
       })
       .send({
         from: accountInteraction.address,

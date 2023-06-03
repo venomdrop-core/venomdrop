@@ -102,3 +102,14 @@ export const createMintStageGroup = async (slug: string, mintStageGroupDto: Mint
   const { data } = await api.post(`/collections/${slug}/mintstage-groups`, mintStageGroupDto);
   return data;
 };
+
+export const activateMintStageGroup = async (slug: string, mintStageGroupId: string): Promise<{ status: boolean }> => {
+  const { data } = await api.post(`/collections/${slug}/mintstage-groups/${mintStageGroupId}/activate`);
+  return data;
+};
+
+
+export const getMintProof = async (slug: string, address: string): Promise<{ proof: string[] }> => {
+  const { data } = await api.get(`/collections/${slug}/mint-proof/${address}`);
+  return data;
+};

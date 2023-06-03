@@ -35,6 +35,7 @@ import {
   CreateMintStageGroupResponseDto,
   MintStageGroupDto,
 } from './dto/mintstage-group.dto';
+import { MintProofResponseDto } from './dto/mint-proof.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -138,5 +139,31 @@ export class CollectionsController {
       slug,
       mintStageGroupDto,
     );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiResponse({
+    type: CreateMintStageGroupResponseDto,
+  })
+  @Post(':slug/mintstage-groups/:id/activate')
+  activateMintStageGroup(
+    @Me() account: Account,
+    @Param('slug') slug: string,
+    @Param('id') id: string,
+  ): Promise<{ status: boolean }> {
+    return this.collectionsService.activateMintStageGroup(account, slug, id);
+  }
+
+  @ApiResponse({
+    type: MintProofResponseDto,
+    description: 'An array of hex values used for the MerkleTree proof',
+  })
+  @Get(':slug/mint-proof/:address')
+  getMintProofForAddress(
+    @Param('slug') slug: string,
+    @Param('address') address: string,
+  ): Promise<MintProofResponseDto> {
+    return this.collectionsService.getMintProofForAddress(slug, address);
   }
 }

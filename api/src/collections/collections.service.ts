@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { Account, Prisma } from '@prisma/client';
@@ -17,6 +18,7 @@ import {
 } from './dto/mintstage-group.dto';
 import MerkleTree from 'merkletreejs';
 import { Address } from 'everscale-inpage-provider';
+import { MintProofResponseDto } from './dto/mint-proof.dto';
 
 function getAddrHex(address: Address): string {
   const addr = address.toString();
@@ -171,7 +173,7 @@ export class CollectionsService {
     const jsonData = mintStage.allowlistData;
 
     if (!jsonData || !Array.isArray(jsonData)) {
-      throw new Error('Could not parse allowlist data');
+      throw new InternalServerErrorException('Could not parse allowlist data');
     }
 
     const allowlistData = jsonData as Prisma.JsonArray;
@@ -206,6 +208,7 @@ export class CollectionsService {
       await this.prismaService.collectionMintStageGroup.create({
         data: {
           collectionId: c.id,
+          active: false,
           mintStages: {
             createMany: {
               data: mintStageGroupDto.mintStages.map((ms, idx) => {
@@ -216,7 +219,6 @@ export class CollectionsService {
                   name: ms.name,
                   price: parseInt(ms.price),
                   type: ms.type,
-                  active: false,
                   allowlistData,
                   startDate: new Date(ms.startDate),
                   endDate: new Date(ms.endDate),
@@ -250,6 +252,77 @@ export class CollectionsService {
     return {
       mintStageGroupId: mintStageGroup.id,
       merkleTreeRoots,
+    };
+  }
+
+  async activateMintStageGroup(account: Account, slug: string, id: string) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const mintGroup =
+      await this.prismaService.collectionMintStageGroup.findUnique({
+        where: {
+          id,
+        },
+      });
+    if (mintGroup?.collectionId !== c.id) {
+      throw new ForbiddenException();
+    }
+    // Deactivating all previous mintstage group
+    await this.prismaService.collectionMintStageGroup.updateMany({
+      where: {
+        collectionId: c.id,
+      },
+      data: {
+        active: false,
+      },
+    });
+    // Activating the selected MintStageGroup
+    await this.prismaService.collectionMintStageGroup.update({
+      where: {
+        id: mintGroup.id,
+      },
+      data: {
+        active: true,
+      },
+    });
+    return {
+      status: true,
+    };
+  }
+
+  async getMintProofForAddress(
+    slug: string,
+    address: string,
+  ): Promise<MintProofResponseDto> {
+    const now = new Date();
+    const currentMintStage =
+      await this.prismaService.collectionMintStage.findFirst({
+        where: {
+          mintStageGroup: {
+            collection: {
+              slug,
+            },
+            active: true,
+          },
+          startDate: {
+            lt: now,
+          },
+          endDate: {
+            gt: now,
+          },
+        },
+      });
+    if (!currentMintStage) {
+      throw new BadRequestException('No current mint stage');
+    }
+    const tree = await this.getMintStageMerkleTree(currentMintStage.id);
+    const leaf = Buffer.from(getAddrHex(new Address(address)), 'hex');
+    const proof = tree.getHexProof(leaf);
+    return {
+      address,
+      proof,
     };
   }
 }

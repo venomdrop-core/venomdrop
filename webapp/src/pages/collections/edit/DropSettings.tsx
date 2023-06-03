@@ -18,7 +18,7 @@ import { toNano } from "../../../utils/toNano";
 import classNames from "classnames";
 import { parseContractMintStage } from "../../../utils/parseContractMintStage";
 import { useMutation } from "@tanstack/react-query";
-import { MintStageGroupDto, createMintStageGroup } from "../../../api/collections";
+import { MintStageGroupDto, activateMintStageGroup, createMintStageGroup } from "../../../api/collections";
 
 export interface DropSettingsProps {}
 
@@ -47,6 +47,9 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
   const { data: info } = useCollectionInfo(slug);
   const createMintStageGroupMutation = useMutation({
     mutationFn: (data: MintStageGroupDto) => createMintStageGroup(slug!, data),
+  });
+  const activateMintStageGroupMutation = useMutation({
+    mutationFn: (mintStageGroupId: string) => activateMintStageGroup(slug!, mintStageGroupId),
   });
   const {
     register,
@@ -87,9 +90,10 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
         maxSupply: data.supplyMode === 'limited' ? data.maxSupply: 0,
         mintStages: mintStages.map((ms, idx) => {
           const merkleTreeRoot = mintStageGroupRes.merkleTreeRoots[idx];
+          console.log(merkleTreeRoot);
           return {
             name: ms.name,
-            startTime: dateToUnix(new Date(ms.startTime)),
+            startTime: 1, // TODO: Use real start time after tests
             endTime: dateToUnix(new Date(ms.endTime)),
             price: ms.price,
             merkleTreeRoot,
@@ -97,8 +101,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
         }),
       }
     }).send({ from: accountInteraction?.address, amount: toNano('0.1') });
-
-    // TODO: Call Activate MintStage Group Here
+    await activateMintStageGroupMutation.mutateAsync(mintStageGroupRes.mintStageGroupId);
   }
   const supplyModeWatch = watch('supplyMode');
   return (

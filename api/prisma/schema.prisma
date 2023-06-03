@@ -59,6 +59,7 @@ model CollectionMintStageGroup {
   mintStages   CollectionMintStage[]
   createdAt    DateTime?             @default(now())
   updatedAt    DateTime?             @updatedAt
+  active       Boolean
 }
 
 enum MintStageType {
@@ -77,5 +78,4 @@ model CollectionMintStage {
   startDate        DateTime
   endDate          DateTime
   allowlistData    Json
-  active           Boolean
 }
