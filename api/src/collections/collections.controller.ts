@@ -7,6 +7,7 @@ import {
   Param,
   UseGuards,
   Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { CollectionsService } from './collections.service';
 import { CreateCollectionDto } from './dto/create-collection.dto';
@@ -34,12 +35,13 @@ import {
 import { Collection } from './dto/collection.dto';
 import { Graphics } from './dto/graphics.dto';
 import { Request } from 'express';
-import { GraphicsInterceptors } from './decorators/graphics.interceptors.decorator';
 import {
   CreateMintStageGroupResponseDto,
   MintStageGroupDto,
 } from './dto/mintstage-group.dto';
 import { MintProofResponseDto } from './dto/mint-proof.dto';
+import { UploadInterceptor } from './decorators/upload.interceptors.decorator';
+import { Upload, UploadResponse } from './dto/upload.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -89,7 +91,11 @@ export class CollectionsController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Post(':slug/graphics')
-  @GraphicsInterceptors()
+  @UploadInterceptor([
+    { name: 'logo', maxCount: 1 },
+    { name: 'cover', maxCount: 1 },
+    { name: 'featured', maxCount: 1 },
+  ])
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Collection Graphics',
@@ -182,5 +188,34 @@ export class CollectionsController {
     @Param('address') address: string,
   ): Promise<MintProofResponseDto> {
     return this.collectionsService.getMintProofForAddress(slug, address);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Post(':slug/upload')
+  @UploadInterceptor([{ name: 'file', maxCount: 1 }])
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'The uploaded file url',
+    type: Upload,
+  })
+  @ApiResponse({
+    description: 'The uploaded file public URL',
+    type: UploadResponse,
+  })
+  updatePreReveal(@Req() req: Request) {
+    const files = req.files as {
+      file?: Express.MulterS3.File[];
+    };
+    if (!files.file?.length) {
+      throw new BadRequestException();
+    }
+    const file = files.file[0];
+    const url = file.location;
+    const mimetype = file.mimetype;
+    return {
+      url,
+      mimetype,
+    };
   }
 }

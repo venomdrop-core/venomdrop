@@ -97,6 +97,14 @@ export const updateCollectionGraphics = async (
   return data;
 };
 
+export const uploadCollectionFile = async (
+  slug: string,
+  formData: FormData,
+): Promise<{ url: string, mimetype: string }> => {
+  const { data } = await api.post(`/collections/${slug}/upload`, formData);
+  return data;
+};
+
 
 export const createMintStageGroup = async (slug: string, mintStageGroupDto: MintStageGroupDto): Promise<CreateMintStageGroupResponseDto> => {
   const { data } = await api.post(`/collections/${slug}/mintstage-groups`, mintStageGroupDto);

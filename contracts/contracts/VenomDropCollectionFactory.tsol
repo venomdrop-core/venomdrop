@@ -17,7 +17,7 @@ contract VenomDropCollectionFactory {
     _codeNft = codeNft;
   }
 
-  function deployCollection(address owner, uint id) public {
+  function deployCollection(address owner, uint id, string initialMintJson) public {
     require(msg.value > 0.4 ever, 101);
     tvm.rawReserve(0, 4);
     address collection = new VenomDropCollection{
@@ -27,7 +27,7 @@ contract VenomDropCollectionFactory {
         _id: id,
         _creator: msg.sender
       }
-    }(_codeNft, owner);
+    }(_codeNft, owner, initialMintJson);
     emit VenomDropCollectionDeployed(collection, owner, msg.sender);
   }
 }

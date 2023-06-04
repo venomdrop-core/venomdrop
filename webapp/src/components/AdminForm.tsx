@@ -2,12 +2,13 @@ import React, { FC } from "react";
 
 export interface AdminFormProps {
   title: string;
+  description?: string;
   children: React.ReactNode;
-  submitLabel: string;
+  submitLabel?: string;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
 }
 
-export const AdminForm: FC<AdminFormProps> = ({ title, children, submitLabel = 'Save', onSubmit }) => {
+export const AdminForm: FC<AdminFormProps> = ({ title, description, children, submitLabel = 'Save', onSubmit }) => {
   return (
     <form onSubmit={onSubmit}>
       <div className="flex flex-col h-screen">
@@ -18,6 +19,11 @@ export const AdminForm: FC<AdminFormProps> = ({ title, children, submitLabel = '
                 <h2 className="font-semibold leading-7 text-2xl text-white mt-8">
                   {title}
                 </h2>
+                {description && (
+                  <div className="mt-4">
+                    {description}
+                  </div>
+                )}
 
                 <div className="mt-12">{children}</div>
               </div>

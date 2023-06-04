@@ -8,6 +8,7 @@ import { DropSettings } from "./pages/collections/edit/DropSettings";
 import { CollectionsIndex } from "./pages/collections/CollectionsIndex";
 import { CollectionMintPage } from "./pages/collections/CollectionMintPage";
 import { Home } from "./pages/Home";
+import { PreReveal } from "./pages/collections/edit/PreReveal";
 
 export const router = createBrowserRouter([
   {
@@ -37,5 +38,9 @@ export const router = createBrowserRouter([
   {
     path: "/collections/:slug/edit/drop-settings",
     element: <DropSettings />,
+  },
+  {
+    path: "/collections/:slug/edit/pre-reveal",
+    element: <PreReveal />,
   },
 ]);

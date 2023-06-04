@@ -1,20 +1,26 @@
 import {
-  applyDecorators,
-  CallHandler,
-  ExecutionContext,
-  ForbiddenException,
   Injectable,
   NestInterceptor,
+  ExecutionContext,
+  CallHandler,
   NotFoundException,
+  ForbiddenException,
+  applyDecorators,
   UseInterceptors,
 } from '@nestjs/common';
+import { Request as ExpressRequest } from 'express';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { MulterField } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
 import { randomUUID } from 'crypto';
-import { Request } from 'express';
 import * as multerS3 from 'multer-s3';
 import { Observable } from 'rxjs';
 import { s3 } from 'src/common/libs/s3';
 import { PrismaService } from 'src/prisma.service';
+import { Collection } from '@prisma/client';
+
+type Request = ExpressRequest & {
+  collection: Collection;
+};
 
 const GRAPHICS_KEY = 'uploads/graphics';
 
@@ -56,47 +62,46 @@ export class CheckCollectionOwnedByLoggedAccount implements NestInterceptor {
     if (collection.ownerId !== req.user.id) {
       throw new ForbiddenException();
     }
+    req.collection = collection;
     return next.handle();
   }
 }
 
-export function GraphicsInterceptors() {
+export const S3UploadInterceptor = (multerFields: MulterField[]) =>
+  FileFieldsInterceptor(multerFields, {
+    limits: {
+      fileSize: 20000000,
+    },
+    fileFilter(req, file, cb) {
+      const ext = ALLOWED_GRAPHIC_MIMETYPE_EXTENSIONS[file.mimetype];
+      const isValid = !!ext;
+      cb(null, isValid);
+    },
+    storage: multerS3({
+      s3,
+      bucket: process.env.AWS_S3_BUCKET_NAME!,
+      acl(req, file, callback) {
+        callback(null, 'public-read');
+      },
+      metadata: function (req: Request, file, cb) {
+        cb(null, {
+          fieldName: file.fieldname,
+          collectionId: req.collection.id,
+        });
+      },
+      key: function (req, file, cb) {
+        const key = generateFileKey(file);
+        console.log(key);
+        cb(null, key);
+      },
+    }),
+  });
+
+export function UploadInterceptor(multerFields: MulterField[]) {
   return applyDecorators(
     UseInterceptors(
       CheckCollectionOwnedByLoggedAccount,
-      FileFieldsInterceptor(
-        [
-          { name: 'logo', maxCount: 1 },
-          { name: 'cover', maxCount: 1 },
-          { name: 'featured', maxCount: 1 },
-        ],
-        {
-          limits: {
-            fileSize: 20000000,
-          },
-          fileFilter(req, file, cb) {
-            console.log(file);
-            const ext = ALLOWED_GRAPHIC_MIMETYPE_EXTENSIONS[file.mimetype];
-            const isValid = !!ext;
-            cb(null, isValid);
-          },
-          storage: multerS3({
-            s3,
-            bucket: process.env.AWS_S3_BUCKET_NAME!,
-            acl(req, file, callback) {
-              callback(null, 'public-read');
-            },
-            metadata: function (req, file, cb) {
-              cb(null, { fieldName: file.fieldname });
-            },
-            key: function (req, file, cb) {
-              const key = generateFileKey(file);
-              console.log(key);
-              cb(null, key);
-            },
-          }),
-        },
-      ),
+      S3UploadInterceptor(multerFields),
     ),
   );
 }

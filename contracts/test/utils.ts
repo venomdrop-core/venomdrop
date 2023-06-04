@@ -19,6 +19,7 @@ export const deployVenomCollection = async (_id: number, signer: Signer, ownerAd
     constructorParams: {
       codeNft: nftArtifacts.code,
       owner: ownerAddress,
+      initialMintJson: '',
     },
     value: locklift.utils.toNano(100),
   });

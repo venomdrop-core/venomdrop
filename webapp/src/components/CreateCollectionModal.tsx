@@ -31,7 +31,8 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
   const [collectionAddress, setCollectionAddress] = useState<string>();
   const { venomProvider, accountInteraction } = useVenomWallet();
   const createMutation = useMutation({
-    mutationFn: (data: Form & { contractAddress: string }) => createCollection(data),
+    mutationFn: (data: Form & { contractAddress: string }) =>
+      createCollection(data),
   });
   const factory = useMemo(() => {
     return venomProvider
@@ -72,6 +73,15 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
         .deployCollection({
           id: getRandomNonce(),
           owner: accountInteraction.address,
+          initialMintJson: JSON.stringify({
+            type: "Basic NFT",
+            name: "VenomDrop Unrevealed NFT",
+            preview: {
+              source:
+                "https://venomdrop-devnet.s3.amazonaws.com/defaults/venomdrop-pre-reveal.jpeg",
+              mimetype: "image/jpeg",
+            },
+          }),
         })
         .send({
           from: accountInteraction.address,
@@ -95,7 +105,7 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
       throw new Error("Wallet not connected");
     }
     try {
-      setDeploying(true);      
+      setDeploying(true);
       const collectionAddress = await deploy();
       return collectionAddress.toString();
     } catch (error) {
@@ -177,7 +187,9 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
           </InputWrapper>
           <button
             type="submit"
-            className={classNames('btn btn-primary btn-block', { loading: isLoading  })}
+            className={classNames("btn btn-primary btn-block", {
+              loading: isLoading,
+            })}
             disabled={isLoading}
           >
             Create Collection

@@ -47,6 +47,7 @@ describe('VenomDropCollectionFactory: deploy a collection contract', async () =>
         venomCollectionFactory.methods.deployCollection({
           id: locklift.utils.getRandomNonce(),
           owner: owner.address,
+          initialMintJson: '',
         }).send({ from: owner.address, amount: toNano(6) })
       );
 
