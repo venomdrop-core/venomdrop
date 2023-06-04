@@ -71,7 +71,7 @@ describe('VenomDropCollection: reveal', async () => {
       }).call();
       nftContract = locklift.factory.getDeployedContract('Nft', nftAddress);
     });
-    describe('As collection owner', () => {
+    describe('Reveal NFT', () => {
       it('Calling directly the NFT contract: Should revert', async () => {
         const { traceTree } = await locklift.tracing.trace(
           nftContract.methods.reveal({

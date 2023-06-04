@@ -70,4 +70,10 @@ library Errors {
    *         - The caller is not in the allowlist to mint the NFT
    */
   uint16 constant CALLER_IS_NOT_IN_ALLOWLIST = 1080;
+
+  /**
+   * @notice Validation error that throws when:
+   *         - There is no enough balance for withdrawal
+   */
+  uint16 constant NOT_ENOUGH_BALANCE_FOR_WITHDRAWAL = 1090;
 }

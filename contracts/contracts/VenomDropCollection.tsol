@@ -166,6 +166,11 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
     Nft(nftAddress).reveal{ value: 0, flag: 128 }(json);
   }
 
+  function withdraw(address toAccount, uint128 amount) public onlyOwner {
+    require(address(this).balance >= amount, Errors.NOT_ENOUGH_BALANCE_FOR_WITHDRAWAL);
+    toAccount.transfer(amount);
+  }
+
   // PUBLIC VIEWS
 
   /**
