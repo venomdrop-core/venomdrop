@@ -61,7 +61,7 @@ describe('VenomDropCollection: reveal', async () => {
     let nftContract: NftContract;
     const json = `{"type": "Basic NFT", "name": "NFT Not revealed yet"}`;
     before(async () => {
-      collection = await deployVenomCollection(61, ownerSigner, owner.address);
+      collection = await deployVenomCollection(71, ownerSigner, owner.address);
       await configure(collection, { hasMaxSupply: true, maxSupply: 2, json });
       // Mint the first token (id=0)
       await locklift.tracing.trace(mint(collection, 1));
