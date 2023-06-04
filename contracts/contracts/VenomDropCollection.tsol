@@ -90,7 +90,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
 
     TvmCell codeNft = _buildNftCode(address(this));
     TvmCell stateNft = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: codeNft });
-    new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(owner, owner, _remainOnNft, _initialMintJson);
+    new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(address(this), owner, owner, _remainOnNft, _initialMintJson);
 
     currentIteration++;
     _invokeMint(owner, amount, currentIteration);
@@ -151,6 +151,19 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
     setHasMaxSupply(options.hasMaxSupply);
     setMaxSupply(options.maxSupply);
     setMintStages(options.mintStages);
+  }
+
+  /**
+   * @notice Reveal a token with a json metadata
+   * @param tokenId The NFT Token ID to be revealed
+   * @param json the metadata string JSON
+   */
+  function revealToken(uint tokenId, string json) public onlyOwner {
+    TvmCell code = _buildNftCode(address(this));
+    TvmCell state = _buildNftState(code, tokenId);
+    uint256 hashState = tvm.hash(state);
+    address nftAddress = address.makeAddrStd(address(this).wid, hashState);
+    Nft(nftAddress).reveal{ value: 0, flag: 128 }(json);
   }
 
   // PUBLIC VIEWS

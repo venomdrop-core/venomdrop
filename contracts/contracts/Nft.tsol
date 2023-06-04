@@ -4,12 +4,33 @@ pragma AbiHeader pubkey;
 
 import "@itgold/everscale-tip/contracts/TIP4_1/TIP4_1Nft.sol";
 import "@itgold/everscale-tip/contracts/TIP4_2/TIP4_2Nft.sol";
+import "./libraries/Errors.tsol";
 
 contract Nft is TIP4_1Nft, TIP4_2Nft {
+  address private _collectionAddress;
   constructor(
+    address collectionAddress,
     address owner,
     address sendGasTo,
     uint128 remainOnNft,
     string json
-  ) public TIP4_1Nft(owner, sendGasTo, remainOnNft) TIP4_2Nft(json) {}
+  ) public TIP4_1Nft(owner, sendGasTo, remainOnNft) TIP4_2Nft(json) {
+    _collectionAddress = collectionAddress;
+  }
+
+    /**
+     * @dev Throws if called by any address other than the collection contract
+     */
+    modifier onlyCollection() {
+      require(msg.sender == _collectionAddress, Errors.CALLER_IS_NOT_COLLECTION);
+      _;
+    }
+
+  /**
+   * @notice Reveal a token
+   * @param json the metadata string JSON
+   */
+  function reveal(string json) public onlyCollection {
+    _json = json;
+  }
 }
