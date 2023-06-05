@@ -35,21 +35,22 @@ model Category {
 }
 
 model Collection {
-  id               String                     @id @default(uuid())
-  ownerId          String
-  owner            Account                    @relation(fields: [ownerId], references: [id])
-  contractAddress  String                     @unique
-  name             String
-  slug             String                     @unique
-  description      String
-  categoryId       String
-  category         Category                   @relation(fields: [categoryId], references: [id])
-  logoImageSrc     String?
-  coverImageSrc    String?
-  featuredImageSrc String?
-  mintStageGroups  CollectionMintStageGroup[]
-  createdAt        DateTime?                  @default(now())
-  updatedAt        DateTime?                  @updatedAt
+  id                      String                     @id @default(uuid())
+  ownerId                 String
+  owner                   Account                    @relation(fields: [ownerId], references: [id])
+  contractAddress         String                     @unique
+  name                    String
+  slug                    String                     @unique
+  description             String
+  categoryId              String
+  category                Category                   @relation(fields: [categoryId], references: [id])
+  logoImageSrc            String?
+  coverImageSrc           String?
+  featuredImageSrc        String?
+  mintStageGroups         CollectionMintStageGroup[]
+  createdAt               DateTime?                  @default(now())
+  updatedAt               DateTime?                  @updatedAt
+  CollectionRevealedToken CollectionRevealedToken[]
 }
 
 model CollectionMintStageGroup {
@@ -78,4 +79,17 @@ model CollectionMintStage {
   startDate        DateTime
   endDate          DateTime
   allowlistData    Json
+}
+
+model CollectionRevealedToken {
+  id           String     @id @default(uuid())
+  collectionId String
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  tokenId      Int
+  address      String
+  name         String?
+  imageUrl     String?
+  metadataJson Json
+  createdAt    DateTime?  @default(now())
+  updatedAt    DateTime?  @updatedAt
 }

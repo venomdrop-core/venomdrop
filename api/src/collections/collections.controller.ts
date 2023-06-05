@@ -42,6 +42,7 @@ import {
 import { MintProofResponseDto } from './dto/mint-proof.dto';
 import { UploadInterceptor } from './decorators/upload.interceptors.decorator';
 import { Upload, UploadResponse } from './dto/upload.dto';
+import { RevealedTokenDto } from './dto/revealed-token.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -217,5 +218,45 @@ export class CollectionsController {
       url,
       mimetype,
     };
+  }
+
+  @ApiQueryPage()
+  @ApiResponse({
+    type: [Collection],
+  })
+  @UseGuards(AuthGuard)
+  @Get(':slug/revealed-tokens')
+  findAllRevealedTokens(
+    @ApiPage() page: ApiPageOptions,
+    @Me() account: Account,
+    @Param('slug') slug: string,
+  ) {
+    return this.collectionsService.findAllRevealedTokens({
+      account,
+      slug,
+      page,
+    });
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @ApiBody({
+    type: RevealedTokenDto,
+  })
+  @ApiResponse({
+    type: RevealedTokenDto,
+  })
+  @Post(':slug/revealed-tokens')
+  createRevealedToken(
+    @ApiPage() page: ApiPageOptions,
+    @Me() account: Account,
+    @Param('slug') slug: string,
+    @Body() revealedTokenDto: RevealedTokenDto,
+  ) {
+    return this.collectionsService.createRevealedToken(
+      account,
+      slug,
+      revealedTokenDto,
+    );
   }
 }

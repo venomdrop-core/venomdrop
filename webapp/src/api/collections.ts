@@ -36,6 +36,14 @@ export interface CreateMintStageGroupResponseDto {
   merkleTreeRoots: string[];
 }
 
+export interface RevealedTokenDto {
+  tokenId: number;
+  address: string;
+  name?: string;
+  imageUrl?: string;
+  metadataJson?: string;
+}
+
 export const getCollection = async (
   slug: string
 ): Promise<Collection | null> => {
@@ -128,5 +136,27 @@ export const getActiveMintStageGroup = async (slug: string): Promise<MintStageGr
     return data;
   } catch (error) {
     return null;
+  }
+};
+
+export const createRevealedToken = async (slug: string, revealedTokenDto: RevealedTokenDto): Promise<RevealedTokenDto | null> => {
+  try {
+    const { data } = await api.post(`/collections/${slug}/revealed-tokens`, revealedTokenDto);
+    return data;
+  } catch (error) {
+    return null;
+  }
+};
+
+export const getRevealedTokens = async (slug: string, page: Page): Promise<RevealedTokenDto[]> => {
+  try {
+    const { data } = await api.get(`/collections/${slug}/revealed-tokens`, {
+      params: {
+        ...page,
+      },
+    });
+    return data;
+  } catch (error) {
+    return [];
   }
 };

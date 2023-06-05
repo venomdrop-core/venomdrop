@@ -4,10 +4,15 @@ import {
   ArrowTopRightOnSquareIcon,
   Bars3Icon,
   ChartBarIcon,
+  CubeIcon,
+  CubeTransparentIcon,
+  GiftIcon,
   PhotoIcon,
   RectangleGroupIcon,
   RectangleStackIcon,
+  RocketLaunchIcon,
   SparklesIcon,
+  Squares2X2Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
@@ -63,12 +68,6 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
   };
   const navigation = [
     {
-      label: "Dashboard",
-      path: "/dashboard",
-      icon: ChartBarIcon,
-      active: location.pathname.endsWith("/edit/dashboard"),
-    },
-    {
       label: "Collection Details",
       path: "/details",
       icon: RectangleStackIcon,
@@ -83,13 +82,19 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
     {
       label: "Drop Settings",
       path: "/drop-settings",
-      icon: SparklesIcon,
+      icon: RocketLaunchIcon,
       active: false,
     },
     {
       label: "Pre-Reveal",
       path: "/pre-reveal",
-      icon: PhotoIcon,
+      icon: GiftIcon,
+      active: false,
+    },
+    {
+      label: "Reveal",
+      path: "/reveal",
+      icon: SparklesIcon,
       active: false,
     },
   ];

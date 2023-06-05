@@ -19,6 +19,7 @@ import {
 import MerkleTree from 'merkletreejs';
 import { Address } from 'everscale-inpage-provider';
 import { MintProofResponseDto } from './dto/mint-proof.dto';
+import { RevealedTokenDto } from './dto/revealed-token.dto';
 
 function getAddrHex(address: Address): string {
   const addr = address.toString();
@@ -357,5 +358,70 @@ export class CollectionsService {
       throw new NotFoundException('MintStageGroup not found');
     }
     return mintStageGroup;
+  }
+
+  async findAllRevealedTokens({
+    account,
+    slug,
+    page,
+  }: {
+    account: Account;
+    slug: string;
+    page: ApiPageOptions;
+  }) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const where: Prisma.CollectionRevealedTokenFindManyArgs['where'] = {
+      collection: {
+        slug,
+      },
+    };
+    return this.prismaService.collectionRevealedToken.findMany({
+      ...page,
+      where,
+    });
+  }
+
+  async createRevealedToken(
+    account: Account,
+    slug: string,
+    revealedTokenDto: RevealedTokenDto,
+  ) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const existing = await this.prismaService.collectionRevealedToken.findFirst(
+      {
+        where: {
+          collectionId: c.id,
+          tokenId: revealedTokenDto.tokenId,
+        },
+      },
+    );
+    if (existing) {
+      return this.prismaService.collectionRevealedToken.update({
+        where: {
+          id: existing.id,
+        },
+        data: {
+          name: revealedTokenDto.name,
+          imageUrl: revealedTokenDto.imageUrl,
+          metadataJson: revealedTokenDto.metadataJson,
+        },
+      });
+    }
+    return this.prismaService.collectionRevealedToken.create({
+      data: {
+        address: revealedTokenDto.address,
+        collectionId: c.id,
+        tokenId: revealedTokenDto.tokenId,
+        name: revealedTokenDto.name,
+        imageUrl: revealedTokenDto.imageUrl,
+        metadataJson: revealedTokenDto.metadataJson,
+      },
+    });
   }
 }

@@ -9,15 +9,12 @@ import { CollectionsIndex } from "./pages/collections/CollectionsIndex";
 import { CollectionMintPage } from "./pages/collections/CollectionMintPage";
 import { Home } from "./pages/Home";
 import { PreReveal } from "./pages/collections/edit/PreReveal";
+import { Reveal } from "./pages/collections/edit/Reveal";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
-  },
-  {
-    path: "/collections/:slug/edit/dashboard",
-    element: <Dashboard />,
   },
   {
     path: "/collections",
@@ -42,5 +39,9 @@ export const router = createBrowserRouter([
   {
     path: "/collections/:slug/edit/pre-reveal",
     element: <PreReveal />,
+  },
+  {
+    path: "/collections/:slug/edit/reveal",
+    element: <Reveal />,
   },
 ]);
