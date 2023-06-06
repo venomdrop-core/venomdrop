@@ -29,6 +29,16 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
   uint128 _remainOnNft = 0.3 ton;
   uint128 _mintNftValue = _remainOnNft + 0.1 ton;
 
+  // EVENTS
+
+    /**
+     * @notice The event emits when a NFT is minted on VenomDropCollection contract
+     * @param id Unique NFT id
+     * @param nftAddress The NFT contract address
+     * @param owner Address of NFT owner
+     */
+    event VenomDropNftMinted(uint256 id, address nftAddress, address owner);
+
   // UTILS
 
   /**
@@ -90,8 +100,8 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
 
     TvmCell codeNft = _buildNftCode(address(this));
     TvmCell stateNft = tvm.buildStateInit({ contr: Nft, varInit: { _id: id }, code: codeNft });
-    new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(address(this), owner, owner, _remainOnNft, _initialMintJson);
-
+    address nftAddress = new Nft{ stateInit: stateNft, value: _mintNftValue, flag: 0 }(address(this), owner, owner, _remainOnNft, _initialMintJson);
+    emit VenomDropNftMinted(id, nftAddress, owner);
     currentIteration++;
     _invokeMint(owner, amount, currentIteration);
   }

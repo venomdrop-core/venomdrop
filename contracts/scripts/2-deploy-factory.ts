@@ -13,6 +13,7 @@ async function main() {
     contract: "VenomDropCollectionFactory",
     publicKey: signer.publicKey,
     initParams: {
+      _nonce: locklift.utils.getRandomNonce(),
       _codeCollection: venomDropCollectionArtifacts.code,
       _codeNft: nftArtifacts.code,
     },

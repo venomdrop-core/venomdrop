@@ -19,6 +19,7 @@ const NETWORK_CONFIG: {
           endpoint: 'https://jrpc-devnet.venom.foundation',
         },
       },
+      initInput: '../../node_modules/nekoton-wasm/nekoton_wasm_bg.wasm',
     })
   }
 }

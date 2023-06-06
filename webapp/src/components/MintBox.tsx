@@ -1,5 +1,5 @@
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { MintStage } from "../types/mintStage";
 import { fromNano } from "../utils/fromNano";
 import { formatDate } from "../utils/dates";
@@ -9,6 +9,7 @@ import { useVenomWallet } from "../hooks/useVenomWallet";
 import { toNano } from "../utils/toNano";
 import { useQuery } from "@tanstack/react-query";
 import { getMintProof } from "../api/collections";
+import { MintProcess, MintedTokensResult } from "./MintedTokensResult";
 
 // TODO: Increase it in case of error 37
 const MINT_NFT_VALUE = toNano("1");
@@ -30,7 +31,7 @@ export const MintBox: FC<MintBoxProps> = ({
 }) => {
   const { slug } = useParams();
   const contract = useCollectionContract(slug);
-  const { accountInteraction } = useVenomWallet();
+  const { accountInteraction, venomProvider } = useVenomWallet();
   const { data: mintProofRes } = useQuery({
     queryKey: [slug, accountInteraction?.address],
     queryFn: () =>
@@ -38,6 +39,8 @@ export const MintBox: FC<MintBoxProps> = ({
     enabled: !!accountInteraction?.address && !!slug,
   });
   const [count, setCount] = useState(1);
+  const [currentMintProcess, setCurrentMintProcess] =
+    useState<MintProcess | null>(null);
 
   const increment = () => setCount((x) => x + 1);
   const decrement = () => setCount((x) => (x > 1 ? x - 1 : 1));
@@ -48,23 +51,81 @@ export const MintBox: FC<MintBoxProps> = ({
     return nextMingStage;
   }, [mintStages]);
 
-  const onMintClick = async () => {
-    if (!accountInteraction || !currentMintStage) {
-      return;
-    }
-    const amountTotal =
-      (parseInt(MINT_NFT_VALUE) + parseInt(currentMintStage.price)) * count;
-    const txn = await contract?.methods
-      .mint({
-        amount: count,
-        proof:
-          currentMintStage.type === "PUBLIC" ? [] : mintProofRes?.proof || [],
-      })
-      .send({
-        from: accountInteraction.address,
-        amount: amountTotal.toString(),
+  useEffect(() => {
+    if (venomProvider && contract && accountInteraction) {
+      const sub = new venomProvider.Subscriber();
+      console.log("Subscribed");
+      const events = contract.events(sub);
+      events.on((event) => {
+        console.log({ event });
+        if (
+          event.event === "VenomDropNftMinted" &&
+          event.data.owner.equals(accountInteraction.address)
+        ) {
+          setCurrentMintProcess((currentMintProcess) => ({
+            count: currentMintProcess?.count || count,
+            minted: (currentMintProcess?.minted || 0) + 1,
+            events: [...(currentMintProcess?.events || []), event],
+          }));
+        }
       });
-    console.log(txn);
+    }
+  }, [contract, venomProvider, accountInteraction]);
+
+  const mint = () => {
+    return new Promise((resolve, reject) => {
+      if (
+        !accountInteraction ||
+        !currentMintStage ||
+        !venomProvider ||
+        !contract
+      ) {
+        return;
+      }
+      const amountTotal =
+        (parseInt(MINT_NFT_VALUE) + parseInt(currentMintStage.price)) * count;
+
+      // const sub = new venomProvider.Subscriber();
+      // const events = contract.events(sub);
+      // // const mintedTokenEvents: NftCreatedEvent[] = [];
+      setCurrentMintProcess({
+        count,
+        minted: 0,
+        events: [],
+      });
+      // events.on((event) => {
+      //   if (
+      //     event.event === "NftCreated" &&
+      //     event.data.owner.equals(accountInteraction.address)
+      //   ) {
+      //     setCurrentMintProcess((currentMintProcess) => ({
+      //       count: currentMintProcess?.count || count,
+      //       minted: (currentMintProcess?.minted || 0) + 1,
+      //       events: [...(currentMintProcess?.events || []), event],
+      //     }));
+      //   }
+      // });
+      contract.methods
+        .mint({
+          amount: count,
+          proof:
+            currentMintStage.type === "PUBLIC" ? [] : mintProofRes?.proof || [],
+        })
+        .send({
+          from: accountInteraction.address,
+          amount: amountTotal.toString(),
+        })
+        .then((txn) => {
+          if (txn.aborted) {
+            reject(new Error("Transaction Aborted"));
+          }
+        });
+    });
+  };
+
+  const onMintClick = async () => {
+    const mintedTokens = await mint();
+    console.log(mintedTokens);
   };
 
   const supplyPercent = useMemo(() => {
@@ -85,8 +146,17 @@ export const MintBox: FC<MintBoxProps> = ({
 
   const mintDisabled = noCurrentMintStage || accountNotEligible;
 
+  const closeCurrentMintProcess = () => {
+    setCurrentMintProcess(null);
+  };
+
   return (
     <div className="border border-slate-800 p-8 rounded-lg bg-slate-900">
+      <MintedTokensResult
+        open={true}
+        setOpen={closeCurrentMintProcess}
+        mintProcess={currentMintProcess}
+      />
       <div className="mb-6">
         {info && (
           <div>
@@ -154,7 +224,9 @@ export const MintBox: FC<MintBoxProps> = ({
         <div className="mt-6 text-gray-500">Connect your wallet to mint</div>
       )}
       {accountInteraction?.address && accountNotEligible && (
-        <div className="mt-6 text-yellow-600">You are not eligible to mint at this stage</div>
+        <div className="mt-6 text-yellow-600">
+          You are not eligible to mint at this stage
+        </div>
       )}
     </div>
   );

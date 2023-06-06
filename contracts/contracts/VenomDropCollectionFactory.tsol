@@ -6,6 +6,7 @@ import "./utils/Ownable.tsol";
 import "./VenomDropCollection.tsol";
 
 contract VenomDropCollectionFactory {
+  uint static _nonce;
   TvmCell static _codeCollection;
   TvmCell static _codeNft;
 
