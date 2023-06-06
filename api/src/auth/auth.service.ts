@@ -15,6 +15,7 @@ import {
 } from './auth.dto';
 import { generateAuthMessage } from 'src/common/utils/generateAuthMessage';
 
+const VENOM_ADDRESS_REGEX = /^0:[0-9a-f]{64}$/;
 const DEFAULT_NONCE_EXPIRATION = 30 * 60 * 1000; // 30 min
 const ERROR_INVALID_VENOM_ADDRESS =
   'Invalid Venom Address: Hex address expected';
@@ -34,16 +35,7 @@ export class AuthService {
   }
 
   private async validateHexAddress(address: string): Promise<void> {
-    try {
-      const addrType = await this.venomService.client.utils.get_address_type({
-        address,
-      });
-      if (addrType.address_type !== 'Hex') {
-        throw new BadRequestException(ERROR_INVALID_VENOM_ADDRESS);
-      }
-    } catch (error) {
-      throw new BadRequestException(ERROR_INVALID_VENOM_ADDRESS);
-    }
+    VENOM_ADDRESS_REGEX.test(address);
   }
 
   async createNonce({ address, contractType, publicKey }: CreateNonceInput) {

@@ -1,0 +1,63 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: API Build and Deploy
+
+on:
+  push:
+    branches: [ "main", "deploy" ]
+  pull_request:
+    branches: [ "main", "deploy" ]
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - id: commit
+        uses: pr-mpt/actions-commit-hash@v2
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to GCR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.GCR_REGISTRY }}
+          username: _json_key
+          password: ${{ secrets.GCR_JSON_KEY }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: ./api
+          push: true
+          tags: ${{ secrets.GCR_IMAGE }}:${{ steps.commit.outputs.short }}
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: '${{ secrets.GCR_JSON_KEY }}'
+
+      - id: 'get-credentials'
+        uses: 'google-github-actions/get-gke-credentials@v1'
+        with:
+          cluster_name: ${{ secrets.GCR_K8S_CLUSTER_NAME }}
+          location: ${{ secrets.GCR_K8S_LOCATION }}
+
+      - name: 'Deploy'
+        uses: 'chrkaatz/helm@v1.9'
+        with:
+          release: venomdrop-api
+          namespace: default
+          chart: ./api/charts/venomdrop-api
+          helm: helm3
+          values: |
+            image:
+              repository: ${{ secrets.GCR_IMAGE }}
+              tag: ${{ steps.commit.outputs.short }}

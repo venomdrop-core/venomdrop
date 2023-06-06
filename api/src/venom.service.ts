@@ -4,8 +4,6 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { Address, ProviderRpcClient } from 'everscale-inpage-provider';
-import { TonClient } from '@eversdk/core';
-import { libNode } from '@eversdk/lib-node';
 import {
   Account,
   ConnectionProperties,
@@ -14,8 +12,6 @@ import {
   WalletV3Account,
 } from 'everscale-standalone-client/nodejs';
 import { abi } from './common/contracts/abi';
-
-TonClient.useBinaryLibrary(libNode);
 
 const ERROR_WALLET_CONTRACT_NOT_ACTIVE = 'Wallet Contract is not active';
 const COULD_NOT_VALIDATE_WALLET = 'Could not validate wallet';
@@ -56,7 +52,6 @@ const LOOKUP_WALLET_TYPES: {
 
 @Injectable()
 export class VenomService extends ProviderRpcClient implements OnModuleInit {
-  public client: TonClient;
 
   constructor() {
     super({
@@ -65,7 +60,6 @@ export class VenomService extends ProviderRpcClient implements OnModuleInit {
           connection: getConnectionConfig(),
         }),
     });
-    this.client = new TonClient();
   }
 
   async onModuleInit() {

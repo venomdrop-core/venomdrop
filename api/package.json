@@ -21,8 +21,6 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.341.0",
-    "@eversdk/core": "^1.43.0",
-    "@eversdk/lib-node": "^1.43.0",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/jwt": "^10.0.3",
