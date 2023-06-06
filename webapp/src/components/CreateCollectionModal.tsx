@@ -85,7 +85,7 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
         })
         .send({
           from: accountInteraction.address,
-          amount: toNano("6"),
+          amount: toNano("5"),
         })
         .then((txn) => {
           if (txn.aborted) {
@@ -96,7 +96,7 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
       setTimeout(() => {
         sub.unsubscribe();
         reject(new Error("Could not retrieve the deployed contract"));
-      }, 30000);
+      }, 60000);
     });
   };
 

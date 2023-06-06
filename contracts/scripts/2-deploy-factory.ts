@@ -12,12 +12,12 @@ async function main() {
   const { contract: collection } = await locklift.factory.deployContract({
     contract: "VenomDropCollectionFactory",
     publicKey: signer.publicKey,
-    initParams: {},
-    constructorParams: {
-      codeCollection: venomDropCollectionArtifacts.code,
-      codeNft: nftArtifacts.code,
+    initParams: {
+      _codeCollection: venomDropCollectionArtifacts.code,
+      _codeNft: nftArtifacts.code,
     },
-    value: locklift.utils.toNano(5),
+    constructorParams: {},
+    value: locklift.utils.toNano(4),
   });
 
   const collectionAddress = collection.address.toString();

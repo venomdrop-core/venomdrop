@@ -10,6 +10,9 @@ import { useMutation } from "@tanstack/react-query";
 import { uploadCollectionFile } from "../../../api/collections";
 import { useVenomWallet } from "../../../hooks/useVenomWallet";
 import { toNano } from "../../../utils/toNano";
+import { LoadingBox } from "../../../components/LoadingBox";
+import { waitFinalized } from "../../../utils/waitFinalized";
+import { toast } from "react-toastify";
 
 export interface PreRevealProps {}
 
@@ -26,7 +29,8 @@ export const PreReveal: FC<PreRevealProps> = (props) => {
     control,
     reset,
   } = useForm<Form>({});
-  const { accountInteraction } = useVenomWallet();
+  const [loading, setLoading] = useState(true);
+  const { accountInteraction, venomProvider } = useVenomWallet();
   const { slug } = useParams();
   const collection = useCollectionContract(slug);
   const [currentImageSrc, setCurrentImageSrc] = useState<string | undefined>();
@@ -42,29 +46,43 @@ export const PreReveal: FC<PreRevealProps> = (props) => {
           const metadata = JSON.parse(initialMintJson);
           setCurrentImageSrc(metadata.preview.source);
           reset({ name: metadata.name });
+          setLoading(false);
         });
     }
   }, [collection]);
 
   const onSubmit = async (data: Form) => {
+    if (!collection || !venomProvider) {
+      return;
+    }
+    setLoading(true);
     const formData = new FormData();
     if (data.file && data.file.length) {
       formData.append("file", data.file[0]);
     }
-    const { url, mimetype } = await uploadMutation.mutateAsync(formData);
-    console.log(url);
-
-    await collection?.methods.setInitialMintJson({
-      initialMintJson: JSON.stringify({
-        type: "Basic NFT",
-        name: data.name,
-        preview: {
-          source: url,
-          mimetype,
-        },
+    try {
+      const { url, mimetype } = await uploadMutation.mutateAsync(formData);
+      
+      const txn = collection.methods
+      .setInitialMintJson({
+        initialMintJson: JSON.stringify({
+          type: "Basic NFT",
+          name: data.name,
+          preview: {
+            source: url,
+            mimetype,
+          },
+        }),
       })
-    }).send({ from: accountInteraction!.address, amount: toNano('0.1') })
-  }
+      .send({ from: accountInteraction!.address, amount: toNano("0.1") });
+      await waitFinalized(venomProvider, txn);
+      toast('Pre-Reveal updated successfully');
+    } catch (error) {
+      toast.error('Could not update Pre-Reveal');
+      console.error(error);
+    }
+    setLoading(false);
+  };
 
   return (
     <AdminLayout>
@@ -73,6 +91,7 @@ export const PreReveal: FC<PreRevealProps> = (props) => {
         description="Configure how your NFT will look like before it is revealed"
         submitLabel="Save Collection"
         onSubmit={handleSubmit(onSubmit)}
+        loading={loading}
       >
         <InputWrapper label="Image" description="Upload a image">
           <ImageUploadInput src={currentImageSrc} {...register("file")} />

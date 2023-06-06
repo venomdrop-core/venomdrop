@@ -6,16 +6,10 @@ import "./utils/Ownable.tsol";
 import "./VenomDropCollection.tsol";
 
 contract VenomDropCollectionFactory {
-  TvmCell private _codeCollection;
-  TvmCell private _codeNft;
+  TvmCell static _codeCollection;
+  TvmCell static _codeNft;
 
   event VenomDropCollectionDeployed(address collection, address indexed owner, address indexed creator);
-
-  constructor(TvmCell codeCollection, TvmCell codeNft) public {
-    tvm.accept();
-    _codeCollection = codeCollection;
-    _codeNft = codeNft;
-  }
 
   function deployCollection(address owner, uint id, string initialMintJson) public {
     require(msg.value > 0.4 ever, 101);

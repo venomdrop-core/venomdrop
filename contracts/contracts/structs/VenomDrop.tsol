@@ -21,8 +21,8 @@ pragma AbiHeader pubkey;
 struct MintStage {
   string name;
   uint64 price;
-  uint32 startTime;
-  uint32 endTime;
+  uint64 startTime;
+  uint64 endTime;
   bytes32 merkleTreeRoot;
 }
 
