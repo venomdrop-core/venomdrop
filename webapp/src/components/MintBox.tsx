@@ -54,7 +54,6 @@ export const MintBox: FC<MintBoxProps> = ({
   useEffect(() => {
     if (venomProvider && contract && accountInteraction) {
       const sub = new venomProvider.Subscriber();
-      console.log("Subscribed");
       const events = contract.events(sub);
       events.on((event) => {
         console.log({ event });
@@ -63,6 +62,7 @@ export const MintBox: FC<MintBoxProps> = ({
           event.data.owner.equals(accountInteraction.address)
         ) {
           setCurrentMintProcess((currentMintProcess) => ({
+            txn: currentMintProcess?.txn,
             count: currentMintProcess?.count || count,
             minted: (currentMintProcess?.minted || 0) + 1,
             events: [...(currentMintProcess?.events || []), event],
@@ -116,9 +116,21 @@ export const MintBox: FC<MintBoxProps> = ({
           amount: amountTotal.toString(),
         })
         .then((txn) => {
+          setCurrentMintProcess(p => {
+            if (p) {
+              return {
+                ...p,
+                txn,
+              }
+            }
+            return null;
+          });
           if (txn.aborted) {
             reject(new Error("Transaction Aborted"));
           }
+        })
+        .catch(() => {
+          setCurrentMintProcess(null);
         });
     });
   };

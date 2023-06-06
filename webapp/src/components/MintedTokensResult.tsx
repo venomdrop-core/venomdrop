@@ -1,38 +1,37 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useMemo } from "react";
 import { Modal, ModalProps } from "./Modal";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowTopRightOnSquareIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { Address, Transaction } from "everscale-inpage-provider";
 import { getShortAddress } from "../utils/getShortAddress";
-import { useMutation } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import { uploadCollectionFile } from "../api/collections";
-import { useCollectionContract } from "../hooks/useCollectionContract";
-import { useVenomWallet } from "../hooks/useVenomWallet";
 import { usePreRevealInfo } from "../hooks/usePreRevealInfo";
 import { Spinner } from "./Spinner";
-import { getTransactionUrl, getAddressUrl } from '../utils/venomscan';
+import { getAddressUrl, getTransactionUrl } from "../utils/venomscan";
 
 export interface NftCreatedEvent {
-  event: string
-  data: NftCreatedEventData
-  transaction: Transaction
+  event: string;
+  data: NftCreatedEventData;
+  transaction: Transaction;
 }
 
 export interface NftCreatedEventData {
-  id: string
-  nftAddress: Address
-  owner: Address
+  id: string;
+  nftAddress: Address;
+  owner: Address;
 }
 
-
 export interface MintProcess {
+  txn?: Transaction;
   count: number;
   minted: number;
   events: NftCreatedEvent[];
 }
 
 export interface MintedTokensResultProps extends ModalProps {
-  mintProcess: MintProcess | null
+  mintProcess: MintProcess | null;
 }
 
 // const mintProcess = {
@@ -446,57 +445,86 @@ export interface MintedTokensResultProps extends ModalProps {
 //   ]
 // };
 
-
-export const MintedTokensResult: FC<MintedTokensResultProps> = ({  mintProcess, ...props }) => {
+export const MintedTokensResult: FC<MintedTokensResultProps> = ({
+  mintProcess,
+  ...props
+}) => {
   const { slug } = useParams();
   const { name, imageSrc } = usePreRevealInfo(slug);
-  const finished = mintProcess && mintProcess.minted >= mintProcess.count ;
+  const finished = mintProcess && mintProcess.minted >= mintProcess.count;
+  const txnUrl = useMemo(
+    () => getTransactionUrl(mintProcess?.txn?.id?.hash),
+    [mintProcess?.txn]
+  );
   if (!mintProcess) {
     return null;
   }
+  const txnLink = mintProcess?.txn ? (
+    <a href={txnUrl} className="text-sm text-primary-focus" target="_blank">
+      Txn {getShortAddress(mintProcess?.txn?.id?.hash)}
+    </a>
+  ) : null;
   return (
-    <Modal open={props.open} setOpen={props.setOpen}>
+    <Modal open={props.open} setOpen={() => null}>
       <div className="w-full p-2">
         <div className="p-4 border-b border-slate-900">
-          <h2 className="text-2xl">
-            {finished ? (
-              <>
-                Minted {mintProcess.minted} token{mintProcess.minted > 1 ? 's': ''}
-              </>
-            ): (
-              <div className="flex items-center">
-                {mintProcess.events.length > 0 && (
-                  <Spinner />
+          <div className="flex justify-between items-center">
+            <div>
+              <h2 className="text-2xl">
+                {finished ? (
+                  <div>
+                    <div>{txnLink}</div>
+                    <div>
+                      Minted {mintProcess.minted} token
+                      {mintProcess.minted > 1 ? "s" : ""}
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div>
+                      <div>{txnLink}</div>
+                      {mintProcess.events.length > 0 && <Spinner />}
+                      <div>
+                        Minting {mintProcess.minted} of {mintProcess.count}...
+                      </div>
+                    </div>
+                  </div>
                 )}
-                <div className="ml-2">
-                  Minting {mintProcess.minted} of {mintProcess.count}..
-                </div>
-              </div>
-            )}
-          </h2>
+              </h2>
+            </div>
+            <div>
+              <button className="btn btn-sm btn-circle btn-ghost" onClick={() => props.setOpen(false)}>
+                <XMarkIcon className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
         </div>
         {mintProcess.events.length === 0 && (
           <div className="flex items-center justify-center p-8">
             <Spinner />
           </div>
         )}
-        {mintProcess?.events.map(mintEvent => (
+        {mintProcess?.events.map((mintEvent) => (
           <div className="grid grid-cols-3 p-4">
             <div className="flex items-center space-x-3 col-span-2">
               <div className="avatar">
                 <div className="w-12 h-12">
-                  <img
-                    src={imageSrc}
-                  />
+                  <img src={imageSrc} />
                 </div>
               </div>
               <div>
-                <div className="text-sm opacity-50">Token ID: {mintEvent.data.id}</div>
+                <div className="text-sm opacity-50">
+                  Token ID: {mintEvent.data.id}
+                </div>
                 <div className="font-bold text-sm">{name}</div>
               </div>
             </div>
             <div className="flex justify-end items-center">
-              <a href={getAddressUrl(mintEvent?.data?.nftAddress.toString())} target="_blank" className="flex items-center text-primary-focus text-sm">
+              <a
+                href={getAddressUrl(mintEvent?.data?.nftAddress.toString())}
+                target="_blank"
+                className="flex items-center text-primary-focus text-sm"
+              >
                 {getShortAddress(mintEvent?.data?.nftAddress.toString())}
                 <ArrowTopRightOnSquareIcon className="w-4 h-4 ml-2" />
               </a>
