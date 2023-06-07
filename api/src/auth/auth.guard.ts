@@ -16,11 +16,11 @@ export const AuthGuard = ({ required = true } = {}): Type<CanActivate> => {
     async canActivate(context: ExecutionContext): Promise<boolean> {
       const request = context.switchToHttp().getRequest();
       const token = this.extractTokenFromHeader(request);
-      if (!token) {
-        throw new UnauthorizedException();
-      }
       try {
-        const payload = await this.jwtService.verifyAsync(token, {
+        if (required && !token) {
+          throw new UnauthorizedException();
+        }
+        const payload = await this.jwtService.verifyAsync(token!, {
           secret: process.env.JWT_SECRET_KEY,
         });
         request['user'] = payload;

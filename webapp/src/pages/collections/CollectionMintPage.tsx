@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from "react";
+import React, { FC, useEffect, useMemo } from "react";
 import { useCollection } from "../../hooks/useCollection";
 import { useParams } from "react-router-dom";
 import { Topbar } from "../../components/Topbar";
@@ -17,6 +17,11 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
   const { slug } = useParams();
   const { data: info } = useCollectionInfo(slug);
   const { data: collection } = useCollection(slug);
+  useEffect(() => {
+    if (collection) {
+      document.title = `${collection?.name} - Drop Page`;
+    }
+  }, [collection]);
   const currentMintStage = useMemo(() => {
     const now = new Date();
     const contractMintStage = (info?.mintStages || []).find(ms => {

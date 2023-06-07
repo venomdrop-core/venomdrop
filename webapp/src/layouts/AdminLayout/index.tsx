@@ -1,4 +1,4 @@
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowTopRightOnSquareIcon,
@@ -31,6 +31,8 @@ const MenuLink: React.FC<{
   const { slug } = useParams();
   const to = `/collections/${slug}/edit${path}`;
   const active = to === location.pathname;
+
+
   return (
     <Link
       key={label}
@@ -57,12 +59,17 @@ const MenuLink: React.FC<{
 
 interface AdminProps {
   children: React.ReactNode;
+  title?: string;
 }
 
-export const AdminLayout: FC<AdminProps> = ({ children }) => {
+export const AdminLayout: FC<AdminProps> = ({ children, title }) => {
   const { slug } = useParams();
   const { data: collection } = useCollection(slug);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    document.title = title || 'VenomDrop Admin';
+  }, [title]);
 
   const user = {
     name: "Name Test",
