@@ -20,6 +20,7 @@ import VenomDropLogoSrc from "../../assets/venomdrop-logo.svg";
 import classNames from "classnames";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { CollectionPublishStatus } from "../../components/CollectionPublishStatusSelect";
+import { useCollection } from "../../hooks/useCollection";
 
 const MenuLink: React.FC<{
   label: string;
@@ -60,6 +61,7 @@ interface AdminProps {
 
 export const AdminLayout: FC<AdminProps> = ({ children }) => {
   const { slug } = useParams();
+  const { data: collection } = useCollection(slug);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const user = {
@@ -233,6 +235,23 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                     alt="VenomDrop"
                   />
                 </div>
+                <div className="space-y-1 p-4">
+                  <div className="flex mb-4 items-center">
+                    <div>
+                      {collection?.logoImageSrc && (
+                        <img src={collection?.logoImageSrc} className="w-8 h-8 rounded-sm border-slate-700 border mr-2" />
+                      )}
+                    </div>
+                    <div className="truncate">
+                      {collection?.name}
+                    </div>
+                  </div>
+                  <CollectionPublishStatus />
+                </div>
+                <hr
+                    className="my-3 border-t border-gray-800"
+                    aria-hidden="true"
+                  />
                 <nav className="mt-5 flex-1" aria-label="Sidebar">
                   <div className="space-y-1 px-2">
                     {navigation.map((item) => (
@@ -240,13 +259,12 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                     ))}
                   </div>
                   <hr
-                    className="my-5 border-t border-gray-800"
+                    className="my-3 border-t border-gray-800"
                     aria-hidden="true"
                   />
-                  <div className="space-y-1 px-2">
-                    <CollectionPublishStatus />
+                  <div className="flex-1 space-y-1 px-2 mt-4">
+                    {dropPageLink}
                   </div>
-                  <div className="flex-1 space-y-1 px-2 mt-4">{dropPageLink}</div>
                 </nav>
               </div>
               <div className="flex flex-shrink-0 border-t border-gray-800 px-4 py-7">

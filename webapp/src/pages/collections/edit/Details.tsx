@@ -8,6 +8,7 @@ import { getCollection, updateCollection } from "../../../api/collections";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCollection } from "../../../hooks/useCollection";
+import { toast } from "react-toastify";
 
 export interface DetailsProps {}
 
@@ -21,7 +22,7 @@ interface FormData {
 export const Details: FC<DetailsProps> = (props) => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const { data: collection } = useCollection(slug);
+  const { data: collection, refetch } = useCollection(slug);
   const updateMutation = useMutation({
     mutationFn: (data: FormData) => updateCollection(collection!.slug, data),
   });
@@ -45,6 +46,8 @@ export const Details: FC<DetailsProps> = (props) => {
   const onSubmit = async (data: FormData) => {
     const res = await updateMutation.mutateAsync(data);
     navigate(`/collections/${res.slug}/edit/details`);
+    refetch();
+    toast('Collection Updated!');
   };
   return (
     <AdminLayout>

@@ -1,16 +1,15 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { AdminLayout } from "../../../layouts/AdminLayout";
 import { AdminForm } from "../../../components/AdminForm";
 import { ImageUploadInput } from "../../../components/ImageUploadInput";
 import { useCollectionContract } from "../../../hooks/useCollectionContract";
 import { useForm } from "react-hook-form";
-import { json, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { InputWrapper } from "../../../components/InputWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { uploadCollectionFile } from "../../../api/collections";
 import { useVenomWallet } from "../../../hooks/useVenomWallet";
 import { toNano } from "../../../utils/toNano";
-import { LoadingBox } from "../../../components/LoadingBox";
 import { waitFinalized } from "../../../utils/waitFinalized";
 import { toast } from "react-toastify";
 
@@ -62,23 +61,23 @@ export const PreReveal: FC<PreRevealProps> = (props) => {
     }
     try {
       const { url, mimetype } = await uploadMutation.mutateAsync(formData);
-      
+
       const txn = collection.methods
-      .setInitialMintJson({
-        initialMintJson: JSON.stringify({
-          type: "Basic NFT",
-          name: data.name,
-          preview: {
-            source: url,
-            mimetype,
-          },
-        }),
-      })
-      .send({ from: accountInteraction!.address, amount: toNano("0.1") });
+        .setInitialMintJson({
+          initialMintJson: JSON.stringify({
+            type: "Basic NFT",
+            name: data.name,
+            preview: {
+              source: url,
+              mimetype,
+            },
+          }),
+        })
+        .send({ from: accountInteraction!.address, amount: toNano("0.1") });
       await waitFinalized(venomProvider, txn);
-      toast('Pre-Reveal updated successfully');
+      toast("Pre-Reveal updated successfully");
     } catch (error) {
-      toast.error('Could not update Pre-Reveal');
+      toast.error("Could not update Pre-Reveal");
       console.error(error);
     }
     setLoading(false);

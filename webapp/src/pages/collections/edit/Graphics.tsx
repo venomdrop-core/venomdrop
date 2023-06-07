@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { updateCollectionGraphics } from "../../../api/collections";
+import { toast } from "react-toastify";
 
 export interface GraphicsProps {}
 
@@ -45,10 +46,11 @@ export const Graphics: FC<GraphicsProps> = (props) => {
     }
     await updateMutation.mutateAsync(formData);
     refetch();
+    toast('Collection Updated!');
   }
   return (
     <AdminLayout>
-      <AdminForm title="Graphics" submitLabel="Save Collection" onSubmit={handleSubmit(onSubmit)}>
+      <AdminForm title="Graphics" submitLabel="Save Collection" onSubmit={handleSubmit(onSubmit)} loading={updateMutation.isLoading}>
         <InputWrapper
           label="Logo Image"
           description="A squared image used to display across the VenomDrop pages"

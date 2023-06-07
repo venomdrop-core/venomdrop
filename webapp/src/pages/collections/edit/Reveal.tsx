@@ -7,6 +7,7 @@ import { getRevealedTokens } from '../../../api/collections';
 import { useParams } from 'react-router-dom';
 import { RevealedTokenListingCard } from '../../../components/RevealedTokenListingCard';
 import { LoadingBox } from '../../../components/LoadingBox';
+import { toast } from 'react-toastify';
 
 export interface RevealProps {
   
@@ -24,6 +25,7 @@ export const Reveal: FC<RevealProps> = (props) => {
   const onAddRevealTokenFinish = () => {
     refetch();
     setRevealModalOpen(false);
+    toast('Token Revealed!');
   }
   return (
     <AdminLayout>
