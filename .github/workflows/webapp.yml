@@ -7,11 +7,11 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - "./webapp/**"
+      - "webapp/**"
   pull_request:
     branches: [ "main"]
     paths:
-      - "./webapp/**"
+      - "webapp/**"
 
 jobs:
   docker:
