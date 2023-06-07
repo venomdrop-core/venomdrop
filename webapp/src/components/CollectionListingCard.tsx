@@ -1,7 +1,6 @@
-import React, { FC, useEffect, useRef } from "react";
+import { FC } from "react";
 import { Collection } from "../api/collections";
 import { Link } from "react-router-dom";
-// const DEFAU
 
 export interface CollectionListingCardProps {
   collection: Collection;

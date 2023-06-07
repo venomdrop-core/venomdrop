@@ -13,7 +13,7 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({ value, onChange 
   const [selected, setSelected] = useState(CATEGORIES.find(c => c.slug === value) || CATEGORIES[0]);
   useEffect(() => {
     onChange(selected.slug);
-  }, [selected]);
+  }, [onChange, selected]);
   useEffect(() => {
     setSelected(CATEGORIES.find(c => c.slug === value ) || CATEGORIES[0]);
   }, [value]);

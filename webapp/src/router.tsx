@@ -1,7 +1,6 @@
 import {
   createBrowserRouter,
 } from "react-router-dom";
-import { Dashboard } from "./pages/collections/edit/Dashboard";
 import { Details } from "./pages/collections/edit/Details";
 import { Graphics } from "./pages/collections/edit/Graphics";
 import { DropSettings } from "./pages/collections/edit/DropSettings";

@@ -1,10 +1,8 @@
-import React, { FC, useEffect, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { useCollection } from "../../hooks/useCollection";
 import { useParams } from "react-router-dom";
 import { Topbar } from "../../components/Topbar";
-import { CollectionMintStagesTimeline } from "../../components/CollectionMintStagesTimeline";
 import { MintBox } from "../../components/MintBox";
-import { useCurrentMintStage } from "../../hooks/useCollectionCurrentMintStage";
 import { MintStagesTimeline } from "../../components/MintStagesTimeline";
 import { useCollectionInfo } from "../../hooks/useCollectionInfo";
 import { parseContractMintStage } from "../../utils/parseContractMintStage";
@@ -13,7 +11,7 @@ import { CollectionStatusBadge } from "../../components/CollectionStatusBadge";
 
 export interface CollectionMintPageProps {}
 
-export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
+export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
   const { slug } = useParams();
   const { data: info } = useCollectionInfo(slug);
   const { data: collection } = useCollection(slug);
@@ -24,7 +22,7 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
   }, [collection]);
   const currentMintStage = useMemo(() => {
     const now = new Date();
-    const contractMintStage = (info?.mintStages || []).find(ms => {
+    const contractMintStage = (info?.mintStages || []).find((ms) => {
       return now > unixToDate(ms.startTime) && now < unixToDate(ms.endTime);
     });
     if (!contractMintStage) {
@@ -57,16 +55,15 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
             <h1 className="py-8 text-4xl font-semibold text-white">
               {collection?.name}
             </h1>
-            {collection && (
-              <CollectionStatusBadge collection={collection} />
-            )}
+            {collection && <CollectionStatusBadge collection={collection} />}
           </div>
         </div>
       </div>
 
-      {collection && collection.publishStatus === 'DRAFT' && (
+      {collection && collection.publishStatus === "DRAFT" && (
         <div className="w-full p-4 bg-yellow-600 text-center text-slate-800">
-          <strong>Draft Mode:</strong> Only you (Collection Owner) can see this page
+          <strong>Draft Mode:</strong> Only you (Collection Owner) can see this
+          page
         </div>
       )}
 
@@ -83,7 +80,11 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
           <div>
             <h2 className="text-gray-100 text-3xl">Mint</h2>
             <div className="mt-16">
-              <MintBox currentMintStage={currentMintStage} mintStages={mintStages} info={info} />
+              <MintBox
+                currentMintStage={currentMintStage}
+                mintStages={mintStages}
+                info={info}
+              />
             </div>
           </div>
         </div>

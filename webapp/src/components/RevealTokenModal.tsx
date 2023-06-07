@@ -1,15 +1,12 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-
 import { FC, useMemo, useState } from "react";
 import { Modal, ModalProps } from "./Modal";
 import { useVenomWallet } from "../hooks/useVenomWallet";
 import { InputWrapper } from "./InputWrapper";
 import { Controller, useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import CodeEditor from '@uiw/react-textarea-code-editor';
+import CodeEditor from "@uiw/react-textarea-code-editor";
 import "@uiw/react-textarea-code-editor/dist.css";
 import classNames from "classnames";
-import { SparklesIcon } from "@heroicons/react/24/outline";
 import { useCollectionContract } from "../hooks/useCollectionContract";
 import { useParams } from "react-router-dom";
 import { toNano } from "../utils/toNano";
@@ -35,53 +32,56 @@ const INITIAL_JSON = `{
       }
   ],
   "external_url": ""
-}`
+}`;
 
-export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (props) => {
+export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (
+  props
+) => {
   const [loading, setLoading] = useState(false);
   const { slug } = useParams();
   const collection = useCollectionContract(slug);
-  const { venomProvider, accountInteraction } = useVenomWallet();
+  const { accountInteraction } = useVenomWallet();
   const createMutation = useMutation({
-    mutationFn: (data: RevealedTokenDto) =>
-    createRevealedToken(slug!, data),
+    mutationFn: (data: RevealedTokenDto) => createRevealedToken(slug!, data),
   });
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
     control,
     reset,
     watch,
   } = useForm<Form>({
     defaultValues: {
       json: INITIAL_JSON,
-    }
+    },
   });
 
   const onSubmit = async (data: Form) => {
-
     if (!collection) {
       return;
     }
 
     setLoading(true);
 
-    const { nft: nftAddress } = await collection.methods.nftAddress({
-      answerId: 0,
-      id: data.tokenId,
-    }).call();
-    await collection?.methods.revealToken({
-      ...data,
-    }).send({ from: accountInteraction!.address, amount: toNano('0.1') });
+    const { nft: nftAddress } = await collection.methods
+      .nftAddress({
+        answerId: 0,
+        id: data.tokenId,
+      })
+      .call();
+    await collection?.methods
+      .revealToken({
+        ...data,
+      })
+      .send({ from: accountInteraction!.address, amount: toNano("0.1") });
     let name;
     let imageUrl;
     try {
       const metadata = JSON.parse(data.json);
       name = metadata?.name;
       imageUrl = metadata?.preview?.source;
-    // eslint-disable-next-line no-empty
+      // eslint-disable-next-line no-empty
     } catch (error) {}
     await createMutation.mutateAsync({
       tokenId: parseInt(data.tokenId),
@@ -91,19 +91,19 @@ export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (prop
       metadataJson: data.json,
     });
     reset({
-      json: '',
-      tokenId: '',
-    })
+      json: "",
+      tokenId: "",
+    });
     props.onFinish();
     setLoading(false);
   };
 
-  const watchedJson = watch('json');
+  const watchedJson = watch("json");
   const validJson = useMemo(() => {
     try {
       JSON.parse(watchedJson);
       return true;
-    } catch (error) {}
+    } catch (error) { /* empty */ }
     return false;
   }, [watchedJson]);
 
@@ -128,18 +128,18 @@ export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (prop
               rules={{ required: false }}
               render={({ field }) => (
                 <CodeEditor
-                value={field.value}
-                language="json"
-                placeholder=""
-                onChange={field.onChange}
-                padding={15}
-                data-color-mode="dark"
-                style={{
-                  fontSize: 16,
-                  // backgroundColor: "#f5f5f5",
-                  // fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                }}
-              />
+                  value={field.value}
+                  language="json"
+                  placeholder=""
+                  onChange={field.onChange}
+                  padding={15}
+                  data-color-mode="dark"
+                  style={{
+                    fontSize: 16,
+                    // backgroundColor: "#f5f5f5",
+                    // fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                  }}
+                />
               )}
             />
           </InputWrapper>

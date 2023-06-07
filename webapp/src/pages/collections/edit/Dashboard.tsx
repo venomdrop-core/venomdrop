@@ -3,7 +3,7 @@ import { AdminLayout } from '../../../layouts/AdminLayout'
 
 export interface DashboardProps {}
 
-export const Dashboard: FC<DashboardProps> = (props) => {
+export const Dashboard: FC<DashboardProps> = () => {
   return (
     <AdminLayout>
       Test

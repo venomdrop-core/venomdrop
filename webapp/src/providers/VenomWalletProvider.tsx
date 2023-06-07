@@ -1,17 +1,23 @@
-import React, { FC, useEffect, useState } from 'react'
-import { initVenomConnect } from '../lib/venomConnect';
-import VenomConnect from 'venom-connect';
-import { AccountInteraction, venomWalletContext } from '../contexts/venomWallet';
-import { Address, ProviderRpcClient } from 'everscale-inpage-provider';
-import { useQueryClient } from '@tanstack/react-query';
+import React, { FC, useEffect, useState } from "react";
+import { initVenomConnect } from "../lib/venomConnect";
+import VenomConnect from "venom-connect";
+import {
+  AccountInteraction,
+  venomWalletContext,
+} from "../contexts/venomWallet";
+import { ProviderRpcClient } from "everscale-inpage-provider";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface VenomWalletProviderProps {
   children: React.ReactNode;
 }
 
-export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) => {
-  const queryClient = useQueryClient()
-  const [accountInteraction, setAccountInteraction] = useState<AccountInteraction>();
+export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({
+  children,
+}) => {
+  const queryClient = useQueryClient();
+  const [accountInteraction, setAccountInteraction] =
+    useState<AccountInteraction>();
   const [venomConnect, setVenomConnect] = useState<VenomConnect | undefined>();
   const init = async () => {
     const _venomConnect = await initVenomConnect();
@@ -23,10 +29,12 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
   const [venomProvider, setVenomProvider] = useState<ProviderRpcClient>();
   const [address, setAddress] = useState<string>();
   // This method allows us to gen a wallet address from inpage provider
-  const getAccountInteraction = async (provider: any): Promise<AccountInteraction> => {
+  const getAccountInteraction = async (
+    provider: any
+  ): Promise<AccountInteraction> => {
     const providerState = await provider?.getProviderState?.();
     return providerState?.permissions.accountInteraction;
-  }
+  };
   // Any interaction with venom-wallet (address fetching is included) needs to be authentificated
   const checkAuth = async (_venomConnect: VenomConnect) => {
     const auth = await _venomConnect?.checkAuth();
@@ -51,10 +59,13 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
   };
   useEffect(() => {
     // connect event handler
-    const off = venomConnect?.on('connect', async (provider: ProviderRpcClient) => {
-      setVenomProvider(provider);
-      await onProviderReady(provider);
-    });
+    const off = venomConnect?.on(
+      "connect",
+      async (provider: ProviderRpcClient) => {
+        setVenomProvider(provider);
+        await onProviderReady(provider);
+      }
+    );
     if (venomConnect) {
       initStandalone();
       checkAuth(venomConnect);
@@ -63,8 +74,8 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
     return () => {
       off?.();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [venomConnect]);
-
 
   const connect = async () => {
     if (!venomConnect) return;
@@ -75,13 +86,21 @@ export const VenomWalletProvider: FC<VenomWalletProviderProps> = ({ children }) 
     venomProvider?.disconnect();
     setAddress(undefined);
     // In case there is a session with that wallet, clear it
-    localStorage.removeItem('venomdrop-access-token');
-    queryClient.invalidateQueries({ queryKey: ['me'] });
+    localStorage.removeItem("venomdrop-access-token");
+    queryClient.invalidateQueries({ queryKey: ["me"] });
   };
-  
+
   return (
-    <venomWalletContext.Provider value={{ connect, disconnect, address, accountInteraction, venomProvider }}>
+    <venomWalletContext.Provider
+      value={{
+        connect,
+        disconnect,
+        address,
+        accountInteraction,
+        venomProvider,
+      }}
+    >
       {children}
     </venomWalletContext.Provider>
-  )
-}
+  );
+};

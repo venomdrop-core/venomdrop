@@ -1,5 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
-
 import { FC, useMemo, useState } from "react";
 import { Modal, ModalProps } from "./Modal";
 import { useVenomWallet } from "../hooks/useVenomWallet";
@@ -43,13 +41,7 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
       : null;
   }, [venomProvider]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    control,
-    reset,
-  } = useForm<Form>({});
+  const { register, handleSubmit, control } = useForm<Form>({});
 
   const deploy = async (): Promise<Address> => {
     return new Promise((resolve, reject) => {

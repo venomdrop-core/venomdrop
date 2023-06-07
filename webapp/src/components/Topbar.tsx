@@ -1,26 +1,21 @@
-import { FC, Fragment, useMemo, useState } from 'react'
-import { Dialog, Disclosure, Popover, Transition } from '@headlessui/react'
-import {
-  Bars3Icon,
-  XMarkIcon,
-} from '@heroicons/react/24/outline'
-import { ChevronDownIcon } from '@heroicons/react/20/solid'
-import classNames from 'classnames'
-import VenomDropSrc from '../assets/venomdrop-logo.svg';
-import VenomDropWhiteSrc from '../assets/venomdrop-logo-white.png';
-import { CATEGORIES } from '../consts'
-import { Link } from 'react-router-dom'
-import { ProfileInfo } from './ProfileInfo'
-
+import { FC, Fragment, useMemo, useState } from "react";
+import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon } from "@heroicons/react/20/solid";
+import classNames from "classnames";
+import VenomDropWhiteSrc from "../assets/venomdrop-logo-white.png";
+import { CATEGORIES } from "../consts";
+import { Link } from "react-router-dom";
+import { ProfileInfo } from "./ProfileInfo";
 
 const MENU_LINKS = [
   {
-    name: 'About',
-    href: '/about',
+    name: "About",
+    href: "/about",
   },
   {
-    name: 'Guides',
-    href: '/guides',
+    name: "Guides",
+    href: "/guides",
   },
 ];
 
@@ -31,15 +26,21 @@ interface TopbarProps {
 export const Topbar: FC<TopbarProps> = ({ className }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const categories = useMemo(() => CATEGORIES.map(c => ({
-    ...c,
-    href: `/categories/${c.slug}`,
-  })), []);
-
+  const categories = useMemo(
+    () =>
+      CATEGORIES.map((c) => ({
+        ...c,
+        href: `/categories/${c.slug}`,
+      })),
+    []
+  );
 
   return (
     <header className={className}>
-      <nav className="container mx-auto flex items-center justify-between py-6" aria-label="Global">
+      <nav
+        className="container mx-auto flex items-center justify-between py-6"
+        aria-label="Global"
+      >
         <div className="flex lg:flex-1">
           <Link to="/" className="-m-1.5 p-1.5">
             <span className="sr-only">VenomDrop</span>
@@ -60,7 +61,10 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
           <Popover className="relative">
             <Popover.Button className="flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-100">
               Explore
-              <ChevronDownIcon className="h-5 w-5 flex-none text-gray-400" aria-hidden="true" />
+              <ChevronDownIcon
+                className="h-5 w-5 flex-none text-gray-400"
+                aria-hidden="true"
+              />
             </Popover.Button>
 
             <Transition
@@ -83,10 +87,16 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
                       className="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-slate-900"
                     >
                       <div className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-slate-800 group-hover:bg-primary">
-                        <item.icon className="h-6 w-6 text-gray-400 group-hover:text-gray-50" aria-hidden="true" />
+                        <item.icon
+                          className="h-6 w-6 text-gray-400 group-hover:text-gray-50"
+                          aria-hidden="true"
+                        />
                       </div>
                       <div className="flex-auto">
-                        <a href={item.href} className="block font-semibold text-gray-100">
+                        <a
+                          href={item.href}
+                          className="block font-semibold text-gray-100"
+                        >
                           {item.name}
                           <span className="absolute inset-0" />
                         </a>
@@ -99,8 +109,11 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
             </Transition>
           </Popover>
 
-          {MENU_LINKS.map(link => (
-            <a href={link.href} className="text-lg font-semibold leading-6 text-gray-200">
+          {MENU_LINKS.map((link) => (
+            <a
+              href={link.href}
+              className="text-lg font-semibold leading-6 text-gray-200"
+            >
               {link.name}
             </a>
           ))}
@@ -109,17 +122,18 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
           <ProfileInfo />
         </div>
       </nav>
-      <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
+      <Dialog
+        as="div"
+        className="lg:hidden"
+        open={mobileMenuOpen}
+        onClose={setMobileMenuOpen}
+      >
         <div className="fixed inset-0 z-10" />
         <Dialog.Panel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-slate-950 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">VenomDrop</span>
-              <img
-                className="h-6 w-auto"
-                src={VenomDropWhiteSrc}
-                alt=""
-              />
+              <img className="h-6 w-auto" src={VenomDropWhiteSrc} alt="" />
             </a>
             <button
               type="button"
@@ -139,7 +153,10 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
                       <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 text-gray-100 hover:bg-gray-800">
                         Explore
                         <ChevronDownIcon
-                          className={classNames(open ? 'rotate-180' : '', 'h-5 w-5 flex-none')}
+                          className={classNames(
+                            open ? "rotate-180" : "",
+                            "h-5 w-5 flex-none"
+                          )}
                           aria-hidden="true"
                         />
                       </Disclosure.Button>
@@ -151,7 +168,10 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
                             href={item.href}
                             className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-200 hover:bg-gray-50"
                           >
-                            <item.icon className="h-5 w-5 flex-none text-gray-400 inline-flex mr-2" aria-hidden="true" />
+                            <item.icon
+                              className="h-5 w-5 flex-none text-gray-400 inline-flex mr-2"
+                              aria-hidden="true"
+                            />
                             {item.name}
                           </Disclosure.Button>
                         ))}
@@ -159,7 +179,7 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
                     </>
                   )}
                 </Disclosure>
-                {MENU_LINKS.map(link => (
+                {MENU_LINKS.map((link) => (
                   <a
                     href={link.href}
                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-200 hover:bg-gray-50"
@@ -173,5 +193,5 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
         </Dialog.Panel>
       </Dialog>
     </header>
-  )
-}
+  );
+};

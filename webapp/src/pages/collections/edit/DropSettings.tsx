@@ -13,7 +13,6 @@ import { dateToUnix } from "../../../utils/dates";
 import { useVenomWallet } from "../../../hooks/useVenomWallet";
 import { toNano } from "../../../utils/toNano";
 import classNames from "classnames";
-import { parseContractMintStage } from "../../../utils/parseContractMintStage";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   MintStageGroupDto,
@@ -44,7 +43,7 @@ interface Form {
   maxSupply: string;
 }
 
-export const DropSettings: FC<DropSettingsProps> = (props) => {
+export const DropSettings: FC<DropSettingsProps> = () => {
   const { accountInteraction, venomProvider } = useVenomWallet();
   const { slug } = useParams();
   const [loading, setLoading] = useState(false);
@@ -65,7 +64,6 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
     control,
     reset,
     watch,
@@ -93,6 +91,7 @@ export const DropSettings: FC<DropSettingsProps> = (props) => {
         supplyMode: info.hasMaxSupply ? "limited" : "unlimited",
       });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [info]);
   const onSubmit = async (data: Form) => {
     if (!contract || !accountInteraction || !venomProvider) {

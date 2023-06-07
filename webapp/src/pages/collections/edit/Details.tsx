@@ -4,9 +4,9 @@ import { InputWrapper } from "../../../components/InputWrapper";
 import { CategorySelect } from "../../../components/CategorySelect";
 import { AdminForm } from "../../../components/AdminForm";
 import { Controller, useForm } from "react-hook-form";
-import { getCollection, updateCollection } from "../../../api/collections";
+import { updateCollection } from "../../../api/collections";
 import { useNavigate, useParams } from "react-router-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCollection } from "../../../hooks/useCollection";
 import { toast } from "react-toastify";
 
@@ -19,7 +19,7 @@ interface FormData {
   categorySlug: string;
 }
 
-export const Details: FC<DetailsProps> = (props) => {
+export const Details: FC<DetailsProps> = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const { data: collection, refetch } = useCollection(slug);
@@ -29,7 +29,6 @@ export const Details: FC<DetailsProps> = (props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
     control,
     reset,
   } = useForm<FormData>({});
@@ -39,7 +38,7 @@ export const Details: FC<DetailsProps> = (props) => {
         name: collection?.name,
         description: collection?.description,
         slug: collection?.slug,
-        categorySlug: collection?.category.slug || 'art',
+        categorySlug: collection?.category.slug || "art",
       });
     }
   }, [collection, reset]);
@@ -47,7 +46,7 @@ export const Details: FC<DetailsProps> = (props) => {
     const res = await updateMutation.mutateAsync(data);
     navigate(`/collections/${res.slug}/edit/details`);
     refetch();
-    toast('Collection Updated!');
+    toast("Collection Updated!");
   };
   return (
     <AdminLayout>

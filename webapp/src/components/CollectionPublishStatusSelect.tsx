@@ -9,12 +9,7 @@ import classNames from "classnames";
 import { Modal } from "./Modal";
 import { useParams } from "react-router-dom";
 import { useCollection } from "../hooks/useCollection";
-import {
-  ExclamationTriangleIcon,
-  GlobeAltIcon,
-  RocketLaunchIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { GlobeAltIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { setPublishStatus } from "../api/collections";
 
@@ -212,7 +207,7 @@ export const CollectionPublishStatus = () => {
                       }
                       value={status}
                     >
-                      {({ selected, active }) => (
+                      {({ selected }) => (
                         <>
                           <div className="flex items-center">
                             <div

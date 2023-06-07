@@ -20,12 +20,10 @@ interface Form {
   file?: FileList;
 }
 
-export const PreReveal: FC<PreRevealProps> = (props) => {
+export const PreReveal: FC<PreRevealProps> = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    control,
     reset,
   } = useForm<Form>({});
   const [loading, setLoading] = useState(true);
@@ -48,6 +46,7 @@ export const PreReveal: FC<PreRevealProps> = (props) => {
           setLoading(false);
         });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
 
   const onSubmit = async (data: Form) => {

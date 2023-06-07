@@ -56,14 +56,13 @@ export const MintBox: FC<MintBoxProps> = ({
       const sub = new venomProvider.Subscriber();
       const events = contract.events(sub);
       events.on((event) => {
-        console.log({ event });
         if (
           event.event === "VenomDropNftMinted" &&
           event.data.owner.equals(accountInteraction.address)
         ) {
           setCurrentMintProcess((currentMintProcess) => ({
             txn: currentMintProcess?.txn,
-            count: currentMintProcess?.count || count,
+            count: currentMintProcess?.count || 0,
             minted: (currentMintProcess?.minted || 0) + 1,
             events: [...(currentMintProcess?.events || []), event],
           }));
@@ -85,26 +84,11 @@ export const MintBox: FC<MintBoxProps> = ({
       const amountTotal =
         (parseInt(MINT_NFT_VALUE) + parseInt(currentMintStage.price)) * count;
 
-      // const sub = new venomProvider.Subscriber();
-      // const events = contract.events(sub);
-      // // const mintedTokenEvents: NftCreatedEvent[] = [];
       setCurrentMintProcess({
         count,
         minted: 0,
         events: [],
       });
-      // events.on((event) => {
-      //   if (
-      //     event.event === "NftCreated" &&
-      //     event.data.owner.equals(accountInteraction.address)
-      //   ) {
-      //     setCurrentMintProcess((currentMintProcess) => ({
-      //       count: currentMintProcess?.count || count,
-      //       minted: (currentMintProcess?.minted || 0) + 1,
-      //       events: [...(currentMintProcess?.events || []), event],
-      //     }));
-      //   }
-      // });
       contract.methods
         .mint({
           amount: count,
@@ -128,6 +112,7 @@ export const MintBox: FC<MintBoxProps> = ({
           if (txn.aborted) {
             reject(new Error("Transaction Aborted"));
           }
+          resolve(txn);
         })
         .catch(() => {
           setCurrentMintProcess(null);

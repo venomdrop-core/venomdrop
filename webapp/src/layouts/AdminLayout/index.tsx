@@ -3,16 +3,11 @@ import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowTopRightOnSquareIcon,
   Bars3Icon,
-  ChartBarIcon,
-  CubeIcon,
-  CubeTransparentIcon,
   GiftIcon,
-  PhotoIcon,
   RectangleGroupIcon,
   RectangleStackIcon,
   RocketLaunchIcon,
   SparklesIcon,
-  Squares2X2Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
@@ -31,7 +26,6 @@ const MenuLink: React.FC<{
   const { slug } = useParams();
   const to = `/collections/${slug}/edit${path}`;
   const active = to === location.pathname;
-
 
   return (
     <Link
@@ -68,7 +62,7 @@ export const AdminLayout: FC<AdminProps> = ({ children, title }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    document.title = title || 'VenomDrop Admin';
+    document.title = title || "VenomDrop Admin";
   }, [title]);
 
   const user = {
@@ -246,19 +240,20 @@ export const AdminLayout: FC<AdminProps> = ({ children, title }) => {
                   <div className="flex mb-4 items-center">
                     <div>
                       {collection?.logoImageSrc && (
-                        <img src={collection?.logoImageSrc} className="w-8 h-8 rounded-sm border-slate-700 border mr-2" />
+                        <img
+                          src={collection?.logoImageSrc}
+                          className="w-8 h-8 rounded-sm border-slate-700 border mr-2"
+                        />
                       )}
                     </div>
-                    <div className="truncate">
-                      {collection?.name}
-                    </div>
+                    <div className="truncate">{collection?.name}</div>
                   </div>
                   <CollectionPublishStatus />
                 </div>
                 <hr
-                    className="my-3 border-t border-gray-800"
-                    aria-hidden="true"
-                  />
+                  className="my-3 border-t border-gray-800"
+                  aria-hidden="true"
+                />
                 <nav className="mt-5 flex-1" aria-label="Sidebar">
                   <div className="space-y-1 px-2">
                     {navigation.map((item) => (

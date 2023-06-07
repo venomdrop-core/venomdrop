@@ -1,35 +1,42 @@
-import React, { FC, useState } from 'react'
-import { AdminLayout } from '../../../layouts/AdminLayout'
-import { SparklesIcon } from '@heroicons/react/24/outline'
-import { RevealTokenModal } from '../../../components/RevealTokenModal';
-import { useQuery } from '@tanstack/react-query';
-import { getRevealedTokens } from '../../../api/collections';
-import { useParams } from 'react-router-dom';
-import { RevealedTokenListingCard } from '../../../components/RevealedTokenListingCard';
-import { LoadingBox } from '../../../components/LoadingBox';
-import { toast } from 'react-toastify';
+import { FC, useState } from "react";
+import { AdminLayout } from "../../../layouts/AdminLayout";
+import { SparklesIcon } from "@heroicons/react/24/outline";
+import { RevealTokenModal } from "../../../components/RevealTokenModal";
+import { useQuery } from "@tanstack/react-query";
+import { getRevealedTokens } from "../../../api/collections";
+import { useParams } from "react-router-dom";
+import { RevealedTokenListingCard } from "../../../components/RevealedTokenListingCard";
+import { LoadingBox } from "../../../components/LoadingBox";
+import { toast } from "react-toastify";
 
-export interface RevealProps {
-  
-}
+export interface RevealProps {}
 
-export const Reveal: FC<RevealProps> = (props) => {
+export const Reveal: FC<RevealProps> = () => {
   const { slug } = useParams();
   const [revealModalOpen, setRevealModalOpen] = useState(false);
-  const { data: revealedTokens, refetch, isLoading } = useQuery({
-    queryFn: () => getRevealedTokens(slug!, {
-      limit: 50,
-      skip: 0,
-    })
+  const {
+    data: revealedTokens,
+    refetch,
+    isLoading,
+  } = useQuery({
+    queryFn: () =>
+      getRevealedTokens(slug!, {
+        limit: 50,
+        skip: 0,
+      }),
   });
   const onAddRevealTokenFinish = () => {
     refetch();
     setRevealModalOpen(false);
-    toast('Token Revealed!');
-  }
+    toast("Token Revealed!");
+  };
   return (
     <AdminLayout>
-      <RevealTokenModal open={revealModalOpen} setOpen={setRevealModalOpen} onFinish={onAddRevealTokenFinish} />
+      <RevealTokenModal
+        open={revealModalOpen}
+        setOpen={setRevealModalOpen}
+        onFinish={onAddRevealTokenFinish}
+      />
       <LoadingBox loading={isLoading}>
         <div className="p-16">
           <div className="flex flex-col md:flex-row justify-between">
@@ -68,5 +75,5 @@ export const Reveal: FC<RevealProps> = (props) => {
         </div>
       </LoadingBox>
     </AdminLayout>
-  )
-}
+  );
+};

@@ -1,11 +1,9 @@
-import React, { FC, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { Collection } from "../api/collections";
-import { useCollection } from "../hooks/useCollection";
 import { useCollectionInfo } from "../hooks/useCollectionInfo";
 import { unixToDate } from "../utils/dates";
 import { parseContractMintStage } from "../utils/parseContractMintStage";
 import { Countdown } from "./Countdown";
-
 
 export interface CollectionStatusBadgeProps {
   collection: Collection;

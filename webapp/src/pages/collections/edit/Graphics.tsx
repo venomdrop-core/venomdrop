@@ -3,7 +3,6 @@ import { AdminLayout } from "../../../layouts/AdminLayout";
 import { InputWrapper } from "../../../components/InputWrapper";
 import { AdminForm } from "../../../components/AdminForm";
 import { ImageUploadInput } from "../../../components/ImageUploadInput";
-import { FileInputButton } from "../../../components/FileInputButton";
 import { useCollection } from "../../../hooks/useCollection";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -20,7 +19,7 @@ interface Form {
   featured?: FileList;
 }
 
-export const Graphics: FC<GraphicsProps> = (props) => {
+export const Graphics: FC<GraphicsProps> = () => {
   const { slug } = useParams();
   const { data: collection, refetch } = useCollection(slug);
   const updateMutation = useMutation({
@@ -29,9 +28,6 @@ export const Graphics: FC<GraphicsProps> = (props) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    control,
-    reset,
   } = useForm<Form>({});
   const onSubmit = async (data: Form) => {
     const formData = new FormData();

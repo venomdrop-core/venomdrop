@@ -8,7 +8,7 @@ import { CollectionListingCard } from "../../components/CollectionListingCard";
 
 export interface CollectionsIndexProps {}
 
-export const CollectionsIndex: FC<CollectionsIndexProps> = (props) => {
+export const CollectionsIndex: FC<CollectionsIndexProps> = () => {
   const { address } = useVenomWallet();
   const { data: collections } = useCollections({ owner: address, publishStatus: ['PUBLISHED', 'DRAFT'] }, { limit: 50, skip: 0 }, { enabled: !!address });
   const [showCreateModal, setShowCreateModal] = useState(false);

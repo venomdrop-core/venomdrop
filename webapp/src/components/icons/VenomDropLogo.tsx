@@ -1,9 +1,8 @@
 
-import { SVGProps, Ref } from "react"
+import { SVGProps } from "react";
 
 export const VenomDropLogo = (
-  props: SVGProps<SVGSVGElement>,
-  ref: Ref<SVGSVGElement>
+  props: SVGProps<SVGSVGElement>
 ) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
