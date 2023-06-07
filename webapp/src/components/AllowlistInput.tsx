@@ -1,4 +1,4 @@
-import React, { DragEventHandler, FC, useState } from "react";
+import { DragEventHandler, FC, useState } from "react";
 import * as Papa from "papaparse";
 import { validateVenomAddress } from "../utils/validateVenomAddress";
 import { FileUploader } from "react-drag-drop-files";

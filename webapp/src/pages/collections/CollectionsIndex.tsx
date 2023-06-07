@@ -1,17 +1,19 @@
-import React, { FC, useState } from "react";
+import { FC, useState } from "react";
 import { MainLayout } from "../../layouts/MainLayout";
 import { CreateCollectionModal } from "../../components/CreateCollectionModal";
 import { PlusIcon } from "@heroicons/react/24/outline";
 import { useCollections } from "../../hooks/useCollections";
 import { useVenomWallet } from "../../hooks/useVenomWallet";
 import { CollectionListingCard } from "../../components/CollectionListingCard";
+import { Collection } from "../../api/collections";
 
 export interface CollectionsIndexProps {}
 
 export const CollectionsIndex: FC<CollectionsIndexProps> = () => {
   const { address } = useVenomWallet();
-  const { data: collections } = useCollections({ owner: address, publishStatus: ['PUBLISHED', 'DRAFT'] }, { limit: 50, skip: 0 }, { enabled: !!address });
+  const { data } = useCollections({ owner: address, publishStatus: ['PUBLISHED', 'DRAFT'] }, { limit: 50, skip: 0 }, { enabled: !!address });
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const collections = ((data as { collections?: Collection[] })?.collections || []);
   return (
     <MainLayout authRequired>
       <div className="container mx-auto mt-24">
