@@ -39,7 +39,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./api
+          context: ./webapp
           push: true
           tags: ${{ secrets.GCR_IMAGE }}-webapp:${{ steps.commit.outputs.short }}
 
