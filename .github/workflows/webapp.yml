@@ -1,17 +1,17 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: API Build and Deploy
+name: Webapp Build and Deploy
 
 on:
   push:
     branches: [ "main" ]
     paths:
-      - "./api/**"
+      - "./webapp/**"
   pull_request:
     branches: [ "main"]
     paths:
-      - "./api/**"
+      - "./webapp/**"
 
 jobs:
   docker:
@@ -41,7 +41,7 @@ jobs:
         with:
           context: ./api
           push: true
-          tags: ${{ secrets.GCR_IMAGE }}-api:${{ steps.commit.outputs.short }}
+          tags: ${{ secrets.GCR_IMAGE }}-webapp:${{ steps.commit.outputs.short }}
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
@@ -57,11 +57,11 @@ jobs:
       - name: 'Deploy'
         uses: 'chrkaatz/helm@v1.9'
         with:
-          release: venomdrop-api
+          release: venomdrop-webapp
           namespace: default
-          chart: ./api/charts/venomdrop-api
+          chart: ./webapp/charts/venomdrop-webapp
           helm: helm3
           values: |
             image:
-              repository: ${{ secrets.GCR_IMAGE }}-api
+              repository: ${{ secrets.GCR_IMAGE }}-webapp
               tag: ${{ steps.commit.outputs.short }}
