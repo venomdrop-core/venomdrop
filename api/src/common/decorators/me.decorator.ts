@@ -5,9 +5,12 @@ export const Me = createParamDecorator(
   (
     data: unknown,
     context: ExecutionContext,
-  ): Pick<Account, 'id' | 'address'> => {
+  ): null | Pick<Account, 'id' | 'address'> => {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
+    if (!user) {
+      return null;
+    }
     return {
       id: user.id,
       address: user.address,

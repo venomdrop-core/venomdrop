@@ -10,7 +10,7 @@ export interface CollectionsIndexProps {}
 
 export const CollectionsIndex: FC<CollectionsIndexProps> = (props) => {
   const { address } = useVenomWallet();
-  const { data: collections } = useCollections({ owner: address }, { limit: 50, skip: 0 }, { enabled: !!address });
+  const { data: collections } = useCollections({ owner: address, publishStatus: ['PUBLISHED', 'DRAFT'] }, { limit: 50, skip: 0 }, { enabled: !!address });
   const [showCreateModal, setShowCreateModal] = useState(false);
   return (
     <MainLayout authRequired>
@@ -38,7 +38,7 @@ export const CollectionsIndex: FC<CollectionsIndexProps> = (props) => {
             <div className="grid grid-cols-4 gap-8">
               {(collections || []).map((collection) => (
                 <div>
-                  <CollectionListingCard collection={collection} />
+                  <CollectionListingCard collection={collection} showPublishStatus linkToAdmin />
                 </div>
               ))}
             </div>

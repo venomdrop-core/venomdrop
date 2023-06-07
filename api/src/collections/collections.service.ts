@@ -5,7 +5,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { Account, Prisma } from '@prisma/client';
+import { Account, CollectionPublishStatus, Prisma } from '@prisma/client';
 import { SHA256 } from 'crypto-js';
 import { CreateCollectionDto } from './dto/create-collection.dto';
 import { UpdateCollectionDto } from './dto/update-collection.dto';
@@ -20,6 +20,7 @@ import MerkleTree from 'merkletreejs';
 import { Address } from 'everscale-inpage-provider';
 import { MintProofResponseDto } from './dto/mint-proof.dto';
 import { RevealedTokenDto } from './dto/revealed-token.dto';
+import { SetPublishStatusDto } from './dto/publish-status.dto';
 
 function getAddrHex(address: Address): string {
   const addr = address.toString();
@@ -73,17 +74,34 @@ export class CollectionsService {
     });
   }
 
-  findAll({
-    page,
-    filter,
-  }: {
-    page: ApiPageOptions;
-    filter: { owner?: string };
-  }) {
-    const where: Prisma.CollectionFindManyArgs['where'] = {};
+  findAllPublic(
+    {
+      page,
+      filter,
+    }: {
+      page: ApiPageOptions;
+      filter: { owner?: string; publishStatus?: CollectionPublishStatus[] };
+    },
+    account?: Account,
+  ) {
+    const where: Prisma.CollectionFindManyArgs['where'] = {
+      OR: [
+        {
+          publishStatus: 'PUBLISHED',
+        },
+        {
+          ownerId: account?.id,
+        },
+      ],
+    };
     if (filter?.owner) {
       where.owner = {
         address: filter.owner,
+      };
+    }
+    if (filter?.publishStatus) {
+      where.publishStatus = {
+        in: filter.publishStatus,
       };
     }
     return this.prismaService.collection.findMany({
@@ -105,6 +123,26 @@ export class CollectionsService {
       },
     });
     if (!collection) {
+      throw new NotFoundException();
+    }
+    return collection;
+  }
+
+  /**
+   * Similar to findOne, the findOnePublic retrieves a collection if meets the following condition:
+   *    1. The Collection is published
+   *    2. The account (second arg) is the owner of the collection
+   * @param slug the collection slug
+   * @param account the optional logged account
+   * @returns Collection
+   */
+  async findOnePublic(slug: string, account?: Account) {
+    const collection = await this.findOne(slug);
+    if (
+      !collection ||
+      (collection.publishStatus === 'DRAFT' &&
+        collection.ownerId !== account?.id)
+    ) {
       throw new NotFoundException();
     }
     return collection;
@@ -423,5 +461,40 @@ export class CollectionsService {
         metadataJson: revealedTokenDto.metadataJson,
       },
     });
+  }
+
+  private async _updatePublishStatus(
+    collectionId: string,
+    publishStatus: CollectionPublishStatus,
+  ) {
+    await this.prismaService.collection.update({
+      where: {
+        id: collectionId,
+      },
+      data: {
+        publishStatus,
+      },
+    });
+  }
+
+  async setPublishStatus(
+    account: Account,
+    slug: string,
+    setPublishStatusDto: SetPublishStatusDto,
+  ) {
+    const c = await this.findOne(slug);
+    if (c.ownerId !== account.id) {
+      throw new ForbiddenException();
+    }
+    const { status } = setPublishStatusDto;
+    if (status === 'DRAFT') {
+      await this._updatePublishStatus(c.id, 'DRAFT');
+      return;
+    }
+    const validForPublished = c.name && c.logoImageSrc && c.coverImageSrc;
+    if (!validForPublished) {
+      throw new BadRequestException('Collection is not valid to be published');
+    }
+    await this._updatePublishStatus(c.id, 'PUBLISHED');
   }
 }

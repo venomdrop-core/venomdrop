@@ -59,13 +59,18 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = (props) => {
         </div>
       </div>
 
+      {collection && collection.publishStatus === 'DRAFT' && (
+        <div className="w-full p-4 bg-yellow-600 text-center text-slate-800">
+          <strong>Draft Mode:</strong> Only you (Collection Owner) can see this page
+        </div>
+      )}
+
       <div className="container mx-auto mt-24">
         <div className="grid grid-cols-2 gap-16">
           <div>
             <div>
               <h2 className="text-gray-100 text-3xl">Schedule</h2>
               <div className="mt-16 ">
-                {/* <CollectionMintStagesTimeline slug={slug} /> */}
                 <MintStagesTimeline mintStages={mintStages} />
               </div>
             </div>

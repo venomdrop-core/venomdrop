@@ -25,6 +25,7 @@ import {
   Account,
   CollectionMintStage,
   CollectionMintStageGroup,
+  CollectionPublishStatus,
 } from '@prisma/client';
 import { Me } from 'src/common/decorators/me.decorator';
 import {
@@ -43,13 +44,14 @@ import { MintProofResponseDto } from './dto/mint-proof.dto';
 import { UploadInterceptor } from './decorators/upload.interceptors.decorator';
 import { Upload, UploadResponse } from './dto/upload.dto';
 import { RevealedTokenDto } from './dto/revealed-token.dto';
+import { SetPublishStatusDto } from './dto/publish-status.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
 export class CollectionsController {
   constructor(private readonly collectionsService: CollectionsService) {}
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @Post()
   create(
     @Me() account: Account,
@@ -67,19 +69,33 @@ export class CollectionsController {
   @ApiResponse({
     type: [Collection],
   })
+  @UseGuards(AuthGuard({ required: false }))
   @Get()
-  findAll(@ApiPage() page: ApiPageOptions, @Req() req: Request) {
+  findAll(
+    @ApiPage() page: ApiPageOptions,
+    @Req() req: Request,
+    @Me() account: Account,
+  ) {
     const owner = req.query.owner ? (req.query.owner as string) : undefined;
-    return this.collectionsService.findAll({ page, filter: { owner } });
+    const publishStatus = (
+      req.query.publishStatus
+        ? (req.query.publishStatus as string[])
+        : ['PUBLISHED']
+    ) as CollectionPublishStatus[];
+    return this.collectionsService.findAllPublic(
+      { page, filter: { owner, publishStatus } },
+      account,
+    );
   }
 
+  @UseGuards(AuthGuard({ required: false }))
   @Get(':slug')
-  findOne(@Param('slug') slug: string) {
-    return this.collectionsService.findOne(slug);
+  findOne(@Param('slug') slug: string, @Me() account: Account) {
+    return this.collectionsService.findOnePublic(slug, account);
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @Patch(':slug')
   update(
     @Me() account: Account,
@@ -90,7 +106,7 @@ export class CollectionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @Post(':slug/graphics')
   @UploadInterceptor([
     { name: 'logo', maxCount: 1 },
@@ -131,7 +147,7 @@ export class CollectionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @ApiBody({
     description: 'Mint Stage Group',
     type: MintStageGroupDto,
@@ -153,7 +169,7 @@ export class CollectionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @ApiResponse({
     type: CreateMintStageGroupResponseDto,
   })
@@ -167,7 +183,7 @@ export class CollectionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @ApiResponse({
     type: MintStageGroupDto,
   })
@@ -192,7 +208,7 @@ export class CollectionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @Post(':slug/upload')
   @UploadInterceptor([{ name: 'file', maxCount: 1 }])
   @ApiConsumes('multipart/form-data')
@@ -224,7 +240,7 @@ export class CollectionsController {
   @ApiResponse({
     type: [Collection],
   })
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @Get(':slug/revealed-tokens')
   findAllRevealedTokens(
     @ApiPage() page: ApiPageOptions,
@@ -239,7 +255,7 @@ export class CollectionsController {
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard())
   @ApiBody({
     type: RevealedTokenDto,
   })
@@ -248,7 +264,6 @@ export class CollectionsController {
   })
   @Post(':slug/revealed-tokens')
   createRevealedToken(
-    @ApiPage() page: ApiPageOptions,
     @Me() account: Account,
     @Param('slug') slug: string,
     @Body() revealedTokenDto: RevealedTokenDto,
@@ -257,6 +272,27 @@ export class CollectionsController {
       account,
       slug,
       revealedTokenDto,
+    );
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
+  @ApiBody({
+    type: RevealedTokenDto,
+  })
+  @ApiResponse({
+    type: RevealedTokenDto,
+  })
+  @Post(':slug/publish-status')
+  setPublishedStatus(
+    @Me() account: Account,
+    @Param('slug') slug: string,
+    @Body() setPublishStatusDto: SetPublishStatusDto,
+  ) {
+    return this.collectionsService.setPublishStatus(
+      account,
+      slug,
+      setPublishStatusDto,
     );
   }
 }

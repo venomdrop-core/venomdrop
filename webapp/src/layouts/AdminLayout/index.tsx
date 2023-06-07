@@ -19,6 +19,7 @@ import {
 import VenomDropLogoSrc from "../../assets/venomdrop-logo.svg";
 import classNames from "classnames";
 import { Link, useLocation, useParams } from "react-router-dom";
+import { CollectionPublishStatus } from "../../components/CollectionPublishStatusSelect";
 
 const MenuLink: React.FC<{
   label: string;
@@ -186,9 +187,7 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                         className="my-5 border-t border-slate-800"
                         aria-hidden="true"
                       />
-                      <div className="space-y-1 px-2">
-                        {dropPageLink}
-                      </div>
+                      <div className="space-y-1 px-2">{dropPageLink}</div>
                     </nav>
                   </div>
                   <div className="flex flex-shrink-0 border-t border-slate-800 p-4">
@@ -244,9 +243,10 @@ export const AdminLayout: FC<AdminProps> = ({ children }) => {
                     className="my-5 border-t border-gray-800"
                     aria-hidden="true"
                   />
-                  <div className="flex-1 space-y-1 px-2">
-                    {dropPageLink}
+                  <div className="space-y-1 px-2">
+                    <CollectionPublishStatus />
                   </div>
+                  <div className="flex-1 space-y-1 px-2 mt-4">{dropPageLink}</div>
                 </nav>
               </div>
               <div className="flex flex-shrink-0 border-t border-gray-800 px-4 py-7">

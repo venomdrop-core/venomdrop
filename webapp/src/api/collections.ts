@@ -12,6 +12,7 @@ export interface Collection {
   coverImageSrc?: string;
   featuredImageSrc?: string;
   contractAddress: string;
+  publishStatus: string;
 }
 
 export interface AllowlistDto {
@@ -44,6 +45,10 @@ export interface RevealedTokenDto {
   metadataJson?: string;
 }
 
+export interface PublishStatusDto {
+  status: 'DRAFT' | 'PUBLISHED'
+}
+
 export const getCollection = async (
   slug: string
 ): Promise<Collection | null> => {
@@ -55,7 +60,7 @@ export const getCollection = async (
   }
 };
 
-export const getCollections = async (page: Page, filter: { owner?: string } = {}): Promise<Collection[] | null> => {
+export const getCollections = async (page: Page, filter: { owner?: string, publishStatus?: string[] } = {}): Promise<Collection[] | null> => {
   try {
     const { data } = await api.get('/collections', {
       params: {
@@ -158,5 +163,15 @@ export const getRevealedTokens = async (slug: string, page: Page): Promise<Revea
     return data;
   } catch (error) {
     return [];
+  }
+};
+
+
+export const setPublishStatus = async (slug: string, publishStatusDto: PublishStatusDto): Promise<PublishStatusDto | null> => {
+  try {
+    const { data } = await api.post(`/collections/${slug}/publish-status`, publishStatusDto);
+    return data;
+  } catch (error) {
+    return null;
   }
 };

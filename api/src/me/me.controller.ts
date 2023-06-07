@@ -6,7 +6,7 @@ import { Account } from './account.dto';
 
 @ApiTags('Me')
 @ApiBearerAuth()
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard())
 @Controller('me')
 export class MeController {
   @ApiResponse({
