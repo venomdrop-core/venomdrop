@@ -41,7 +41,7 @@ ingress:
         - path: /
           pathType: Prefix
   tls:
-   - secretName: venomdrop-tls
+   - secretName: venomdrop-webapp-tls
      hosts:
        - venomdrop.xyz
 

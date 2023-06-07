@@ -41,10 +41,14 @@ spec:
             httpGet:
               path: /
               port: http
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               port: http
+              initialDelaySeconds: 10
+              timeoutSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
