@@ -47,7 +47,7 @@ jobs:
             VITE_API_BASE_URL=https://api.venomdrop.xyz
             VITE_VENOM_NETWORK=devnet
             VITE_VENOMSCAN_BASE_URL=https://devnet.venomscan.com
-            VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS=${{ env.VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS }}
+            VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS=${{ vars.VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS }}
 
       - id: 'auth'
         uses: 'google-github-actions/auth@v1'
