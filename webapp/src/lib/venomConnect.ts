@@ -1,7 +1,20 @@
 import { VenomConnect } from 'venom-connect';
+import { EverscaleStandaloneClient } from '@strandgeek/everscale-standalone-client';
 import { ProviderRpcClient } from 'everscale-inpage-provider';
-import { EverscaleStandaloneClient } from 'everscale-standalone-client';
 
+
+export const createEverscaleStandaloneClient = () => {
+  return EverscaleStandaloneClient.create({
+    connection: {
+      id: 1002,
+      type: 'jrpc',
+      data: {
+        endpoint: 'https://jrpc-devnet.venom.foundation',
+      },
+    },
+    initInput: '/nekoton_wasm_bg.wasm',
+  })
+}
 
 const NETWORK_CONFIG: {
   [key: string]: any
@@ -11,16 +24,7 @@ const NETWORK_CONFIG: {
   },
   devnet: {
     networkId: 1002,
-    fallback: () => EverscaleStandaloneClient.create({
-      connection: {
-        id: 1002,
-        type: 'jrpc',
-        data: {
-          endpoint: 'https://jrpc-devnet.venom.foundation',
-        },
-      },
-      initInput: '../../node_modules/nekoton-wasm/nekoton_wasm_bg.wasm',
-    })
+    fallback: () => createEverscaleStandaloneClient(),
   }
 }
 
