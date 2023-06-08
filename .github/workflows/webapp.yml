@@ -9,13 +9,16 @@ on:
     branches: [ "main" ]
     paths:
       - "webapp/**"
+      - ".github/workflows/webapp.yml"
   pull_request:
     branches: [ "main"]
     paths:
       - "webapp/**"
+      - ".github/workflows/webapp.yml"
 
 jobs:
-  docker:
+  deploy:
+    name: "Build and Deploy"
     runs-on: ubuntu-latest
     steps:
       - id: commit

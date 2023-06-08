@@ -8,13 +8,16 @@ on:
     branches: [ "main" ]
     paths:
       - "./api/**"
+      - ".github/workflows/api.yml"
   pull_request:
     branches: [ "main"]
     paths:
       - "./api/**"
+      - ".github/workflows/api.yml"
 
 jobs:
-  docker:
+  deploy:
+    name: "Build and Deploy"
     runs-on: ubuntu-latest
     steps:
       - id: commit
