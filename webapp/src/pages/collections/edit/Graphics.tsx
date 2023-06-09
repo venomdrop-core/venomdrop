@@ -12,7 +12,6 @@ import { toast } from "react-toastify";
 
 export interface GraphicsProps {}
 
-
 interface Form {
   logo?: FileList;
   cover?: FileList;
@@ -23,12 +22,10 @@ export const Graphics: FC<GraphicsProps> = () => {
   const { slug } = useParams();
   const { data: collection, refetch } = useCollection(slug);
   const updateMutation = useMutation({
-    mutationFn: (data: FormData) => updateCollectionGraphics(collection!.slug, data),
+    mutationFn: (data: FormData) =>
+      updateCollectionGraphics(collection!.slug, data),
   });
-  const {
-    register,
-    handleSubmit,
-  } = useForm<Form>({});
+  const { register, handleSubmit, formState: { isDirty } } = useForm<Form>({});
   const onSubmit = async (data: Form) => {
     const formData = new FormData();
     if (data.logo && data.logo.length) {
@@ -42,11 +39,17 @@ export const Graphics: FC<GraphicsProps> = () => {
     }
     await updateMutation.mutateAsync(formData);
     refetch();
-    toast('Collection Updated!');
-  }
+    toast("Collection Updated!");
+  };
   return (
     <AdminLayout>
-      <AdminForm title="Graphics" submitLabel="Save Collection" onSubmit={handleSubmit(onSubmit)} loading={updateMutation.isLoading}>
+      <AdminForm
+        title="Graphics"
+        submitLabel="Save Collection"
+        onSubmit={handleSubmit(onSubmit)}
+        loading={updateMutation.isLoading}
+        submitDisabled={!isDirty}
+      >
         <InputWrapper
           label="Logo Image"
           description="A squared image used to display across the VenomDrop pages"
@@ -54,7 +57,7 @@ export const Graphics: FC<GraphicsProps> = () => {
         >
           <ImageUploadInput
             src={collection?.logoImageSrc}
-            {...register('logo')}
+            {...register("logo")}
           />
         </InputWrapper>
         <InputWrapper
@@ -66,7 +69,7 @@ export const Graphics: FC<GraphicsProps> = () => {
             src={collection?.coverImageSrc}
             displayWidth="700px"
             displayHeight="175px"
-            {...register('cover')}
+            {...register("cover")}
           />
         </InputWrapper>
         <InputWrapper
@@ -78,7 +81,7 @@ export const Graphics: FC<GraphicsProps> = () => {
             src={collection?.featuredImageSrc}
             displayWidth="300px"
             displayHeight="200px"
-            {...register('featured')}
+            {...register("featured")}
           />
         </InputWrapper>
       </AdminForm>
