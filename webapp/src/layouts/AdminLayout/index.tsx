@@ -215,16 +215,13 @@ export const AdminLayout: FC<AdminProps> = ({ children, title }) => {
                           <div>
                             <img
                               className="inline-block h-10 w-10 rounded-full"
-                              src={user.imageUrl}
+                              src={getIdenticonSrc(me?.address)}
                               alt=""
                             />
                           </div>
                           <div className="ml-3">
                             <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                              {user.name}
-                            </p>
-                            <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
-                              View profile
+                              {getShortAddress(me?.address)}
                             </p>
                           </div>
                         </div>
@@ -246,11 +243,13 @@ export const AdminLayout: FC<AdminProps> = ({ children, title }) => {
               <div className="flex min-h-0 flex-1 flex-col border-r border-gray-800 bg-slate-950">
                 <div className="flex flex-1 flex-col overflow-y-auto pt-5 pb-4">
                   <div className="flex flex-shrink-0 items-center px-4 mb-4">
-                    <img
-                      className="h-7 w-auto"
-                      src={VenomDropLogoSrc}
-                      alt="VenomDrop"
-                    />
+                    <Link to="/">
+                      <img
+                        className="h-7 w-auto"
+                        src={VenomDropLogoSrc}
+                        alt="VenomDrop"
+                      />
+                    </Link>
                   </div>
                   <div className="space-y-1 p-4">
                     <div className="flex mb-4 items-center">
