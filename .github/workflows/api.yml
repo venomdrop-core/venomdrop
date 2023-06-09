@@ -4,15 +4,16 @@
 name: API Build and Deploy
 
 on:
+  workflow_dispatch: {}
   push:
     branches: [ "main" ]
     paths:
-      - "./api/**"
+      - "api/**"
       - ".github/workflows/api.yml"
   pull_request:
     branches: [ "main"]
     paths:
-      - "./api/**"
+      - "api/**"
       - ".github/workflows/api.yml"
 
 jobs:
