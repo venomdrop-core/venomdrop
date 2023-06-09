@@ -13,6 +13,7 @@ export interface Collection {
   featuredImageSrc?: string;
   contractAddress: string;
   publishStatus: string;
+  ownerId: string;
 }
 
 export interface AllowlistDto {
