@@ -61,7 +61,7 @@ export const Details: FC<DetailsProps> = () => {
           title="Collection Details"
           submitLabel="Save Collection"
           onSubmit={handleSubmit(onSubmit)}
-          submitDisabled={Object.keys(errors).length || !isValid}
+          submitDisabled={Object.keys(errors).length > 0 || !isValid}
         >
           <InputWrapper label="Name" description="Set the collection name">
             <input

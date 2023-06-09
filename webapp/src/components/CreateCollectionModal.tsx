@@ -45,7 +45,7 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
   }, [venomProvider]);
 
   const form = useForm<Form>({ mode: 'onChange' });
-  const { register, handleSubmit, control, watch, setValue, formState: { isValid, isDirty, errors } } = form;
+  const { register, handleSubmit, control, watch, setValue, formState: { isValid, errors } } = form;
   const name = watch('name');
 
   console.log(errors);

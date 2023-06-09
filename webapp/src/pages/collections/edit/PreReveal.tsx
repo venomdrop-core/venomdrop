@@ -25,6 +25,7 @@ export const PreReveal: FC<PreRevealProps> = () => {
     register,
     handleSubmit,
     reset,
+    formState: { isDirty },
   } = useForm<Form>({});
   const [loading, setLoading] = useState(true);
   const { accountInteraction, venomProvider } = useVenomWallet();
@@ -34,18 +35,21 @@ export const PreReveal: FC<PreRevealProps> = () => {
   const uploadMutation = useMutation({
     mutationFn: (data: FormData) => uploadCollectionFile(slug!, data),
   });
-  useEffect(() => {
+  const fetchCurrentPreReveal = () => {
     if (collection) {
       collection.methods
-        .getInitialMintJson()
-        .call()
-        .then(({ initialMintJson }) => {
-          const metadata = JSON.parse(initialMintJson);
-          setCurrentImageSrc(metadata.preview.source);
-          reset({ name: metadata.name });
-          setLoading(false);
-        });
+      .getInitialMintJson()
+      .call()
+      .then(({ initialMintJson }) => {
+        const metadata = JSON.parse(initialMintJson);
+        setCurrentImageSrc(metadata.preview.source);
+        reset({ name: metadata.name });
+        setLoading(false);
+      });
     }
+  }
+  useEffect(() => {
+    fetchCurrentPreReveal();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collection]);
 
@@ -75,6 +79,7 @@ export const PreReveal: FC<PreRevealProps> = () => {
         .send({ from: accountInteraction!.address, amount: toNano("0.1") });
       await waitFinalized(venomProvider, txn);
       toast("Pre-Reveal updated successfully");
+      fetchCurrentPreReveal();
     } catch (error) {
       toast.error("Could not update Pre-Reveal");
       console.error(error);
@@ -90,6 +95,7 @@ export const PreReveal: FC<PreRevealProps> = () => {
         submitLabel="Save Collection"
         onSubmit={handleSubmit(onSubmit)}
         loading={loading}
+        submitDisabled={!isDirty}
       >
         <InputWrapper label="Image" description="Upload a image">
           <ImageUploadInput src={currentImageSrc} {...register("file")} />
