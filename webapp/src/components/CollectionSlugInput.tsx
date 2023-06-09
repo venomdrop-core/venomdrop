@@ -41,7 +41,7 @@ export const CollectionSlugInput: FC<CollectionSlugInputProps> = ({ currentSlug 
         <Controller
           name="slug"
           control={control}
-          rules={{ required: false }}
+          rules={{ required: true }}
           render={({ field }) => (
             <input
               type="text"

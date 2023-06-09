@@ -9,6 +9,7 @@ export interface AdminFormProps {
   submitLabel?: string;
   onSubmit?: React.FormEventHandler<HTMLFormElement>;
   loading?: boolean;
+  submitDisabled?: boolean;
 }
 
 export const AdminForm: FC<AdminFormProps> = ({
@@ -18,6 +19,7 @@ export const AdminForm: FC<AdminFormProps> = ({
   submitLabel = "Save",
   onSubmit,
   loading,
+  submitDisabled,
 }) => {
   return (
     <form onSubmit={onSubmit}>
@@ -46,7 +48,7 @@ export const AdminForm: FC<AdminFormProps> = ({
           <button
             className={classNames("btn btn-primary", { loading })}
             type="submit"
-            disabled={loading}
+            disabled={loading || submitDisabled}
           >
             {submitLabel}
           </button>

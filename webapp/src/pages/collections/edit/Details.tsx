@@ -27,12 +27,16 @@ export const Details: FC<DetailsProps> = () => {
   const updateMutation = useMutation({
     mutationFn: (data: FormData) => updateCollection(collection!.slug, data),
   });
-  const form = useForm<FormData>({});
+  const form = useForm<FormData>();
   const {
     register,
     handleSubmit,
     control,
     reset,
+    formState: {
+      errors,
+      isValid
+    }
   } = form;
   useEffect(() => {
     if (collection) {
@@ -57,6 +61,7 @@ export const Details: FC<DetailsProps> = () => {
           title="Collection Details"
           submitLabel="Save Collection"
           onSubmit={handleSubmit(onSubmit)}
+          submitDisabled={Object.keys(errors).length || !isValid}
         >
           <InputWrapper label="Name" description="Set the collection name">
             <input
