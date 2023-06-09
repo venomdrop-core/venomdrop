@@ -38,7 +38,7 @@ export const InputWrapper: FC<InputWrapperProps> = ({
         {children}
       </div>
       {error && (
-        <div className="text text-error text-sm">
+        <div className="text text-error text-sm mt-4">
           {error}
         </div>
       )}

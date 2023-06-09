@@ -11,6 +11,8 @@ import { useCollectionContract } from "../hooks/useCollectionContract";
 import { useParams } from "react-router-dom";
 import { toNano } from "../utils/toNano";
 import { RevealedTokenDto, createRevealedToken } from "../api/collections";
+import { useCollectionInfo } from "../hooks/useCollectionInfo";
+import { toast } from "react-toastify";
 
 interface Form {
   tokenId: string;
@@ -40,6 +42,7 @@ export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (
   const [loading, setLoading] = useState(false);
   const { slug } = useParams();
   const collection = useCollectionContract(slug);
+  const { data: info } = useCollectionInfo(slug);
   const { accountInteraction } = useVenomWallet();
   const createMutation = useMutation({
     mutationFn: (data: RevealedTokenDto) => createRevealedToken(slug!, data),
@@ -51,6 +54,8 @@ export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (
     control,
     reset,
     watch,
+    setError,
+    formState: { errors }
   } = useForm<Form>({
     defaultValues: {
       json: INITIAL_JSON,
@@ -58,6 +63,19 @@ export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (
   });
 
   const onSubmit = async (data: Form) => {
+    if (!info) {
+      toast.error('Could not retrieve collection info');
+      return;
+    }
+    const tokenId = parseInt(data.tokenId);
+    if (isNaN(tokenId)) {
+      setError('tokenId', { message: 'Token ID should be a number' });
+      return;
+    }
+    if (tokenId >= parseInt(info.totalSupply)) {
+      setError('tokenId', { message: `Token ID not minted. Current supply: ${info.totalSupply}` });
+      return;
+    }
     if (!collection) {
       return;
     }
@@ -114,6 +132,7 @@ export const RevealTokenModal: FC<ModalProps & { onFinish: () => void }> = (
           <InputWrapper
             label="Token ID"
             description="Enter the token id you want to reveal"
+            error={errors.tokenId?.message}
           >
             <input
               type="text"
