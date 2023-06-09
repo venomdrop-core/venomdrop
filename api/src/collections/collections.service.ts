@@ -21,6 +21,8 @@ import { Address } from 'everscale-inpage-provider';
 import { MintProofResponseDto } from './dto/mint-proof.dto';
 import { RevealedTokenDto } from './dto/revealed-token.dto';
 import { SetPublishStatusDto } from './dto/publish-status.dto';
+import { SlugAvailabilityResponseDto } from './dto/slug-availability.dto';
+import ShortUniqueId from 'short-unique-id';
 
 function getAddrHex(address: Address): string {
   const addr = address.toString();
@@ -496,5 +498,58 @@ export class CollectionsService {
       throw new BadRequestException('Collection is not valid to be published');
     }
     await this._updatePublishStatus(c.id, 'PUBLISHED');
+  }
+
+  /**
+   * This function checks if a collection slug is available.
+   *
+   * Case the slug is not available, we generate some available suggestions
+   * based on the provided name. (Variations with random strings at the end)
+   *
+   * @param slug the slug to check availability
+   * @returns SlugAvailabilityResponseDto
+   */
+  async getSlugAvailability(
+    slug: string,
+  ): Promise<SlugAvailabilityResponseDto> {
+    const c = await this.prismaService.collection.findUnique({
+      where: {
+        slug,
+      },
+    });
+    if (c === null) {
+      return {
+        status: true,
+        suggestions: [],
+      };
+    }
+
+    const uid = new ShortUniqueId();
+
+    const numericSlugs = Array.from(Array(3).keys()).map(
+      (idx) => `${slug}-${idx + 1}`,
+    );
+
+    const randomSlugs = Array.from(Array(3).keys())
+      .map(() => uid())
+      .map((id) => `${slug}-${id.toString()}`);
+
+    const slugs = [...numericSlugs, ...randomSlugs];
+
+    const foundCollections = await this.prismaService.collection.findMany({
+      where: {
+        slug: {
+          in: slugs,
+        },
+      },
+    });
+    const existentSlugs = foundCollections.map((c) => c.slug);
+    const suggestions = slugs.filter(
+      (suggestedSlug) => !existentSlugs.includes(suggestedSlug),
+    );
+    return {
+      status: false,
+      suggestions,
+    };
   }
 }

@@ -16,6 +16,7 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiOperation,
   ApiQuery,
   ApiResponse,
   ApiTags,
@@ -45,6 +46,7 @@ import { UploadInterceptor } from './decorators/upload.interceptors.decorator';
 import { Upload, UploadResponse } from './dto/upload.dto';
 import { RevealedTokenDto } from './dto/revealed-token.dto';
 import { SetPublishStatusDto } from './dto/publish-status.dto';
+import { SlugAvailabilityResponseDto } from './dto/slug-availability.dto';
 
 @ApiTags('Collections')
 @Controller('collections')
@@ -294,5 +296,17 @@ export class CollectionsController {
       slug,
       setPublishStatusDto,
     );
+  }
+
+  @ApiResponse({
+    type: SlugAvailabilityResponseDto,
+  })
+  @ApiOperation({
+    summary:
+      'Check if a slug is available. Otherwise generate some suggested slugs',
+  })
+  @Get(':slug/availability')
+  getSlugAvailability(@Param('slug') slug: string) {
+    return this.collectionsService.getSlugAvailability(slug);
   }
 }
