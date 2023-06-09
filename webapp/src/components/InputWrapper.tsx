@@ -7,6 +7,7 @@ export interface InputWrapperProps {
   children?: React.ReactNode;
   bottomLeftContent?: React.ReactNode | string;
   bottomRightContent?: React.ReactNode | string;
+  error?: string;
 }
 
 export const InputWrapper: FC<InputWrapperProps> = ({
@@ -15,7 +16,8 @@ export const InputWrapper: FC<InputWrapperProps> = ({
   description,
   children,
   bottomLeftContent,
-  bottomRightContent
+  bottomRightContent,
+  error,
 }) => {
   return (
     <div className="mb-8 form-control">
@@ -35,6 +37,11 @@ export const InputWrapper: FC<InputWrapperProps> = ({
       <div className="mt-2">
         {children}
       </div>
+      {error && (
+        <div className="text text-error text-sm">
+          {error}
+        </div>
+      )}
       {bottomLeftContent || bottomRightContent ? (
         <label className="label">
           <span className="label-text-alt">{bottomLeftContent}</span>

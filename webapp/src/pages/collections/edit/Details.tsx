@@ -3,12 +3,13 @@ import { AdminLayout } from "../../../layouts/AdminLayout";
 import { InputWrapper } from "../../../components/InputWrapper";
 import { CategorySelect } from "../../../components/CategorySelect";
 import { AdminForm } from "../../../components/AdminForm";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { updateCollection } from "../../../api/collections";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { useCollection } from "../../../hooks/useCollection";
 import { toast } from "react-toastify";
+import { CollectionSlugInput } from "../../../components/CollectionSlugInput";
 
 export interface DetailsProps {}
 
@@ -26,12 +27,13 @@ export const Details: FC<DetailsProps> = () => {
   const updateMutation = useMutation({
     mutationFn: (data: FormData) => updateCollection(collection!.slug, data),
   });
+  const form = useForm<FormData>({});
   const {
     register,
     handleSubmit,
     control,
     reset,
-  } = useForm<FormData>({});
+  } = form;
   useEffect(() => {
     if (collection) {
       reset({
@@ -49,58 +51,51 @@ export const Details: FC<DetailsProps> = () => {
     toast("Collection Updated!");
   };
   return (
-    <AdminLayout>
-      <AdminForm
-        title="Collection Details"
-        submitLabel="Save Collection"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <InputWrapper label="Name" description="Set the collection name">
-          <input
-            type="text"
-            className="input input-bordered w-full"
-            {...register("name")}
-          />
-        </InputWrapper>
-        <InputWrapper
-          label="Description"
-          description="Write a description for your collection"
+    <FormProvider {...form}>
+      <AdminLayout>
+        <AdminForm
+          title="Collection Details"
+          submitLabel="Save Collection"
+          onSubmit={handleSubmit(onSubmit)}
         >
-          <textarea
-            className="textarea textarea-bordered w-full text-base"
-            {...register("description")}
-          ></textarea>
-        </InputWrapper>
-        <InputWrapper label="URL" description="Set a custom URL on VenomDrop">
-          <div className="input input-bordered flex">
-            <span className="flex select-none items-center pl-0 text-gray-400 text-base">
-              https://venomdrop.xyz/collections/
-            </span>
+          <InputWrapper label="Name" description="Set the collection name">
             <input
               type="text"
-              className="input border-0 focus:border-0 focus:ring-0 focus:outline-none bg-transparent pl-0.5 text-white"
-              {...register("slug")}
+              className="input input-bordered w-full"
+              {...register("name")}
             />
-          </div>
-        </InputWrapper>
-        <InputWrapper
-          label="Category"
-          description="Boost the visibility of your listings on VenomDrop by assigning them a relevant category"
-        >
-          <Controller
-            name="categorySlug"
-            control={control}
-            rules={{ required: false }}
-            render={({ field }) => (
-              <CategorySelect
-                {...field}
-                onChange={(slug) => field.onChange({ target: { value: slug } })}
-                value={field.value}
-              />
-            )}
-          />
-        </InputWrapper>
-      </AdminForm>
-    </AdminLayout>
+          </InputWrapper>
+          <InputWrapper
+            label="Description"
+            description="Write a description for your collection"
+          >
+            <textarea
+              className="textarea textarea-bordered w-full text-base"
+              {...register("description")}
+            ></textarea>
+          </InputWrapper>
+          <InputWrapper label="URL" description="Set a custom URL on VenomDrop">
+            <CollectionSlugInput currentSlug={slug} />
+          </InputWrapper>
+          <InputWrapper
+            label="Category"
+            description="Boost the visibility of your listings on VenomDrop by assigning them a relevant category"
+          >
+            <Controller
+              name="categorySlug"
+              control={control}
+              rules={{ required: false }}
+              render={({ field }) => (
+                <CategorySelect
+                  {...field}
+                  onChange={(slug) => field.onChange({ target: { value: slug } })}
+                  value={field.value}
+                />
+              )}
+            />
+          </InputWrapper>
+        </AdminForm>
+      </AdminLayout>
+    </FormProvider>
   );
 };

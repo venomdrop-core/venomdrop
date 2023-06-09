@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useState } from "react";
 import { Modal, ModalProps } from "./Modal";
 import { useVenomWallet } from "../hooks/useVenomWallet";
 import { abi } from "../contracts/abi";
@@ -6,12 +6,15 @@ import { getRandomNonce } from "../utils/getRandomNonce";
 import { toNano } from "../utils/toNano";
 import { Address } from "everscale-inpage-provider";
 import { InputWrapper } from "./InputWrapper";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { CategorySelect } from "./CategorySelect";
 import { useMutation } from "@tanstack/react-query";
-import { createCollection } from "../api/collections";
+import { createCollection, getSlugAvailability } from "../api/collections";
 import { useNavigate } from "react-router-dom";
 import classNames from "classnames";
+import { CollectionSlugInput } from "./CollectionSlugInput";
+import slugify from 'slugify';
+import { toast } from "react-toastify";
 
 const FACTORY_ADDRESS = import.meta.env
   .VITE_VENOMDROP_COLLECTION_FACTORY_ADDRESS;
@@ -41,7 +44,36 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
       : null;
   }, [venomProvider]);
 
-  const { register, handleSubmit, control } = useForm<Form>({});
+  const form = useForm<Form>({ mode: 'onChange' });
+  const { register, handleSubmit, control, watch, setValue, formState: { isValid, isDirty, errors } } = form;
+  const name = watch('name');
+
+  console.log(errors);
+
+  const updateSlugByName = async (name: string) => {
+    const slug = slugify(name, {
+      replacement: '-',
+      lower: true,
+      strict: true,
+      trim: true
+    })
+    try {
+      const res = await getSlugAvailability(slug);
+      if (res.status) {
+        setValue('slug', slug);
+        return;
+      }
+      if (res.suggestions.length > 0) {
+        setValue('slug', res.suggestions[0]);
+      }
+    } catch (error) {
+      /* empty */
+    }
+  };
+
+  useEffect(() => {
+    updateSlugByName(name);
+  }, [name]);
 
   const deploy = async (): Promise<Address> => {
     return new Promise((resolve, reject) => {
@@ -114,7 +146,7 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
       setCollectionAddress(address);
     }
     if (!address) {
-      // TODO: Show an error message
+      toast.error('Could not identify the collection contract');
       return;
     }
     const collection = await createMutation.mutateAsync({
@@ -127,67 +159,64 @@ export const CreateCollectionModal: FC<ModalProps> = (props) => {
   const isLoading = deploying || createMutation.isLoading;
 
   return (
-    <Modal {...props}>
-      <div className="p-8">
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <InputWrapper label="Name" description="Set the collection name">
-            <input
-              type="text"
-              className="input input-bordered w-full"
-              {...register("name")}
-            />
-          </InputWrapper>
-          <InputWrapper
-            label="Description"
-            description="Write a description for your collection"
-          >
-            <textarea
-              className="textarea textarea-bordered w-full text-base"
-              {...register("description")}
-            ></textarea>
-          </InputWrapper>
-          <InputWrapper label="URL" description="Set a custom URL on VenomDrop">
-            <div className="input input-bordered flex">
-              <span className="flex select-none items-center pl-0 text-gray-400 text-base">
-                https://venomdrop.xyz/collections/
-              </span>
+    <FormProvider {...form}>
+      <Modal {...props}>
+        <div className="p-8">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <InputWrapper label="Name" description="Set the collection name">
               <input
                 type="text"
-                className="input border-0 focus:border-0 focus:ring-0 focus:outline-none bg-transparent pl-0.5 text-white"
-                {...register("slug")}
+                className="input input-bordered w-full"
+                {...register("name")}
               />
-            </div>
-          </InputWrapper>
-          <InputWrapper
-            label="Category"
-            description="Boost the visibility of your listings on VenomDrop by assigning them a relevant category"
-          >
-            <Controller
-              name="categorySlug"
-              control={control}
-              rules={{ required: false }}
-              render={({ field }) => (
-                <CategorySelect
-                  {...field}
-                  onChange={(slug) =>
-                    field.onChange({ target: { value: slug } })
-                  }
-                  value={field.value}
-                />
-              )}
-            />
-          </InputWrapper>
-          <button
-            type="submit"
-            className={classNames("btn btn-primary btn-block", {
-              loading: isLoading,
-            })}
-            disabled={isLoading}
-          >
-            Create Collection
-          </button>
-        </form>
-      </div>
-    </Modal>
+            </InputWrapper>
+            <InputWrapper
+              label="Description"
+              description="Write a description for your collection"
+              error={errors.description?.message}
+            >
+              <textarea
+                className="textarea textarea-bordered w-full text-base"
+                {...register("description", { required: true })}
+              ></textarea>
+            </InputWrapper>
+            <InputWrapper
+              label="URL"
+              description="Set a custom URL on VenomDrop"
+            >
+              <CollectionSlugInput />
+            </InputWrapper>
+            <InputWrapper
+              label="Category"
+              description="Boost the visibility of your listings on VenomDrop by assigning them a relevant category"
+            >
+              <Controller
+                name="categorySlug"
+                control={control}
+                rules={{ required: false }}
+                render={({ field }) => (
+                  <CategorySelect
+                    {...field}
+                    onChange={(slug) =>
+                      field.onChange({ target: { value: slug } })
+                    }
+                    value={field.value}
+                  />
+                )}
+              />
+            </InputWrapper>
+            <button
+              type="submit"
+              className={classNames("btn btn-primary btn-block", {
+                loading: isLoading,
+              })}
+              disabled={isLoading || Object.keys(errors).length > 0 || !isValid}
+            >
+              Create Collection
+            </button>
+          </form>
+        </div>
+      </Modal>
+    </FormProvider>
   );
 };
