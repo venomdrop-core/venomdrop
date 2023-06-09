@@ -19,6 +19,8 @@ import { useCollection } from "../../hooks/useCollection";
 import { useMe } from "../../hooks/useMe";
 import { LoadingBox } from "../../components/LoadingBox";
 import { toast } from "react-toastify";
+import { getIdenticonSrc } from "../../utils/getIdenticonSrc";
+import { getShortAddress } from "../../utils/getShortAddress";
 
 const MenuLink: React.FC<{
   label: string;
@@ -284,21 +286,18 @@ export const AdminLayout: FC<AdminProps> = ({ children, title }) => {
                   </nav>
                 </div>
                 <div className="flex flex-shrink-0 border-t border-gray-800 px-4 py-7">
-                  <a href="#" className="group block w-full flex-shrink-0 pt-1">
+                  <a className="group block w-full flex-shrink-0 pt-1">
                     <div className="flex items-center">
                       <div>
                         <img
                           className="inline-block h-9 w-9 rounded-full"
-                          src={user.imageUrl}
+                          src={getIdenticonSrc(me?.address)}
                           alt=""
                         />
                       </div>
                       <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-400 group-hover:text-gray-200">
-                          {user.name}
-                        </p>
-                        <p className="text-xs font-medium text-gray-500 group-hover:text-gray-300">
-                          View profile
+                        <p className="text-sm font-medium text-gray-400">
+                          {getShortAddress(me?.address)}
                         </p>
                       </div>
                     </div>

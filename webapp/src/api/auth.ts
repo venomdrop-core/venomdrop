@@ -24,7 +24,7 @@ export const completeAuth = async ({
   return data;
 };
 
-export const getMe = async (): Promise<{ id: string; account: string } | null > => {
+export const getMe = async (): Promise<{ id: string; address: string } | null > => {
   try {    
     const { data } = await api.get('/me');
     return data;

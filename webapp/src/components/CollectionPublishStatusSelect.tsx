@@ -12,6 +12,7 @@ import { useCollection } from "../hooks/useCollection";
 import { GlobeAltIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useMutation } from "@tanstack/react-query";
 import { setPublishStatus } from "../api/collections";
+import { toast } from "react-toastify";
 
 const statusOptions = [
   {
@@ -70,6 +71,7 @@ export const CollectionPublishStatus = () => {
   const setStatus = async (status: "DRAFT" | "PUBLISHED") => {
     await setPublishStatusMutation.mutateAsync(status);
     await refetch();
+    toast(status === 'PUBLISHED' ? 'Collection published!': 'Collection changed to draft');
     closeConfirmModal();
   };
 

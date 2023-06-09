@@ -14,7 +14,7 @@ export interface AddMintStageModalProps extends ModalProps {
   setMintStages: React.Dispatch<React.SetStateAction<MintStage[]>>;
 }
 
-const INITIAL_MODE = 'ALLOWLIST';
+const INITIAL_MODE = "ALLOWLIST";
 
 const STAGE_MODE_OPTIONS: Option[] = [
   {
@@ -29,11 +29,18 @@ const STAGE_MODE_OPTIONS: Option[] = [
   },
 ];
 
+type FormErrorMessages = {
+  name?: string;
+  price?: string;
+  range?: string
+};
+
 export const AddMintStageModal: FC<AddMintStageModalProps> = ({
   setMintStages,
   mintStages,
   ...props
 }) => {
+  const [errorMessages, setErrorMessages] = useState<FormErrorMessages>({});
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [mode, setMode] = useState("ALLOWLIST");
@@ -47,8 +54,8 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({
   };
   const setOpen: any = (open: boolean) => {
     // Reset Form
-    setName('');
-    setPrice('');
+    setName("");
+    setPrice("");
     setMode(INITIAL_MODE);
     setAllowlist([]);
     setRange({
@@ -58,13 +65,30 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({
     props.setOpen(open);
   };
   const onAddClick = () => {
+    const errorMessages: FormErrorMessages = {};
+    if (name === '') {
+      errorMessages.name = 'Name is a required field';
+    }
+    if (price === '' || isNaN(parseFloat(price))) {
+      errorMessages.price = 'Invalid price';
+    }
+    if (range.startDate === null || range.endDate === null) {
+      errorMessages.range = 'Please, select a start and end date';
+    }
+
+    setErrorMessages(errorMessages);
+
+    if (Object.keys(errorMessages).length > 0) {
+      return;
+    }
+
     const mintStage: MintStage = {
       name,
       startTime: range.startDate as Date,
       endTime: range.endDate as Date,
-      type: mode as 'ALLOWLIST' | 'PUBLIC',
+      type: mode as "ALLOWLIST" | "PUBLIC",
       price: toNano(price),
-      allowlist: mode === 'ALLOWLIST' ? allowlist : [],
+      allowlist: mode === "ALLOWLIST" ? allowlist : [],
     };
     setMintStages((mintStages) => [...mintStages, mintStage]);
     setOpen(false);
@@ -75,17 +99,14 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({
       endDate: null,
     });
   };
-  const addMintStageEnabled =
-    (mode === "PUBLIC" || (mode === "ALLOWLIST" && allowlist.length > 0)) &&
-    price &&
-    price.length > 0 &&
-    !isNaN(parseInt(price));
+  const addMintStageEnabled = (mode === "PUBLIC" || (mode === "ALLOWLIST" && allowlist.length > 0));
   return (
     <Modal open={props.open} setOpen={setOpen}>
       <div className="p-8">
         <InputWrapper
           label="Name"
           description="Give a name for this mint stage"
+          error={errorMessages.name}
         >
           <input
             className="input input-bordered w-full"
@@ -95,6 +116,7 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({
         <InputWrapper
           label="Price"
           description="Set the price per token for this stage"
+          error={errorMessages.price}
         >
           <div className="relative">
             <VenomIcon className="w-4 h-4 absolute top-4 left-4" />
@@ -107,6 +129,7 @@ export const AddMintStageModal: FC<AddMintStageModalProps> = ({
         <InputWrapper
           label="Dates"
           description="Select the start and end date for this mint stage"
+          error={errorMessages.range}
         >
           <Datepicker
             value={range}
