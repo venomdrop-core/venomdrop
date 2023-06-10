@@ -6,6 +6,10 @@
   outline:0;
 }
 
+.container {
+  @apply px-4 lg:px-0;
+}
+
 
 .mint-page-cover-background {
   pointer-events: none;

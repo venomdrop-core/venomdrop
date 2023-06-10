@@ -8,6 +8,7 @@ import { useCollectionInfo } from "../../hooks/useCollectionInfo";
 import { parseContractMintStage } from "../../utils/parseContractMintStage";
 import { unixToDate } from "../../utils/dates";
 import { CollectionStatusBadge } from "../../components/CollectionStatusBadge";
+import { Footer } from "../../components/Footer";
 
 export interface CollectionMintPageProps {}
 
@@ -33,7 +34,8 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
   const aboutText = collection?.description.replaceAll("\n", "<br />") || "";
   const mintStages = (info?.mintStages || []).map(parseContractMintStage);
   return (
-    <div className="w-screen h-screen overflow-y-scroll bg-slate-950">
+    <div className="overflow-y-auto bg-slate-950 flex flex-col h-screen min-h-screen">
+      <div>
       <div className="w-full h-[600px] relative">
         <div
           className="w-full h-full absolute bg-cover bg-center"
@@ -46,16 +48,16 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
         <div className="w-full h-full absolute flex flex-col justify-end">
           <div className="mint-page-cover" />
           <div className="container mx-auto py-8">
-            <div>
+            <div className="flex justify-center lg:block">
               <img
                 src={collection?.logoImageSrc}
                 className="w-32 h-32 rounded-lg border-4 border-gray-100"
               />
             </div>
-            <h1 className="py-8 text-4xl font-semibold text-white">
+            <h1 className="py-8 text-4xl font-semibold text-white flex justify-center text-center lg:text-left lg:block">
               {collection?.name}
             </h1>
-            {collection && <CollectionStatusBadge collection={collection} />}
+            {collection && <div className="flex justify-center lg:block"><CollectionStatusBadge collection={collection} /></div>}
           </div>
         </div>
       </div>
@@ -68,7 +70,7 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
       )}
 
       <div className="container mx-auto mt-24">
-        <div className="grid grid-cols-2 gap-16">
+        <div className="grid lg:grid-cols-2 gap-16">
           <div>
             <div>
               <h2 className="text-gray-100 text-3xl">Schedule</h2>
@@ -88,7 +90,7 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
             </div>
           </div>
         </div>
-        <div>
+        <div className="my-16">
             <div>
               <h2 className="text-gray-100 text-3xl">About</h2>
               <div
@@ -97,6 +99,10 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
               />
             </div>
           </div>
+      </div>
+      </div>
+      <div className="mt-auto pt-8">
+        <Footer />
       </div>
     </div>
   );

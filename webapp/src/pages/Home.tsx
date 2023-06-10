@@ -9,7 +9,7 @@ import { Collection } from "../api/collections";
 export interface HomeProps {}
 
 export const Home: FC<HomeProps> = () => {
-  const slug = "test2";
+  const slug = "test4";
   const { data: collection } = useCollection(slug);
   const { data: collections } = useCollections();
   return (
@@ -23,7 +23,7 @@ export const Home: FC<HomeProps> = () => {
       <div className="container mx-auto my-2 text-gray-50 mt-24">
         <h2 className="text-3xl mb-8">Recent Collections</h2>
         <div className="mt-8">
-          <div className="grid grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {((collections as Collection[]) || []).map((collection) => (
               <div>
                 <CollectionListingCard collection={collection} />
