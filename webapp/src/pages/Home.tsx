@@ -9,7 +9,7 @@ import { Collection } from "../api/collections";
 export interface HomeProps {}
 
 export const Home: FC<HomeProps> = () => {
-  const slug = "test4";
+  const slug = "cyber-pumas";
   const { data: collection } = useCollection(slug);
   const { data: collections } = useCollections();
   return (
