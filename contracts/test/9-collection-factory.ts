@@ -20,11 +20,12 @@ describe('VenomDropCollectionFactory: deploy a collection contract', async () =>
     ({ contract: venomCollectionFactory } = await locklift.factory.deployContract({
       contract: "VenomDropCollectionFactory",
       publicKey: ownerSigner.publicKey,
-      initParams: {},
-      constructorParams: {
-        codeNft: nftArtifacts.code,
-        codeCollection: collectionArtifacts.code,
+      initParams: {
+        _nonce: locklift.utils.getRandomNonce(),
+        _codeNft: nftArtifacts.code,
+        _codeCollection: collectionArtifacts.code,
       },
+      constructorParams: {},
       value: locklift.utils.toNano(20),
     }));
   });
