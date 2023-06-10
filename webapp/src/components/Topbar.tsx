@@ -1,6 +1,9 @@
-import { FC, Fragment, useMemo, useState } from "react";
-import { Dialog, Disclosure, Popover, Transition } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { FC, useMemo, useState } from "react";
+import { Dialog, Disclosure } from "@headlessui/react";
+import {
+  ChevronRightIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import classNames from "classnames";
 import VenomDropWhiteSrc from "../assets/venomdrop-logo-white.png";
@@ -8,16 +11,16 @@ import { CATEGORIES } from "../consts";
 import { Link } from "react-router-dom";
 import { ProfileInfo } from "./ProfileInfo";
 
-const MENU_LINKS = [
-  {
-    name: "About",
-    href: "/about",
-  },
-  {
-    name: "Guides",
-    href: "/guides",
-  },
-];
+// const MENU_LINKS = [
+//   {
+//     name: "About",
+//     href: "/about",
+//   },
+//   {
+//     name: "Guides",
+//     href: "/guides",
+//   },
+// ];
 
 interface TopbarProps {
   className?: string;
@@ -48,16 +51,37 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
           </Link>
         </div>
         <div className="flex lg:hidden">
-          <button
+          {/* <button
             type="button"
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open main menu</span>
             <Bars3Icon className="h-6 w-6" aria-hidden="true" />
-          </button>
+          </button> */}
         </div>
-        <Popover.Group className="hidden lg:flex lg:gap-x-12">
+
+        <div className="px-2 pt-2 pb-3 space-y-1 hidden md:inline-flex">
+          <a
+            href="https://dorahacks.io/buidl/5843"
+            target="_blank"
+            className="hidden md:inline-flex items-center text-white bg-gray-800 rounded-full p-1 pr-2 sm:text-base lg:text-sm xl:text-base hover:text-gray-200"
+            rel="noreferrer"
+          >
+            <span className="px-3 py-0.5 text-white text-xs font-semibold leading-5 uppercase tracking-wide bg-primary rounded-full">
+              BETA
+            </span>
+            <span className="ml-4 text-sm">
+              This project was created for the Venom Hackathon
+            </span>
+            <ChevronRightIcon
+              className="ml-2 w-5 h-5 text-gray-500"
+              aria-hidden="true"
+            />
+          </a>
+        </div>
+
+        {/* <Popover.Group className="hidden lg:flex lg:gap-x-12">
           <Popover className="relative">
             <Popover.Button className="flex items-center gap-x-1 text-lg font-semibold leading-6 text-gray-100">
               Explore
@@ -117,7 +141,7 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
               {link.name}
             </a>
           ))}
-        </Popover.Group>
+        </Popover.Group> */}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
           <ProfileInfo />
         </div>
@@ -179,14 +203,14 @@ export const Topbar: FC<TopbarProps> = ({ className }) => {
                     </>
                   )}
                 </Disclosure>
-                {MENU_LINKS.map((link) => (
+                {/* {MENU_LINKS.map((link) => (
                   <a
                     href={link.href}
                     className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-200 hover:bg-gray-50"
                   >
                     {link.name}
                   </a>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>
