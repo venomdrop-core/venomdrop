@@ -18,8 +18,8 @@ interface Request extends ExpressRequest {
 
 const DEFAULT_METADATA: PageMetadata = {
   title: 'VenomDrop',
-  imageUrl: '', // TODO: Use a default cover image url here
-  description: '', // TODO: add a description URL here
+  imageUrl: 'https://venomdrop-devnet.s3.amazonaws.com/defaults/venomdrop-cover.png',
+  description: 'Create and launch your NFT Drops effortlessly with VenomDrop, the platform built on the Venom Blockchain. Showcase your NFTs on customized Drop Pages, engage your audience, and experience the power of decentralized technology. Join VenomDrop today and embrace the future of NFT creation and distribution',
 }
 
 const DROP_PAGE_PATH_REGEX = /^\/collections\/([a-zA-Z-0-9-]+)$/;

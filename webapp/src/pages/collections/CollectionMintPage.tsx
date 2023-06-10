@@ -88,8 +88,7 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-16 mt-24">
-          <div>
+        <div>
             <div>
               <h2 className="text-gray-100 text-3xl">About</h2>
               <div
@@ -98,14 +97,6 @@ export const CollectionMintPage: FC<CollectionMintPageProps> = () => {
               />
             </div>
           </div>
-          <div>
-            <h2 className="text-gray-100 text-3xl">About</h2>
-            <div
-              className="prose prose-lg w-full max-w-full mt-8 text-justify"
-              dangerouslySetInnerHTML={{ __html: aboutText }}
-            />
-          </div>
-        </div>
       </div>
     </div>
   );

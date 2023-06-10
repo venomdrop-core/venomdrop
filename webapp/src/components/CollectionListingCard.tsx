@@ -22,10 +22,10 @@ export const CollectionListingCard: FC<CollectionListingCardProps> = ({
     <Link to={`/collections/${slug}${linkToAdmin ? "/edit/details" : ""}`}>
       <div className="w-full bg-slate-950">
         <div
-          className="w-full h-48 bg-cover bg-center bg-slate-950 rounded-t-lg"
+          className="w-full h-48 bg-cover bg-center bg-slate-950 rounded-t-lg flex flex-col justify-between"
           style={{ backgroundImage }}
         >
-          {showPublishStatus && (
+          {showPublishStatus ? (
             <div className="flex justify-end pt-4 pr-4">
               {collection.publishStatus === "PUBLISHED" && (
                 <div className="bg-green-500 inline-block text-[10px] text-white  rounded-md px-2 py-1 mb-2">
@@ -38,7 +38,13 @@ export const CollectionListingCard: FC<CollectionListingCardProps> = ({
                 </div>
               )}
             </div>
-          )}
+          ): <div />}
+          <div>
+            <img
+              src={collection?.logoImageSrc}
+              className="w-20 h-20 rounded-lg border-2 border-gray-100 ml-8 mb-[-16px]"
+            />
+          </div>
         </div>
         <div className="p-8 border-t border-t-slate-900">
           <div className="font-bold text-gray-200">{collection.name}</div>
