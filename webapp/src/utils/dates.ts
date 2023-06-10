@@ -1,10 +1,10 @@
 export const dateToUnix = (date: Date): number => {
-  return date.getTime();
+  return date.getTime() / 1000;
 }
 
 
 export const unixToDate = (timestamp: number | string): Date => {
-  return new Date((+timestamp));
+  return new Date((+timestamp * 1000));
 }
 
 export const formatDate = (date: any) => {

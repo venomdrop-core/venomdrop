@@ -70,7 +70,7 @@ contract VenomDropCollection is TIP4_1Collection, Ownable {
     uint256 numStages = _mintStages.length;
     for (uint256 i = 0; i < numStages; i++) {
       MintStage stage = _mintStages[i];
-      if (now > stage.startTime && now < stage.endTime) {
+      if ((now > stage.startTime) && (now < stage.endTime)) {
         return stage;
       }
     }
